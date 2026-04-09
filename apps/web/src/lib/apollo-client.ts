@@ -6,6 +6,7 @@ import {
 } from "@apollo/client";
 import { CombinedGraphQLErrors } from "@apollo/client/errors";
 import { ErrorLink } from "@apollo/client/link/error";
+import { createQueryPreloader } from "@apollo/client/react";
 import { env } from "@graphql-conf/env/web";
 import { toast } from "sonner";
 
@@ -32,3 +33,5 @@ export const apolloClient = new ApolloClient({
 	cache: new InMemoryCache(),
 	link: ApolloLink.from([errorLink, httpLink]),
 });
+
+export const preloadQuery = createQueryPreloader(apolloClient);

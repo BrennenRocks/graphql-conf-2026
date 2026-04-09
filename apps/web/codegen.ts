@@ -13,7 +13,7 @@ const config: CodegenConfig = {
 			},
 			preset: "client",
 			presetConfig: {
-				fragmentMasking: false,
+				fragmentMasking: true,
 			},
 		},
 		"./src/__gql__/apollo-helpers.ts": {

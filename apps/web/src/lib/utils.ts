@@ -1,6 +1,5 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { cn as sharedCn } from "@graphql-conf/ui/lib/utils";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+export const cn: typeof sharedCn = (...inputs) => {
+	return sharedCn(...inputs);
+};

@@ -123,4 +123,19 @@ Biome's linter will catch most issues automatically. Focus your attention on:
 
 ---
 
+## Project-Specific Apollo Client Guidance
+
+For this codebase, follow Apollo Client's fragment colocation and data masking patterns:
+
+- Prefer Apollo's `useFragment` and `useSuspenseFragment` in non-route components instead of GraphQL Code Generator helpers like `getFragmentData`
+- Treat fragments as component-owned data contracts, not shared "common field" bundles
+- If both a parent and child render the same field, include that field in both fragments; repeated selections are expected and GraphQL will flatten them
+- Route and page queries should compose child fragments and also select the entity key fields they need directly, usually `id`
+- For lists, map records into child components and let each child read its own fragment with Apollo's fragment hooks
+- Keep Apollo data masking enabled so components only read the fields they explicitly own
+
+This follows Apollo maintainer guidance and is the default approach for new frontend work in this repo.
+
+---
+
 Most formatting and common issues are automatically fixed by Biome. Run `bun x ultracite fix` before committing to ensure compliance.
