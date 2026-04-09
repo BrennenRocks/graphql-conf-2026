@@ -21,6 +21,6 @@
   "devDependencies": {
     "@graphql-conf/config": "workspace:*",
     "hono": "catalog:",
-    "typescript": "^5"
+    "typescript": "^6.0.2"
   }
 }

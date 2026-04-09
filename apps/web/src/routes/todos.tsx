@@ -11,7 +11,7 @@ import { Checkbox } from "@graphql-conf/ui/components/checkbox";
 import { Input } from "@graphql-conf/ui/components/input";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 
 import { graphql } from "@/__gql__";
 import type { TodosRouteQueryQuery } from "@/__gql__/graphql";
@@ -202,7 +202,7 @@ function TodosRoute() {
 		}
 	);
 
-	const handleAddTodo = (e: FormEvent<HTMLFormElement>) => {
+	const handleAddTodo = (e: SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		const trimmedTodoText = newTodoText.trim();

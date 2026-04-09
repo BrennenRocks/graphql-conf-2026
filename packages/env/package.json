@@ -15,6 +15,6 @@
   "devDependencies": {
     "@graphql-conf/config": "workspace:*",
     "@types/bun": "catalog:",
-    "typescript": "^5"
+    "typescript": "^6.0.2"
   }
 }
