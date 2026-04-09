@@ -29,6 +29,7 @@
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-scan": "^0.5.3",
     "sonner": "catalog:",
     "zod": "catalog:"
   },

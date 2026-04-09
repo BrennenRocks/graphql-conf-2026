@@ -15,6 +15,7 @@ const toggleTodoSchema = z.object({
 });
 
 const deleteTodoSchema = z.number().int();
+const missionIdSchema = z.string().uuid("Mission id must be a valid UUID");
 
 type TodoRecord = typeof todo.$inferSelect;
 
@@ -40,7 +41,33 @@ interface CreateTodoArgs {
 	text: string;
 }
 
+interface MissionArgs {
+	id: string;
+}
+
 export const typeDefs = gql`
+  enum CrewRole {
+    HACKER
+    PILOT
+    MUSCLE
+    GRIFTER
+    ENGINEER
+  }
+
+  enum MissionStatus {
+    PLANNING
+    READY
+    COMMITTED
+  }
+
+  enum ToolCategory {
+    INFILTRATION
+    SURVEILLANCE
+    SOCIAL
+    DEMOLITION
+    ESCAPE
+  }
+
   type Todo {
     id: Int!
     text: String!
@@ -58,9 +85,70 @@ export const typeDefs = gql`
     user: Viewer!
   }
 
+  type Faction {
+    id: ID!
+    name: String!
+    description: String!
+  }
+
+  type Ship {
+    id: ID!
+    name: String!
+    shipClass: String!
+    stealthRating: Int!
+    cargoSlots: Int!
+  }
+
+  type CrewMember {
+    id: ID!
+    name: String!
+    callSign: String!
+    role: CrewRole!
+    bio: String!
+    active: Boolean!
+  }
+
+  type Tool {
+    id: ID!
+    name: String!
+    category: ToolCategory!
+    description: String!
+  }
+
+  type MissionCrewAssignment {
+    assignmentOrder: Int!
+    crewMember: CrewMember!
+  }
+
+  type MissionToolAssignment {
+    quantity: Int!
+    tool: Tool!
+  }
+
+  type Mission {
+    id: ID!
+    codeName: String!
+    targetName: String!
+    destination: String!
+    summary: String!
+    payout: Int!
+    riskLevel: Int!
+    status: MissionStatus!
+    faction: Faction!
+    ship: Ship
+    crewAssignments: [MissionCrewAssignment!]!
+    toolAssignments: [MissionToolAssignment!]!
+  }
+
   type Query {
     healthCheck: String!
     privateData: PrivateData!
+    factions: [Faction!]!
+    crewMembers: [CrewMember!]!
+    mission(id: ID!): Mission
+    missions: [Mission!]!
+    ships: [Ship!]!
+    tools: [Tool!]!
     todos: [Todo!]!
   }
 
@@ -112,6 +200,52 @@ const requireTodo = (todoRecord: TodoRecord | undefined) => {
 	}
 
 	return todoRecord;
+};
+
+const getMissions = async () => {
+	return await db.query.mission.findMany({
+		orderBy: (missions, { asc }) => [asc(missions.codeName)],
+		with: {
+			crewAssignments: {
+				orderBy: (crewAssignments, { asc }) => [
+					asc(crewAssignments.assignmentOrder),
+				],
+				with: {
+					crewMember: true,
+				},
+			},
+			faction: true,
+			ship: true,
+			toolAssignments: {
+				with: {
+					tool: true,
+				},
+			},
+		},
+	});
+};
+
+const getMissionById = async (id: string) => {
+	return await db.query.mission.findFirst({
+		where: (missions, { eq }) => eq(missions.id, id),
+		with: {
+			crewAssignments: {
+				orderBy: (crewAssignments, { asc }) => [
+					asc(crewAssignments.assignmentOrder),
+				],
+				with: {
+					crewMember: true,
+				},
+			},
+			faction: true,
+			ship: true,
+			toolAssignments: {
+				with: {
+					tool: true,
+				},
+			},
+		},
+	});
 };
 
 export const resolvers = {
@@ -193,8 +327,35 @@ export const resolvers = {
 		},
 	},
 	Query: {
+		factions: async () => {
+			return await db.query.faction.findMany({
+				orderBy: (factions, { asc }) => [asc(factions.name)],
+			});
+		},
+		crewMembers: async () => {
+			return await db.query.crewMember.findMany({
+				orderBy: (crewMembers, { asc }) => [asc(crewMembers.name)],
+			});
+		},
 		healthCheck: () => {
 			return "OK";
+		},
+		mission: async (_parent: unknown, args: MissionArgs) => {
+			const parsedId = missionIdSchema.safeParse(args.id);
+
+			if (!parsedId.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedId.error.issues[0]?.message,
+						"Mission id must be a valid UUID"
+					)
+				);
+			}
+
+			return await getMissionById(parsedId.data);
+		},
+		missions: async () => {
+			return await getMissions();
 		},
 		privateData: (
 			_parent: unknown,
@@ -211,6 +372,16 @@ export const resolvers = {
 					name: session.user.name,
 				},
 			};
+		},
+		ships: async () => {
+			return await db.query.ship.findMany({
+				orderBy: (ships, { asc }) => [asc(ships.name)],
+			});
+		},
+		tools: async () => {
+			return await db.query.tool.findMany({
+				orderBy: (tools, { asc }) => [asc(tools.name)],
+			});
 		},
 		todos: async (): Promise<TodoRecord[]> => {
 			return await db.select().from(todo);

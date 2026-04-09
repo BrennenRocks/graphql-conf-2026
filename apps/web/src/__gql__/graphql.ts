@@ -16,6 +16,67 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type CrewMember = {
+  __typename: 'CrewMember';
+  active: Scalars['Boolean']['output'];
+  bio: Scalars['String']['output'];
+  callSign: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  role: CrewRole;
+};
+
+export const CrewRole = {
+  Engineer: 'ENGINEER',
+  Grifter: 'GRIFTER',
+  Hacker: 'HACKER',
+  Muscle: 'MUSCLE',
+  Pilot: 'PILOT'
+} as const;
+
+export type CrewRole = typeof CrewRole[keyof typeof CrewRole];
+export type Faction = {
+  __typename: 'Faction';
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type Mission = {
+  __typename: 'Mission';
+  codeName: Scalars['String']['output'];
+  crewAssignments: Array<MissionCrewAssignment>;
+  destination: Scalars['String']['output'];
+  faction: Faction;
+  id: Scalars['ID']['output'];
+  payout: Scalars['Int']['output'];
+  riskLevel: Scalars['Int']['output'];
+  ship?: Maybe<Ship>;
+  status: MissionStatus;
+  summary: Scalars['String']['output'];
+  targetName: Scalars['String']['output'];
+  toolAssignments: Array<MissionToolAssignment>;
+};
+
+export type MissionCrewAssignment = {
+  __typename: 'MissionCrewAssignment';
+  assignmentOrder: Scalars['Int']['output'];
+  crewMember: CrewMember;
+};
+
+export const MissionStatus = {
+  Committed: 'COMMITTED',
+  Planning: 'PLANNING',
+  Ready: 'READY'
+} as const;
+
+export type MissionStatus = typeof MissionStatus[keyof typeof MissionStatus];
+export type MissionToolAssignment = {
+  __typename: 'MissionToolAssignment';
+  quantity: Scalars['Int']['output'];
+  tool: Tool;
+};
+
 export type Mutation = {
   __typename: 'Mutation';
   createTodo: Todo;
@@ -47,9 +108,29 @@ export type PrivateData = {
 
 export type Query = {
   __typename: 'Query';
+  crewMembers: Array<CrewMember>;
+  factions: Array<Faction>;
   healthCheck: Scalars['String']['output'];
+  mission?: Maybe<Mission>;
+  missions: Array<Mission>;
   privateData: PrivateData;
+  ships: Array<Ship>;
   todos: Array<Todo>;
+  tools: Array<Tool>;
+};
+
+
+export type QueryMissionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type Ship = {
+  __typename: 'Ship';
+  cargoSlots: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  shipClass: Scalars['String']['output'];
+  stealthRating: Scalars['Int']['output'];
 };
 
 export type Todo = {
@@ -59,6 +140,23 @@ export type Todo = {
   text: Scalars['String']['output'];
 };
 
+export type Tool = {
+  __typename: 'Tool';
+  category: ToolCategory;
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
+export const ToolCategory = {
+  Demolition: 'DEMOLITION',
+  Escape: 'ESCAPE',
+  Infiltration: 'INFILTRATION',
+  Social: 'SOCIAL',
+  Surveillance: 'SURVEILLANCE'
+} as const;
+
+export type ToolCategory = typeof ToolCategory[keyof typeof ToolCategory];
 export type Viewer = {
   __typename: 'Viewer';
   email: Scalars['String']['output'];
