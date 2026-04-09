@@ -1,6 +1,6 @@
 # graphql-conf
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, TRPC, and more.
+This project is a Bun monorepo that combines React, TanStack Router, Hono, Apollo Server, Apollo Client, Better Auth, and Drizzle.
 
 ## Features
 
@@ -9,7 +9,8 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **TailwindCSS** - Utility-first CSS for rapid UI development
 - **Shared UI package** - shadcn/ui primitives live in `packages/ui`
 - **Hono** - Lightweight, performant server framework
-- **tRPC** - End-to-end type-safe APIs
+- **GraphQL** - Apollo Server on the backend and Apollo Client on the frontend
+- **GraphQL Code Generator** - Typed documents generated into `apps/web/src/__gql__`
 - **Bun** - Runtime environment
 - **Drizzle** - TypeScript-first ORM
 - **PostgreSQL** - Database engine
@@ -44,8 +45,8 @@ Then, run the development server:
 bun run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
+The API is running at [http://localhost:3000](http://localhost:3000), and GraphQL is exposed at [http://localhost:3000/graphql](http://localhost:3000/graphql).
 
 ## UI Customization
 
@@ -83,10 +84,10 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 graphql-conf/
 ├── apps/
 │   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono, TRPC)
+│   └── server/      # Backend API (Hono + Apollo Server)
 ├── packages/
 │   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── api/         # API layer / business logic
+│   ├── api/         # GraphQL schema, resolvers, and shared context
 │   ├── auth/        # Authentication configuration & logic
 │   └── db/          # Database schema & queries
 ```
@@ -98,6 +99,7 @@ graphql-conf/
 - `bun run dev:web`: Start only the web application
 - `bun run dev:server`: Start only the server
 - `bun run check-types`: Check TypeScript types across all apps
+- `bun run codegen`: Generate typed GraphQL documents for the web app
 - `bun run db:push`: Push schema changes to database
 - `bun run db:generate`: Generate database client/types
 - `bun run db:migrate`: Run database migrations

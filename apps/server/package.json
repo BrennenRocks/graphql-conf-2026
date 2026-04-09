@@ -10,14 +10,14 @@
     "start": "bun run dist/index.mjs"
   },
   "dependencies": {
+    "@apollo/server": "catalog:",
     "@graphql-conf/api": "workspace:*",
     "@graphql-conf/auth": "workspace:*",
     "@graphql-conf/db": "workspace:*",
     "@graphql-conf/env": "workspace:*",
-    "@hono/trpc-server": "^0.4.0",
-    "@trpc/server": "catalog:",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
+    "graphql": "catalog:",
     "hono": "catalog:",
     "zod": "catalog:"
   },

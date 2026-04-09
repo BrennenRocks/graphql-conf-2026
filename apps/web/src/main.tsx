@@ -1,34 +1,33 @@
-import { QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { ApolloProvider } from "@apollo/client/react";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 
 import Loader from "./components/loader";
+import { apolloClient } from "./lib/apollo-client";
 import { routeTree } from "./routeTree.gen";
-import { queryClient, trpc } from "./utils/trpc";
 
 const router = createRouter({
-  routeTree,
-  defaultPreload: "intent",
-  defaultPendingComponent: () => <Loader />,
-  context: { trpc, queryClient },
-  Wrap: function WrapComponent({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  },
+	defaultPreload: "intent",
+	defaultPendingComponent: () => <Loader />,
+	routeTree,
+	Wrap({ children }: { children: React.ReactNode }) {
+		return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
+	},
 });
 
 declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
+	interface Register {
+		router: typeof router;
+	}
 }
 
 const rootElement = document.getElementById("app");
 
 if (!rootElement) {
-  throw new Error("Root element not found");
+	throw new Error("Root element not found");
 }
 
 if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<RouterProvider router={router} />);
+	const root = ReactDOM.createRoot(rootElement);
+	root.render(<RouterProvider router={router} />);
 }
