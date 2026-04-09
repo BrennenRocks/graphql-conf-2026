@@ -1,0 +1,6 @@
+{
+  "extends": "@graphql-conf/config/tsconfig.base.json",
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}

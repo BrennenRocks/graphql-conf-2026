@@ -1,0 +1,24 @@
+{
+  "name": "@graphql-conf/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@graphql-conf/db": "workspace:*",
+    "@graphql-conf/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@graphql-conf/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

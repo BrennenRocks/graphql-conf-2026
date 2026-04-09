@@ -1,0 +1,14 @@
+{
+  "extends": "@graphql-conf/config/tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "paths": {
+      "@graphql-conf/ui/*": ["./src/*"]
+    },
+    "strictNullChecks": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules"]
+}

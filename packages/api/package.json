@@ -1,0 +1,29 @@
+{
+  "name": "@graphql-conf/api",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@graphql-conf/auth": "workspace:*",
+    "@graphql-conf/db": "workspace:*",
+    "@graphql-conf/env": "workspace:*",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "@types/pg": "catalog:",
+    "dotenv": "catalog:",
+    "drizzle-orm": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@graphql-conf/config": "workspace:*",
+    "hono": "catalog:",
+    "typescript": "^5"
+  }
+}
