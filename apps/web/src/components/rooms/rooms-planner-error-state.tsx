@@ -6,31 +6,29 @@ import {
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
 
-interface MissionPlannerErrorStateProps {
+interface RoomsPlannerErrorStateProps {
 	error: unknown;
 }
 
-export function MissionPlannerErrorState({
-	error,
-}: MissionPlannerErrorStateProps) {
+export function RoomsPlannerErrorState({ error }: RoomsPlannerErrorStateProps) {
 	const message =
 		error instanceof Error && error.message.trim()
 			? error.message
-			: "Unable to load missions right now.";
+			: "Unable to load rooms right now.";
 
 	return (
 		<div className="grid h-full min-h-0 grid-cols-1 md:grid-cols-[23rem_minmax(0,1fr)]">
 			<aside className="border-border/80 border-b bg-card/40 md:border-r md:border-b-0">
 				<div className="border-b px-5 py-4">
 					<p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">
-						Planner
+						Houseplant Planner
 					</p>
-					<h1 className="font-heading text-xl">Missions</h1>
+					<h1 className="font-heading text-xl">Rooms</h1>
 				</div>
 				<div className="p-4">
 					<Card className="border border-border/80 border-dashed bg-muted/20">
 						<CardHeader>
-							<CardTitle>Mission feed unavailable</CardTitle>
+							<CardTitle>Room feed unavailable</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground text-sm">
@@ -45,7 +43,7 @@ export function MissionPlannerErrorState({
 					<CardHeader>
 						<CardTitle>Unable to load the planner</CardTitle>
 						<CardDescription>
-							The mission planner hit an error while loading data.
+							The room planner hit an error while loading data.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>

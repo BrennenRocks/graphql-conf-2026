@@ -16,67 +16,6 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type CrewMember = {
-  __typename: 'CrewMember';
-  active: Scalars['Boolean']['output'];
-  bio: Scalars['String']['output'];
-  callSign: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  role: CrewRole;
-};
-
-export const CrewRole = {
-  Engineer: 'ENGINEER',
-  Grifter: 'GRIFTER',
-  Hacker: 'HACKER',
-  Muscle: 'MUSCLE',
-  Pilot: 'PILOT'
-} as const;
-
-export type CrewRole = typeof CrewRole[keyof typeof CrewRole];
-export type Faction = {
-  __typename: 'Faction';
-  description: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
-
-export type Mission = {
-  __typename: 'Mission';
-  codeName: Scalars['String']['output'];
-  crewAssignments: Array<MissionCrewAssignment>;
-  destination: Scalars['String']['output'];
-  faction: Faction;
-  id: Scalars['ID']['output'];
-  payout: Scalars['Int']['output'];
-  riskLevel: Scalars['Int']['output'];
-  ship?: Maybe<Ship>;
-  status: MissionStatus;
-  summary: Scalars['String']['output'];
-  targetName: Scalars['String']['output'];
-  toolAssignments: Array<MissionToolAssignment>;
-};
-
-export type MissionCrewAssignment = {
-  __typename: 'MissionCrewAssignment';
-  assignmentOrder: Scalars['Int']['output'];
-  crewMember: CrewMember;
-};
-
-export const MissionStatus = {
-  Committed: 'COMMITTED',
-  Planning: 'PLANNING',
-  Ready: 'READY'
-} as const;
-
-export type MissionStatus = typeof MissionStatus[keyof typeof MissionStatus];
-export type MissionToolAssignment = {
-  __typename: 'MissionToolAssignment';
-  quantity: Scalars['Int']['output'];
-  tool: Tool;
-};
-
 export type Mutation = {
   __typename: 'Mutation';
   createTodo: Todo;
@@ -100,6 +39,13 @@ export type MutationToggleTodoArgs = {
   id: Scalars['Int']['input'];
 };
 
+export type Plant = {
+  __typename: 'Plant';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  species: Scalars['String']['output'];
+};
+
 export type PrivateData = {
   __typename: 'PrivateData';
   message: Scalars['String']['output'];
@@ -108,29 +54,25 @@ export type PrivateData = {
 
 export type Query = {
   __typename: 'Query';
-  crewMembers: Array<CrewMember>;
-  factions: Array<Faction>;
   healthCheck: Scalars['String']['output'];
-  mission?: Maybe<Mission>;
-  missions: Array<Mission>;
   privateData: PrivateData;
-  ships: Array<Ship>;
+  room?: Maybe<Room>;
+  rooms: Array<Room>;
   todos: Array<Todo>;
-  tools: Array<Tool>;
 };
 
 
-export type QueryMissionArgs = {
+export type QueryRoomArgs = {
   id: Scalars['ID']['input'];
 };
 
-export type Ship = {
-  __typename: 'Ship';
-  cargoSlots: Scalars['Int']['output'];
+export type Room = {
+  __typename: 'Room';
+  description: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  shipClass: Scalars['String']['output'];
-  stealthRating: Scalars['Int']['output'];
+  plantCount: Scalars['Int']['output'];
+  plants: Array<Plant>;
 };
 
 export type Todo = {
@@ -140,23 +82,6 @@ export type Todo = {
   text: Scalars['String']['output'];
 };
 
-export type Tool = {
-  __typename: 'Tool';
-  category: ToolCategory;
-  description: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
-
-export const ToolCategory = {
-  Demolition: 'DEMOLITION',
-  Escape: 'ESCAPE',
-  Infiltration: 'INFILTRATION',
-  Social: 'SOCIAL',
-  Surveillance: 'SURVEILLANCE'
-} as const;
-
-export type ToolCategory = typeof ToolCategory[keyof typeof ToolCategory];
 export type Viewer = {
   __typename: 'Viewer';
   email: Scalars['String']['output'];
@@ -164,17 +89,24 @@ export type Viewer = {
   name: Scalars['String']['output'];
 };
 
-export type MissionListItem_MissionFragment = { __typename: 'Mission', id: string, codeName: string, targetName: string, destination: string, payout: number, riskLevel: number } & { ' $fragmentName'?: 'MissionListItem_MissionFragment' };
+export type PlantListItem_PlantFragment = { __typename: 'Plant', id: string, name: string, species: string } & { ' $fragmentName'?: 'PlantListItem_PlantFragment' };
 
-export type MissionPlannerLayoutQueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type RoomHeader_RoomFragment = { __typename: 'Room', id: string, name: string, description: string, plantCount: number } & { ' $fragmentName'?: 'RoomHeader_RoomFragment' };
+
+export type RoomListItem_RoomFragment = { __typename: 'Room', id: string, name: string, description: string, plantCount: number } & { ' $fragmentName'?: 'RoomListItem_RoomFragment' };
+
+export type RoomPlantList_RoomFragment = { __typename: 'Room', id: string, plants: Array<(
+    { __typename: 'Plant', id: string }
+    & { ' $fragmentRefs'?: { 'PlantListItem_PlantFragment': PlantListItem_PlantFragment } }
+  )> } & { ' $fragmentName'?: 'RoomPlantList_RoomFragment' };
+
+export type RoomsPlannerLayoutQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MissionPlannerLayoutQueryQuery = { __typename: 'Query', missions: Array<(
-    { __typename: 'Mission', id: string }
-    & { ' $fragmentRefs'?: { 'MissionListItem_MissionFragment': MissionListItem_MissionFragment;'MissionShellHeader_MissionFragment': MissionShellHeader_MissionFragment } }
+export type RoomsPlannerLayoutQueryQuery = { __typename: 'Query', rooms: Array<(
+    { __typename: 'Room', id: string }
+    & { ' $fragmentRefs'?: { 'RoomListItem_RoomFragment': RoomListItem_RoomFragment;'RoomHeader_RoomFragment': RoomHeader_RoomFragment;'RoomPlantList_RoomFragment': RoomPlantList_RoomFragment } }
   )> };
-
-export type MissionShellHeader_MissionFragment = { __typename: 'Mission', id: string, codeName: string, targetName: string, destination: string, payout: number, riskLevel: number } & { ' $fragmentName'?: 'MissionShellHeader_MissionFragment' };
 
 export type DashboardRouteQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -213,9 +145,11 @@ export type DeleteTodoMutationMutationVariables = Exact<{
 
 export type DeleteTodoMutationMutation = { __typename: 'Mutation', deleteTodo: number };
 
-export const MissionListItem_MissionFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MissionListItem_mission"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Mission"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"codeName"}},{"kind":"Field","name":{"kind":"Name","value":"targetName"}},{"kind":"Field","name":{"kind":"Name","value":"destination"}},{"kind":"Field","name":{"kind":"Name","value":"payout"}},{"kind":"Field","name":{"kind":"Name","value":"riskLevel"}}]}}]} as unknown as DocumentNode<MissionListItem_MissionFragment, unknown>;
-export const MissionShellHeader_MissionFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MissionShellHeader_mission"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Mission"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"codeName"}},{"kind":"Field","name":{"kind":"Name","value":"targetName"}},{"kind":"Field","name":{"kind":"Name","value":"destination"}},{"kind":"Field","name":{"kind":"Name","value":"payout"}},{"kind":"Field","name":{"kind":"Name","value":"riskLevel"}}]}}]} as unknown as DocumentNode<MissionShellHeader_MissionFragment, unknown>;
-export const MissionPlannerLayoutQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"MissionPlannerLayoutQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"missions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MissionListItem_mission"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MissionShellHeader_mission"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MissionListItem_mission"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Mission"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"codeName"}},{"kind":"Field","name":{"kind":"Name","value":"targetName"}},{"kind":"Field","name":{"kind":"Name","value":"destination"}},{"kind":"Field","name":{"kind":"Name","value":"payout"}},{"kind":"Field","name":{"kind":"Name","value":"riskLevel"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MissionShellHeader_mission"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Mission"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"codeName"}},{"kind":"Field","name":{"kind":"Name","value":"targetName"}},{"kind":"Field","name":{"kind":"Name","value":"destination"}},{"kind":"Field","name":{"kind":"Name","value":"payout"}},{"kind":"Field","name":{"kind":"Name","value":"riskLevel"}}]}}]} as unknown as DocumentNode<MissionPlannerLayoutQueryQuery, MissionPlannerLayoutQueryQueryVariables>;
+export const RoomHeader_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomHeader_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}}]} as unknown as DocumentNode<RoomHeader_RoomFragment, unknown>;
+export const RoomListItem_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomListItem_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}}]} as unknown as DocumentNode<RoomListItem_RoomFragment, unknown>;
+export const PlantListItem_PlantFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}}]} as unknown as DocumentNode<PlantListItem_PlantFragment, unknown>;
+export const RoomPlantList_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomPlantList_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"plants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PlantListItem_plant"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}}]} as unknown as DocumentNode<RoomPlantList_RoomFragment, unknown>;
+export const RoomsPlannerLayoutQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RoomsPlannerLayoutQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomListItem_room"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomHeader_room"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomPlantList_room"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomListItem_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomHeader_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomPlantList_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"plants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PlantListItem_plant"}}]}}]}}]} as unknown as DocumentNode<RoomsPlannerLayoutQueryQuery, RoomsPlannerLayoutQueryQueryVariables>;
 export const DashboardRouteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DashboardRouteQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"privateData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<DashboardRouteQueryQuery, DashboardRouteQueryQueryVariables>;
 export const HomeRouteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"HomeRouteQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"healthCheck"}}]}}]} as unknown as DocumentNode<HomeRouteQueryQuery, HomeRouteQueryQueryVariables>;
 export const TodosRouteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TodosRouteQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"todos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"completed"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]} as unknown as DocumentNode<TodosRouteQueryQuery, TodosRouteQueryQueryVariables>;

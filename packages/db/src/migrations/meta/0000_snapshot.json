@@ -1,5 +1,5 @@
 {
-  "id": "94a9f33b-0e92-4359-b99e-a3d7615db4d0",
+  "id": "b7ccf6f1-dd0f-4e59-b915-a12dae4d0fd7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -359,8 +359,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.crew_member": {
-      "name": "crew_member",
+    "public.plant": {
+      "name": "plant",
       "schema": "",
       "columns": {
         "id": {
@@ -369,37 +369,23 @@
           "primaryKey": true,
           "notNull": true
         },
+        "room_id": {
+          "name": "room_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "call_sign": {
-          "name": "call_sign",
+        "species": {
+          "name": "species",
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "role": {
-          "name": "role",
-          "type": "crew_role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "bio": {
-          "name": "bio",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "active": {
-          "name": "active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
         },
         "created_at": {
           "name": "created_at",
@@ -410,11 +396,26 @@
         }
       },
       "indexes": {
-        "crew_member_role_idx": {
-          "name": "crew_member_role_idx",
+        "plant_name_idx": {
+          "name": "plant_name_idx",
           "columns": [
             {
-              "expression": "role",
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "plant_room_id_idx": {
+          "name": "plant_room_id_idx",
+          "columns": [
+            {
+              "expression": "room_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -426,23 +427,29 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "crew_member_call_sign_unique": {
-          "name": "crew_member_call_sign_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "call_sign"
-          ]
+      "foreignKeys": {
+        "plant_room_id_room_id_fk": {
+          "name": "plant_room_id_room_id_fk",
+          "tableFrom": "plant",
+          "tableTo": "room",
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.faction": {
-      "name": "faction",
+    "public.room": {
+      "name": "room",
       "schema": "",
       "columns": {
         "id": {
@@ -475,477 +482,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "faction_name_unique": {
-          "name": "faction_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.mission": {
-      "name": "mission",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "code_name": {
-          "name": "code_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "target_name": {
-          "name": "target_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "destination": {
-          "name": "destination",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "summary": {
-          "name": "summary",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "payout": {
-          "name": "payout",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "risk_level": {
-          "name": "risk_level",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "status": {
-          "name": "status",
-          "type": "mission_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'PLANNING'"
-        },
-        "faction_id": {
-          "name": "faction_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ship_id": {
-          "name": "ship_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "mission_faction_id_idx": {
-          "name": "mission_faction_id_idx",
-          "columns": [
-            {
-              "expression": "faction_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "mission_ship_id_idx": {
-          "name": "mission_ship_id_idx",
-          "columns": [
-            {
-              "expression": "ship_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "mission_status_idx": {
-          "name": "mission_status_idx",
-          "columns": [
-            {
-              "expression": "status",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "mission_faction_id_faction_id_fk": {
-          "name": "mission_faction_id_faction_id_fk",
-          "tableFrom": "mission",
-          "tableTo": "faction",
-          "columnsFrom": [
-            "faction_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "mission_ship_id_ship_id_fk": {
-          "name": "mission_ship_id_ship_id_fk",
-          "tableFrom": "mission",
-          "tableTo": "ship",
-          "columnsFrom": [
-            "ship_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "mission_code_name_unique": {
-          "name": "mission_code_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "code_name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.mission_crew_assignment": {
-      "name": "mission_crew_assignment",
-      "schema": "",
-      "columns": {
-        "mission_id": {
-          "name": "mission_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "crew_member_id": {
-          "name": "crew_member_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "assignment_order": {
-          "name": "assignment_order",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "assigned_at": {
-          "name": "assigned_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "mission_crew_assignment_crew_member_id_idx": {
-          "name": "mission_crew_assignment_crew_member_id_idx",
-          "columns": [
-            {
-              "expression": "crew_member_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "mission_crew_assignment_mission_id_mission_id_fk": {
-          "name": "mission_crew_assignment_mission_id_mission_id_fk",
-          "tableFrom": "mission_crew_assignment",
-          "tableTo": "mission",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "mission_crew_assignment_crew_member_id_crew_member_id_fk": {
-          "name": "mission_crew_assignment_crew_member_id_crew_member_id_fk",
-          "tableFrom": "mission_crew_assignment",
-          "tableTo": "crew_member",
-          "columnsFrom": [
-            "crew_member_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "mission_crew_assignment_pk": {
-          "name": "mission_crew_assignment_pk",
-          "columns": [
-            "mission_id",
-            "crew_member_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.mission_tool_assignment": {
-      "name": "mission_tool_assignment",
-      "schema": "",
-      "columns": {
-        "mission_id": {
-          "name": "mission_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "tool_id": {
-          "name": "tool_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "quantity": {
-          "name": "quantity",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 1
-        },
-        "assigned_at": {
-          "name": "assigned_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "mission_tool_assignment_tool_id_idx": {
-          "name": "mission_tool_assignment_tool_id_idx",
-          "columns": [
-            {
-              "expression": "tool_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "mission_tool_assignment_mission_id_mission_id_fk": {
-          "name": "mission_tool_assignment_mission_id_mission_id_fk",
-          "tableFrom": "mission_tool_assignment",
-          "tableTo": "mission",
-          "columnsFrom": [
-            "mission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "mission_tool_assignment_tool_id_tool_id_fk": {
-          "name": "mission_tool_assignment_tool_id_tool_id_fk",
-          "tableFrom": "mission_tool_assignment",
-          "tableTo": "tool",
-          "columnsFrom": [
-            "tool_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "mission_tool_assignment_pk": {
-          "name": "mission_tool_assignment_pk",
-          "columns": [
-            "mission_id",
-            "tool_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.ship": {
-      "name": "ship",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "ship_class": {
-          "name": "ship_class",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "stealth_rating": {
-          "name": "stealth_rating",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "cargo_slots": {
-          "name": "cargo_slots",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "ship_name_unique": {
-          "name": "ship_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.tool": {
-      "name": "tool",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "category": {
-          "name": "category",
-          "type": "tool_category",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "tool_category_idx": {
-          "name": "tool_category_idx",
-          "columns": [
-            {
-              "expression": "category",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "tool_name_unique": {
-          "name": "tool_name_unique",
+        "room_name_unique": {
+          "name": "room_name_unique",
           "nullsNotDistinct": false,
           "columns": [
             "name"
@@ -989,39 +527,7 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {
-    "public.crew_role": {
-      "name": "crew_role",
-      "schema": "public",
-      "values": [
-        "HACKER",
-        "PILOT",
-        "MUSCLE",
-        "GRIFTER",
-        "ENGINEER"
-      ]
-    },
-    "public.mission_status": {
-      "name": "mission_status",
-      "schema": "public",
-      "values": [
-        "PLANNING",
-        "READY",
-        "COMMITTED"
-      ]
-    },
-    "public.tool_category": {
-      "name": "tool_category",
-      "schema": "public",
-      "values": [
-        "INFILTRATION",
-        "SURVEILLANCE",
-        "SOCIAL",
-        "DEMOLITION",
-        "ESCAPE"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {},
   "sequences": {},
   "roles": {},

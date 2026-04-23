@@ -6,21 +6,21 @@ import {
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
 
-export function MissionEmptySelection() {
+export function RoomEmptySelection() {
 	return (
 		<div className="flex h-full items-center justify-center p-6">
 			<Card className="max-w-lg border border-border/80 border-dashed bg-muted/20">
 				<CardHeader>
-					<CardTitle>Pick a mission</CardTitle>
+					<CardTitle>Pick a room</CardTitle>
 					<CardDescription>
-						Select a target from the left rail to open the first planner shell.
+						Select a room from the left rail to open the plant collection.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<p className="text-muted-foreground text-sm">
-						We will add crew assignment, ship loadout, and tool planning in the
-						next slices. For now this view just establishes the route, preload,
-						and selection flow.
+						This first slice focuses on route preload, colocated fragments, and
+						cache-backed reads. Room editing and plant moves can layer on top
+						next.
 					</p>
 				</CardContent>
 			</Card>
