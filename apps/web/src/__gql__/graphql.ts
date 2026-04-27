@@ -46,6 +46,14 @@ export type Plant = {
   species: Scalars['String']['output'];
 };
 
+export type PlantCareNote = {
+  __typename: 'PlantCareNote';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  note: Scalars['String']['output'];
+  species: Scalars['String']['output'];
+};
+
 export type PrivateData = {
   __typename: 'PrivateData';
   message: Scalars['String']['output'];
@@ -55,14 +63,26 @@ export type PrivateData = {
 export type Query = {
   __typename: 'Query';
   healthCheck: Scalars['String']['output'];
+  plantCareNote: PlantCareNote;
   privateData: PrivateData;
   room?: Maybe<Room>;
+  roomCarePlan: RoomCarePlan;
   rooms: Array<Room>;
   todos: Array<Todo>;
 };
 
 
+export type QueryPlantCareNoteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryRoomArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryRoomCarePlanArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -73,6 +93,13 @@ export type Room = {
   name: Scalars['String']['output'];
   plantCount: Scalars['Int']['output'];
   plants: Array<Plant>;
+};
+
+export type RoomCarePlan = {
+  __typename: 'RoomCarePlan';
+  roomId: Scalars['ID']['output'];
+  summary: Scalars['String']['output'];
+  tips: Array<Scalars['String']['output']>;
 };
 
 export type Todo = {
@@ -89,14 +116,28 @@ export type Viewer = {
   name: Scalars['String']['output'];
 };
 
+export type PlantCareNoteQueryQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type PlantCareNoteQueryQuery = { __typename: 'Query', plantCareNote: { __typename: 'PlantCareNote', id: string, name: string, species: string, note: string } };
+
 export type PlantListItem_PlantFragment = { __typename: 'Plant', id: string, name: string, species: string } & { ' $fragmentName'?: 'PlantListItem_PlantFragment' };
+
+export type RoomCarePlanQueryQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type RoomCarePlanQueryQuery = { __typename: 'Query', roomCarePlan: { __typename: 'RoomCarePlan', roomId: string, summary: string, tips: Array<string> } };
 
 export type RoomHeader_RoomFragment = { __typename: 'Room', id: string, name: string, description: string, plantCount: number } & { ' $fragmentName'?: 'RoomHeader_RoomFragment' };
 
 export type RoomListItem_RoomFragment = { __typename: 'Room', id: string, name: string, description: string, plantCount: number } & { ' $fragmentName'?: 'RoomListItem_RoomFragment' };
 
 export type RoomPlantList_RoomFragment = { __typename: 'Room', id: string, plants: Array<(
-    { __typename: 'Plant', id: string }
+    { __typename: 'Plant', id: string, name: string }
     & { ' $fragmentRefs'?: { 'PlantListItem_PlantFragment': PlantListItem_PlantFragment } }
   )> } & { ' $fragmentName'?: 'RoomPlantList_RoomFragment' };
 
@@ -148,8 +189,10 @@ export type DeleteTodoMutationMutation = { __typename: 'Mutation', deleteTodo: n
 export const RoomHeader_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomHeader_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}}]} as unknown as DocumentNode<RoomHeader_RoomFragment, unknown>;
 export const RoomListItem_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomListItem_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}}]} as unknown as DocumentNode<RoomListItem_RoomFragment, unknown>;
 export const PlantListItem_PlantFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}}]} as unknown as DocumentNode<PlantListItem_PlantFragment, unknown>;
-export const RoomPlantList_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomPlantList_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"plants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PlantListItem_plant"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}}]} as unknown as DocumentNode<RoomPlantList_RoomFragment, unknown>;
-export const RoomsPlannerLayoutQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RoomsPlannerLayoutQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomListItem_room"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomHeader_room"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomPlantList_room"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomListItem_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomHeader_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomPlantList_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"plants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PlantListItem_plant"}}]}}]}}]} as unknown as DocumentNode<RoomsPlannerLayoutQueryQuery, RoomsPlannerLayoutQueryQueryVariables>;
+export const RoomPlantList_RoomFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomPlantList_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"plants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PlantListItem_plant"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}}]} as unknown as DocumentNode<RoomPlantList_RoomFragment, unknown>;
+export const PlantCareNoteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PlantCareNoteQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plantCareNote"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}},{"kind":"Field","name":{"kind":"Name","value":"note"}}]}}]}}]} as unknown as DocumentNode<PlantCareNoteQueryQuery, PlantCareNoteQueryQueryVariables>;
+export const RoomCarePlanQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RoomCarePlanQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomCarePlan"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"tips"}}]}}]}}]} as unknown as DocumentNode<RoomCarePlanQueryQuery, RoomCarePlanQueryQueryVariables>;
+export const RoomsPlannerLayoutQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RoomsPlannerLayoutQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomListItem_room"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomHeader_room"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoomPlantList_room"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PlantListItem_plant"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Plant"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"species"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomListItem_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomHeader_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"plantCount"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoomPlantList_room"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Room"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"plants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"PlantListItem_plant"}}]}}]}}]} as unknown as DocumentNode<RoomsPlannerLayoutQueryQuery, RoomsPlannerLayoutQueryQueryVariables>;
 export const DashboardRouteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DashboardRouteQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"privateData"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<DashboardRouteQueryQuery, DashboardRouteQueryQueryVariables>;
 export const HomeRouteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"HomeRouteQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"healthCheck"}}]}}]} as unknown as DocumentNode<HomeRouteQueryQuery, HomeRouteQueryQueryVariables>;
 export const TodosRouteQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TodosRouteQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"todos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"completed"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]} as unknown as DocumentNode<TodosRouteQueryQuery, TodosRouteQueryQueryVariables>;

@@ -1,18 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
-import { RoomsPlannerErrorState } from "@/components/rooms/rooms-planner-error-state";
 import {
 	RoomsPlannerLayout,
 	RoomsPlannerLayoutQuery,
 } from "@/components/rooms/rooms-planner-layout";
-import { RoomsPlannerLayoutSkeleton } from "@/components/rooms/rooms-planner-layout-skeleton";
 import { preloadQuery } from "@/lib/apollo-client";
 
 export const Route = createFileRoute("/rooms")({
 	component: RoomsLayoutRoute,
 	errorComponent: ({ error }) => {
-		return <RoomsPlannerErrorState error={error} />;
+		return <RoomsPlannerLayout.Error error={error} />;
 	},
 	loader: () => {
 		return {
@@ -25,8 +24,10 @@ function RoomsLayoutRoute() {
 	const { queryRef } = Route.useLoaderData();
 
 	return (
-		<Suspense fallback={<RoomsPlannerLayoutSkeleton />}>
-			<RoomsPlannerLayout queryRef={queryRef} />
-		</Suspense>
+		<ErrorBoundary FallbackComponent={RoomsPlannerLayout.Error}>
+			<Suspense fallback={<RoomsPlannerLayout.Skeleton />}>
+				<RoomsPlannerLayout queryRef={queryRef} />
+			</Suspense>
+		</ErrorBoundary>
 	);
 }

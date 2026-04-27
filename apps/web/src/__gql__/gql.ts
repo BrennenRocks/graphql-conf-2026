@@ -14,10 +14,12 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n\tquery PlantCareNoteQuery($id: ID!) {\n\t\tplantCareNote(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tspecies\n\t\t\tnote\n\t\t}\n\t}\n": typeof types.PlantCareNoteQueryDocument,
     "\n\tfragment PlantListItem_plant on Plant {\n\t\tid\n\t\tname\n\t\tspecies\n\t}\n": typeof types.PlantListItem_PlantFragmentDoc,
+    "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n": typeof types.RoomCarePlanQueryDocument,
     "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": typeof types.RoomHeader_RoomFragmentDoc,
     "\n\tfragment RoomListItem_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": typeof types.RoomListItem_RoomFragmentDoc,
-    "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n": typeof types.RoomPlantList_RoomFragmentDoc,
+    "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n": typeof types.RoomPlantList_RoomFragmentDoc,
     "\n\tquery RoomsPlannerLayoutQuery {\n\t\trooms {\n\t\t\tid\n\t\t\t...RoomListItem_room\n\t\t\t...RoomHeader_room\n\t\t\t...RoomPlantList_room\n\t\t}\n\t}\n": typeof types.RoomsPlannerLayoutQueryDocument,
     "\n  query DashboardRouteQuery {\n    privateData {\n      message\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": typeof types.DashboardRouteQueryDocument,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": typeof types.HomeRouteQueryDocument,
@@ -27,10 +29,12 @@ type Documents = {
     "\n  mutation DeleteTodoMutation($id: Int!) {\n    deleteTodo(id: $id)\n  }\n": typeof types.DeleteTodoMutationDocument,
 };
 const documents: Documents = {
+    "\n\tquery PlantCareNoteQuery($id: ID!) {\n\t\tplantCareNote(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tspecies\n\t\t\tnote\n\t\t}\n\t}\n": types.PlantCareNoteQueryDocument,
     "\n\tfragment PlantListItem_plant on Plant {\n\t\tid\n\t\tname\n\t\tspecies\n\t}\n": types.PlantListItem_PlantFragmentDoc,
+    "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n": types.RoomCarePlanQueryDocument,
     "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": types.RoomHeader_RoomFragmentDoc,
     "\n\tfragment RoomListItem_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": types.RoomListItem_RoomFragmentDoc,
-    "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n": types.RoomPlantList_RoomFragmentDoc,
+    "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n": types.RoomPlantList_RoomFragmentDoc,
     "\n\tquery RoomsPlannerLayoutQuery {\n\t\trooms {\n\t\t\tid\n\t\t\t...RoomListItem_room\n\t\t\t...RoomHeader_room\n\t\t\t...RoomPlantList_room\n\t\t}\n\t}\n": types.RoomsPlannerLayoutQueryDocument,
     "\n  query DashboardRouteQuery {\n    privateData {\n      message\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": types.DashboardRouteQueryDocument,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": types.HomeRouteQueryDocument,
@@ -57,7 +61,15 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n\tquery PlantCareNoteQuery($id: ID!) {\n\t\tplantCareNote(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tspecies\n\t\t\tnote\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery PlantCareNoteQuery($id: ID!) {\n\t\tplantCareNote(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tspecies\n\t\t\tnote\n\t\t}\n\t}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n\tfragment PlantListItem_plant on Plant {\n\t\tid\n\t\tname\n\t\tspecies\n\t}\n"): (typeof documents)["\n\tfragment PlantListItem_plant on Plant {\n\t\tid\n\t\tname\n\t\tspecies\n\t}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -69,7 +81,7 @@ export function graphql(source: "\n\tfragment RoomListItem_room on Room {\n\t\ti
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n"): (typeof documents)["\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n"];
+export function graphql(source: "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n"): (typeof documents)["\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

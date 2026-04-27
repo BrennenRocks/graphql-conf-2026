@@ -1,4 +1,5 @@
-import { useSuspenseFragment } from "@apollo/client/react";
+import { useLoadableQuery, useSuspenseFragment } from "@apollo/client/react";
+import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
 	CardContent,
@@ -6,9 +7,15 @@ import {
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
 import { useParams } from "@tanstack/react-router";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
 
+import {
+	PlantCareNotePanel,
+	PlantCareNoteQuery,
+} from "./plant-care-note-panel";
 import { PlantListItem } from "./plant-list-item";
 
 export const RoomPlantListFragment = graphql(/* GraphQL */ `
@@ -16,6 +23,7 @@ export const RoomPlantListFragment = graphql(/* GraphQL */ `
 		id
 		plants {
 			id
+			name
 			...PlantListItem_plant
 		}
 	}
@@ -23,6 +31,8 @@ export const RoomPlantListFragment = graphql(/* GraphQL */ `
 
 export function RoomPlantList() {
 	const { roomId } = useParams({ from: "/rooms/$roomId" });
+	const [loadPlantCareNote, plantCareNoteQueryRef] =
+		useLoadableQuery(PlantCareNoteQuery);
 	const { data } = useSuspenseFragment({
 		fragment: RoomPlantListFragment,
 		fragmentName: "RoomPlantList_room",
@@ -49,6 +59,31 @@ export function RoomPlantList() {
 						})}
 					</div>
 				)}
+				{data.plants.length > 0 ? (
+					<div className="mt-5 space-y-3 border-t pt-4">
+						<div className="flex flex-wrap gap-2">
+							{data.plants.map((plant) => {
+								return (
+									<Button
+										key={plant.id}
+										onClick={() => loadPlantCareNote({ id: plant.id })}
+										size="sm"
+										variant="outline"
+									>
+										Care note for {plant.name}
+									</Button>
+								);
+							})}
+						</div>
+						<ErrorBoundary FallbackComponent={PlantCareNotePanel.Error}>
+							<Suspense fallback={<PlantCareNotePanel.Skeleton />}>
+								{plantCareNoteQueryRef ? (
+									<PlantCareNotePanel queryRef={plantCareNoteQueryRef} />
+								) : null}
+							</Suspense>
+						</ErrorBoundary>
+					</div>
+				) : null}
 			</CardContent>
 		</Card>
 	);

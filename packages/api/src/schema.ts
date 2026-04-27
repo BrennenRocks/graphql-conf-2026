@@ -15,6 +15,7 @@ const toggleTodoSchema = z.object({
 });
 
 const deleteTodoSchema = z.number().int();
+const plantIdSchema = z.string().uuid("Plant id must be a valid UUID");
 const roomIdSchema = z.string().uuid("Room id must be a valid UUID");
 
 type TodoRecord = typeof todo.$inferSelect;
@@ -43,6 +44,23 @@ interface CreateTodoArgs {
 
 interface RoomArgs {
 	id: string;
+}
+
+interface PlantCareNote {
+	id: string;
+	name: string;
+	note: string;
+	species: string;
+}
+
+interface PlantCareNoteArgs {
+	id: string;
+}
+
+interface RoomCarePlan {
+	roomId: string;
+	summary: string;
+	tips: string[];
 }
 
 export const typeDefs = gql`
@@ -77,10 +95,25 @@ export const typeDefs = gql`
     plants: [Plant!]!
   }
 
+  type RoomCarePlan {
+    roomId: ID!
+    summary: String!
+    tips: [String!]!
+  }
+
+  type PlantCareNote {
+    id: ID!
+    name: String!
+    species: String!
+    note: String!
+  }
+
   type Query {
     healthCheck: String!
+    plantCareNote(id: ID!): PlantCareNote!
     privateData: PrivateData!
     room(id: ID!): Room
+    roomCarePlan(id: ID!): RoomCarePlan!
     rooms: [Room!]!
     todos: [Todo!]!
   }
@@ -135,6 +168,17 @@ const requireTodo = (todoRecord: TodoRecord | undefined) => {
 	return todoRecord;
 };
 
+const requireRecord = <TRecord>(
+	record: TRecord | null | undefined,
+	resource: string
+) => {
+	if (!record) {
+		throw createNotFoundError(resource);
+	}
+
+	return record;
+};
+
 const getRooms = async () => {
 	return await db.query.room.findMany({
 		orderBy: (rooms, { asc }) => [asc(rooms.name)],
@@ -155,6 +199,31 @@ const getRoomById = async (id: string) => {
 			},
 		},
 	});
+};
+
+const getPlantById = async (id: string) => {
+	return await db.query.plant.findFirst({
+		where: (plants, { eq }) => eq(plants.id, id),
+	});
+};
+
+const getPlantCountLabel = (plantCount: number) => {
+	return `${plantCount} plant${plantCount === 1 ? "" : "s"}`;
+};
+
+const createRoomCareTips = (plantCount: number) => {
+	if (plantCount === 0) {
+		return [
+			"Add one plant before creating a care routine.",
+			"Choose a spot with steady light and easy watering access.",
+		];
+	}
+
+	return [
+		"Check light and soil moisture before watering.",
+		"Group plants with similar watering needs together.",
+		"Rotate plants every few weeks so growth stays even.",
+	];
 };
 
 export const resolvers = {
@@ -239,6 +308,33 @@ export const resolvers = {
 		healthCheck: () => {
 			return "OK";
 		},
+		plantCareNote: async (
+			_parent: unknown,
+			args: PlantCareNoteArgs
+		): Promise<PlantCareNote> => {
+			const parsedId = plantIdSchema.safeParse(args.id);
+
+			if (!parsedId.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedId.error.issues[0]?.message,
+						"Plant id must be a valid UUID"
+					)
+				);
+			}
+
+			const plantRecord = requireRecord(
+				await getPlantById(parsedId.data),
+				"Plant"
+			);
+
+			return {
+				id: plantRecord.id,
+				name: plantRecord.name,
+				note: `Keep ${plantRecord.name} on a steady care rhythm for ${plantRecord.species}.`,
+				species: plantRecord.species,
+			};
+		},
 		privateData: (
 			_parent: unknown,
 			_args: unknown,
@@ -268,6 +364,33 @@ export const resolvers = {
 			}
 
 			return await getRoomById(parsedId.data);
+		},
+		roomCarePlan: async (
+			_parent: unknown,
+			args: RoomArgs
+		): Promise<RoomCarePlan> => {
+			const parsedId = roomIdSchema.safeParse(args.id);
+
+			if (!parsedId.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedId.error.issues[0]?.message,
+						"Room id must be a valid UUID"
+					)
+				);
+			}
+
+			const roomRecord = requireRecord(
+				await getRoomById(parsedId.data),
+				"Room"
+			);
+			const plantCount = roomRecord.plants.length;
+
+			return {
+				roomId: roomRecord.id,
+				summary: `${roomRecord.name} has ${getPlantCountLabel(plantCount)} to keep on schedule.`,
+				tips: createRoomCareTips(plantCount),
+			};
 		},
 		rooms: async () => {
 			return await getRooms();
