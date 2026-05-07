@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { like } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -8,7 +9,27 @@ dotenv.config({
 	path: "../../apps/server/.env",
 });
 
-const seedRooms = [
+const DEFAULT_ROOM_COUNT = 5;
+const DEFAULT_PLANT_COUNT = 8;
+const PLANT_ID_OFFSET = 100_000;
+const SEED_ID_PREFIX = "00000000-0000-4000-8000-";
+const SEED_ID_PATTERN = `${SEED_ID_PREFIX}%`;
+const NON_NEGATIVE_INTEGER_PATTERN = /^\d+$/;
+
+interface SeedPlant {
+	id: string;
+	name: string;
+	species: string;
+}
+
+interface SeedRoom {
+	description: string;
+	id: string;
+	name: string;
+	plants: SeedPlant[];
+}
+
+const defaultSeedRooms = [
 	{
 		description: "A bright gathering room with steady indirect light.",
 		id: "00000000-0000-4000-8000-000000000001",
@@ -84,6 +105,68 @@ const seedRooms = [
 			},
 		],
 	},
+] as const satisfies readonly SeedRoom[];
+
+const roomTemplates = [
+	{
+		description: "A bright gathering room with steady indirect light.",
+		name: "Living Room",
+	},
+	{
+		description: "A calm workspace with morning sun near the desk.",
+		name: "Office",
+	},
+	{
+		description: "A humid room that works well for moisture-loving plants.",
+		name: "Bathroom",
+	},
+	{
+		description: "A warm cooking space with a sunny windowsill.",
+		name: "Kitchen",
+	},
+	{
+		description: "A quiet sleeping space with soft filtered light.",
+		name: "Bedroom",
+	},
+	{
+		description: "A compact room with flexible light for hardy plants.",
+		name: "Plant Room",
+	},
+] as const;
+
+const plantTemplates = [
+	{
+		name: "Monstera",
+		species: "Monstera deliciosa",
+	},
+	{
+		name: "Snake Plant",
+		species: "Dracaena trifasciata",
+	},
+	{
+		name: "Pothos",
+		species: "Epipremnum aureum",
+	},
+	{
+		name: "ZZ Plant",
+		species: "Zamioculcas zamiifolia",
+	},
+	{
+		name: "Bird's Nest Fern",
+		species: "Asplenium nidus",
+	},
+	{
+		name: "Basil",
+		species: "Ocimum basilicum",
+	},
+	{
+		name: "Aloe",
+		species: "Aloe vera",
+	},
+	{
+		name: "Peace Lily",
+		species: "Spathiphyllum wallisii",
+	},
 ] as const;
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -97,6 +180,167 @@ const pool = new Pool({
 });
 
 const db = drizzle(pool);
+
+const createSeedId = (value: number): string => {
+	return `${SEED_ID_PREFIX}${value.toString().padStart(12, "0")}`;
+};
+
+const parseSeedCount = (flag: string, value: string | undefined): number => {
+	if (!value || value.startsWith("--")) {
+		throw new Error(`${flag} requires a count value.`);
+	}
+
+	if (!NON_NEGATIVE_INTEGER_PATTERN.test(value)) {
+		throw new Error(`${flag} must be a non-negative integer.`);
+	}
+
+	const parsedValue = Number(value);
+
+	if (!Number.isSafeInteger(parsedValue)) {
+		throw new Error(`${flag} is too large.`);
+	}
+
+	return parsedValue;
+};
+
+const parseSeedOptions = (
+	args: string[]
+): { customCounts: boolean; plantCount: number; roomCount: number } => {
+	let plantCount = DEFAULT_PLANT_COUNT;
+	let roomCount = DEFAULT_ROOM_COUNT;
+	let customCounts = false;
+
+	for (let index = 0; index < args.length; index += 1) {
+		const arg = args[index];
+
+		if (!arg) {
+			continue;
+		}
+
+		const [flag, inlineValue] = arg.split("=", 2);
+
+		if (flag === "--rooms") {
+			const value = inlineValue ?? args[index + 1];
+			roomCount = parseSeedCount(flag, value);
+			customCounts = true;
+
+			if (!inlineValue) {
+				index += 1;
+			}
+
+			continue;
+		}
+
+		if (flag === "--plants") {
+			const value = inlineValue ?? args[index + 1];
+			plantCount = parseSeedCount(flag, value);
+			customCounts = true;
+
+			if (!inlineValue) {
+				index += 1;
+			}
+
+			continue;
+		}
+
+		throw new Error(`Unknown seed option: ${arg}`);
+	}
+
+	if (roomCount === 0 && plantCount > 0) {
+		throw new Error("Cannot seed plants when --rooms is 0.");
+	}
+
+	return {
+		customCounts,
+		plantCount,
+		roomCount,
+	};
+};
+
+const getRoomTemplate = (index: number) => {
+	return roomTemplates[index] ?? roomTemplates.at(-1);
+};
+
+const getPlantTemplate = (index: number) => {
+	return plantTemplates[index % plantTemplates.length];
+};
+
+const createPlantName = (index: number): string => {
+	const template = getPlantTemplate(index);
+
+	if (index < plantTemplates.length) {
+		return template.name;
+	}
+
+	return `${template.name} ${index + 1}`;
+};
+
+const buildGeneratedSeedRooms = ({
+	plantCount,
+	roomCount,
+}: {
+	plantCount: number;
+	roomCount: number;
+}): SeedRoom[] => {
+	if (roomCount === 0) {
+		return [];
+	}
+
+	const basePlantCount = Math.floor(plantCount / roomCount);
+	const roomsWithExtraPlant = plantCount % roomCount;
+	let nextPlantIndex = 0;
+
+	return Array.from({ length: roomCount }, (_, roomIndex) => {
+		const template = getRoomTemplate(roomIndex);
+
+		if (!template) {
+			throw new Error(`Unable to build seed room ${roomIndex + 1}.`);
+		}
+
+		const roomPlantCount =
+			basePlantCount + (roomIndex < roomsWithExtraPlant ? 1 : 0);
+		const plants = Array.from({ length: roomPlantCount }, () => {
+			const plantIndex = nextPlantIndex;
+			const plantTemplate = getPlantTemplate(plantIndex);
+			nextPlantIndex += 1;
+
+			return {
+				id: createSeedId(PLANT_ID_OFFSET + plantIndex + 1),
+				name: createPlantName(plantIndex),
+				species: plantTemplate.species,
+			};
+		});
+
+		return {
+			description: template.description,
+			id: createSeedId(roomIndex + 1),
+			name:
+				roomIndex < roomTemplates.length - 1
+					? template.name
+					: `${template.name} ${roomIndex + 1}`,
+			plants,
+		};
+	});
+};
+
+const buildSeedRooms = ({
+	customCounts,
+	plantCount,
+	roomCount,
+}: {
+	customCounts: boolean;
+	plantCount: number;
+	roomCount: number;
+}): readonly SeedRoom[] => {
+	if (!customCounts) {
+		return defaultSeedRooms;
+	}
+
+	return buildGeneratedSeedRooms({
+		plantCount,
+		roomCount,
+	});
+};
 
 const formatError = (error: unknown): string => {
 	if (error instanceof AggregateError) {
@@ -113,54 +357,36 @@ const formatError = (error: unknown): string => {
 };
 
 try {
-	let plantCount = 0;
+	const seedOptions = parseSeedOptions(process.argv.slice(2));
+	const seedRooms = buildSeedRooms(seedOptions);
+	const seedPlants = seedRooms.flatMap((seedRoom) => {
+		return seedRoom.plants.map((seedPlant) => ({
+			...seedPlant,
+			roomId: seedRoom.id,
+		}));
+	});
 
-	for (const seedRoom of seedRooms) {
-		const [savedRoom] = await db
-			.insert(room)
-			.values({
-				description: seedRoom.description,
-				id: seedRoom.id,
-				name: seedRoom.name,
-			})
-			.onConflictDoUpdate({
-				set: {
+	await db.transaction(async (tx) => {
+		await tx.delete(plant).where(like(plant.id, SEED_ID_PATTERN));
+		await tx.delete(room).where(like(room.id, SEED_ID_PATTERN));
+
+		if (seedRooms.length > 0) {
+			await tx.insert(room).values(
+				seedRooms.map((seedRoom) => ({
 					description: seedRoom.description,
-				},
-				target: room.name,
-			})
-			.returning({
-				id: room.id,
-			});
-
-		if (!savedRoom) {
-			throw new Error(`Unable to seed room: ${seedRoom.name}`);
+					id: seedRoom.id,
+					name: seedRoom.name,
+				}))
+			);
 		}
 
-		for (const seedPlant of seedRoom.plants) {
-			await db
-				.insert(plant)
-				.values({
-					id: seedPlant.id,
-					name: seedPlant.name,
-					roomId: savedRoom.id,
-					species: seedPlant.species,
-				})
-				.onConflictDoUpdate({
-					set: {
-						name: seedPlant.name,
-						roomId: savedRoom.id,
-						species: seedPlant.species,
-					},
-					target: plant.id,
-				});
-
-			plantCount += 1;
+		if (seedPlants.length > 0) {
+			await tx.insert(plant).values(seedPlants);
 		}
-	}
+	});
 
 	process.stdout.write(
-		`Seeded ${seedRooms.length} rooms and ${plantCount} plants.\n`
+		`Seeded ${seedRooms.length} rooms and ${seedPlants.length} plants.\n`
 	);
 } catch (error) {
 	process.stderr.write(`${formatError(error)}\n`);

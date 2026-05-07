@@ -104,4 +104,6 @@ graphql-conf/
 - `bun run db:generate`: Generate database client/types
 - `bun run db:migrate`: Run database migrations
 - `bun run db:studio`: Open database studio UI
+- `bun run db:seed`: Seed the default rooms and plants
+- `bun run db:seed -- --rooms 10 --plants 50`: Seed a specific number of rooms and plants
 - `bun run check`: Run Biome formatting and linting
