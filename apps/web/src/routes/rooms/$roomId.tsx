@@ -52,13 +52,19 @@ export function RoomDetail() {
 
 	return (
 		<div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto p-4 md:p-6">
-			<RoomHeader />
+			<ErrorBoundary FallbackComponent={RoomHeader.Error}>
+				<Suspense fallback={<RoomHeader.Skeleton />}>
+					<RoomHeader />
+				</Suspense>
+			</ErrorBoundary>
 			<ErrorBoundary FallbackComponent={RoomCarePlanPanel.Error}>
 				<Suspense fallback={<RoomCarePlanPanel.Skeleton />}>
 					<RoomCarePlanPanel queryRef={carePlanQueryRef} />
 				</Suspense>
 			</ErrorBoundary>
-			<RoomPlantList />
+			<ErrorBoundary FallbackComponent={RoomPlantList.Error}>
+				<RoomPlantList />
+			</ErrorBoundary>
 		</div>
 	);
 }

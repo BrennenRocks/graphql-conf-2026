@@ -5,9 +5,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
+import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { useParams } from "@tanstack/react-router";
+import type { FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
+import { ErrorState } from "@/components/shared/error-state";
 
 export const RoomHeaderFragment = graphql(/* GraphQL */ `
 	fragment RoomHeader_room on Room {
@@ -22,7 +25,6 @@ export function RoomHeader() {
 	const { roomId } = useParams({ from: "/rooms/$roomId" });
 	const { data } = useSuspenseFragment({
 		fragment: RoomHeaderFragment,
-		fragmentName: "RoomHeader_room",
 		from: {
 			__typename: "Room",
 			id: roomId,
@@ -55,3 +57,36 @@ export function RoomHeader() {
 		</Card>
 	);
 }
+
+function RoomHeaderSkeleton() {
+	return (
+		<Card className="border border-border/80 bg-card/80">
+			<CardHeader className="gap-3">
+				<div className="flex flex-wrap items-start justify-between gap-3">
+					<div className="space-y-2">
+						<Skeleton className="h-3 w-20" />
+						<Skeleton className="h-7 w-48" />
+						<Skeleton className="h-4 w-72 max-w-full" />
+					</div>
+					<Skeleton className="h-6 w-20 rounded-full" />
+				</div>
+			</CardHeader>
+			<CardContent>
+				<Skeleton className="h-3 w-28" />
+			</CardContent>
+		</Card>
+	);
+}
+
+function RoomHeaderError({ error, resetErrorBoundary }: FallbackProps) {
+	return (
+		<ErrorState
+			error={error}
+			onRetry={resetErrorBoundary}
+			title="Failed to load room"
+		/>
+	);
+}
+
+RoomHeader.Skeleton = RoomHeaderSkeleton;
+RoomHeader.Error = RoomHeaderError;

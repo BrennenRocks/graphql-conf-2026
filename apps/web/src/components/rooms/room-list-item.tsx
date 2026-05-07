@@ -28,7 +28,6 @@ interface RoomListItemProps {
 export function RoomListItem({ isActive, room }: RoomListItemProps) {
 	const { data } = useSuspenseFragment({
 		fragment: RoomListItemFragment,
-		fragmentName: "RoomListItem_room",
 		from: room,
 	});
 

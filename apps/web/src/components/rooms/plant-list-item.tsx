@@ -24,7 +24,6 @@ interface PlantListItemProps {
 export function PlantListItem({ plant }: PlantListItemProps) {
 	const { data } = useSuspenseFragment({
 		fragment: PlantListItemFragment,
-		fragmentName: "PlantListItem_plant",
 		from: plant,
 	});
 

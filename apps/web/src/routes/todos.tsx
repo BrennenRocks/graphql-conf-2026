@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client/react";
+import { type QueryRef, useMutation, useReadQuery } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -9,16 +9,17 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Checkbox } from "@graphql-conf/ui/components/checkbox";
 import { Input } from "@graphql-conf/ui/components/input";
+import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2, Trash2 } from "lucide-react";
-import { type SubmitEvent, useState } from "react";
+import { type SubmitEvent, Suspense, useState } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
+import type { DocumentType } from "@/__gql__";
 import { graphql } from "@/__gql__";
 import type { TodosRouteQueryQuery } from "@/__gql__/graphql";
-
-export const Route = createFileRoute("/todos")({
-	component: TodosRoute,
-});
+import { ErrorState } from "@/components/shared/error-state";
+import { preloadQuery } from "@/lib/apollo-client";
 
 const TodosRouteQuery = graphql(/* GraphQL */ `
   query TodosRouteQuery {
@@ -56,82 +57,27 @@ const DeleteTodoMutation = graphql(/* GraphQL */ `
   }
 `);
 
-interface TodoListContentProps {
-	errorMessage: null | string;
-	isDeleting: boolean;
-	isLoading: boolean;
-	isToggling: boolean;
-	onDelete: (id: number) => void;
-	onToggle: (id: number, completed: boolean) => void;
-	todos: TodosRouteQueryQuery["todos"];
-}
+type TodosQueryRef = QueryRef<DocumentType<typeof TodosRouteQuery>>;
 
-function TodoListContent({
-	errorMessage,
-	isDeleting,
-	isLoading,
-	isToggling,
-	onDelete,
-	onToggle,
-	todos,
-}: TodoListContentProps) {
-	if (isLoading) {
-		return (
-			<div className="flex justify-center py-4">
-				<Loader2 className="h-6 w-6 animate-spin" />
-			</div>
-		);
-	}
+const TODO_LIST_SKELETON_IDS = [
+	"todo-skeleton-alpha",
+	"todo-skeleton-bravo",
+	"todo-skeleton-charlie",
+] as const;
 
-	if (errorMessage) {
-		return <p className="py-4 text-center text-red-500">{errorMessage}</p>;
-	}
-
-	if (todos.length === 0) {
-		return <p className="py-4 text-center">No todos yet. Add one above!</p>;
-	}
-
-	return (
-		<ul className="space-y-2">
-			{todos.map((todo) => (
-				<li
-					className="flex items-center justify-between rounded-md border p-2"
-					key={todo.id}
-				>
-					<div className="flex items-center space-x-2">
-						<Checkbox
-							checked={todo.completed}
-							disabled={isDeleting || isToggling}
-							id={`todo-${todo.id}`}
-							onCheckedChange={() => onToggle(todo.id, todo.completed)}
-						/>
-						<label
-							className={`${todo.completed ? "line-through" : ""}`}
-							htmlFor={`todo-${todo.id}`}
-						>
-							{todo.text}
-						</label>
-					</div>
-					<Button
-						aria-label="Delete todo"
-						disabled={isDeleting || isToggling}
-						onClick={() => onDelete(todo.id)}
-						size="icon"
-						variant="ghost"
-					>
-						<Trash2 className="h-4 w-4" />
-					</Button>
-				</li>
-			))}
-		</ul>
-	);
-}
+export const Route = createFileRoute("/todos")({
+	component: TodosRoute,
+	loader: () => {
+		return {
+			queryRef: preloadQuery(TodosRouteQuery),
+		};
+	},
+});
 
 function TodosRoute() {
+	const { queryRef } = Route.useLoaderData();
 	const [newTodoText, setNewTodoText] = useState("");
 
-	const { data, error, loading } = useQuery(TodosRouteQuery);
-	const todoItems = data?.todos ?? [];
 	const [createTodo, { loading: isCreating }] = useMutation(
 		CreateTodoMutation,
 		{
@@ -145,21 +91,26 @@ function TodosRoute() {
 					return;
 				}
 
-				const existingTodos = cache.readQuery({
-					query: TodosRouteQuery,
-				});
+				cache.modify({
+					fields: {
+						todos(
+							existing: ReadonlyArray<{ __ref: string }> | undefined,
+							{ readField, toReference }
+						) {
+							const newTodoRef = toReference(createdTodo);
+							const list = existing ?? [];
 
-				const todos = existingTodos?.todos ?? [];
-				const nextTodos = todos.some((todo) => todo.id === createdTodo.id)
-					? todos
-					: [...todos, createdTodo];
+							if (!newTodoRef) {
+								return list;
+							}
 
-				cache.writeQuery({
-					data: {
-						__typename: "Query",
-						todos: nextTodos,
+							const alreadyPresent = list.some((todoRef) => {
+								return readField("id", todoRef) === createdTodo.id;
+							});
+
+							return alreadyPresent ? list : [...list, newTodoRef];
+						},
 					},
-					query: TodosRouteQuery,
 				});
 			},
 		}
@@ -175,21 +126,20 @@ function TodosRoute() {
 					return;
 				}
 
-				const existingTodos = cache.readQuery({
-					query: TodosRouteQuery,
-				});
+				cache.modify({
+					fields: {
+						todos(
+							existing: ReadonlyArray<{ __ref: string }> | undefined,
+							{ readField }
+						) {
+							const list = existing ?? [];
 
-				if (existingTodos) {
-					cache.writeQuery({
-						data: {
-							__typename: "Query",
-							todos: existingTodos.todos.filter(
-								(todo) => todo.id !== deletedTodoId
-							),
+							return list.filter((todoRef) => {
+								return readField("id", todoRef) !== deletedTodoId;
+							});
 						},
-						query: TodosRouteQuery,
-					});
-				}
+					},
+				});
 
 				cache.evict({
 					id: cache.identify({
@@ -260,17 +210,134 @@ function TodosRoute() {
 						</Button>
 					</form>
 
-					<TodoListContent
-						errorMessage={error?.message ?? null}
-						isDeleting={isDeleting}
-						isLoading={loading}
-						isToggling={isToggling}
-						onDelete={handleDeleteTodo}
-						onToggle={handleToggleTodo}
-						todos={todoItems}
-					/>
+					<ErrorBoundary FallbackComponent={TodoListError}>
+						<Suspense fallback={<TodoListSkeleton />}>
+							<TodoList
+								isDeleting={isDeleting}
+								isToggling={isToggling}
+								onDelete={handleDeleteTodo}
+								onToggle={handleToggleTodo}
+								queryRef={queryRef}
+							/>
+						</Suspense>
+					</ErrorBoundary>
 				</CardContent>
 			</Card>
 		</div>
+	);
+}
+
+interface TodoListProps {
+	isDeleting: boolean;
+	isToggling: boolean;
+	onDelete: (id: number) => void;
+	onToggle: (id: number, completed: boolean) => void;
+	queryRef: TodosQueryRef;
+}
+
+function TodoList({
+	isDeleting,
+	isToggling,
+	onDelete,
+	onToggle,
+	queryRef,
+}: TodoListProps) {
+	const { data } = useReadQuery(queryRef);
+	const todos = data.todos;
+
+	if (todos.length === 0) {
+		return <p className="py-4 text-center">No todos yet. Add one above!</p>;
+	}
+
+	return (
+		<TodoListContent
+			isDeleting={isDeleting}
+			isToggling={isToggling}
+			onDelete={onDelete}
+			onToggle={onToggle}
+			todos={todos}
+		/>
+	);
+}
+
+interface TodoListContentProps {
+	isDeleting: boolean;
+	isToggling: boolean;
+	onDelete: (id: number) => void;
+	onToggle: (id: number, completed: boolean) => void;
+	todos: TodosRouteQueryQuery["todos"];
+}
+
+function TodoListContent({
+	isDeleting,
+	isToggling,
+	onDelete,
+	onToggle,
+	todos,
+}: TodoListContentProps) {
+	return (
+		<ul className="space-y-2">
+			{todos.map((todo) => (
+				<li
+					className="flex items-center justify-between rounded-md border p-2"
+					key={todo.id}
+				>
+					<div className="flex items-center space-x-2">
+						<Checkbox
+							checked={todo.completed}
+							disabled={isDeleting || isToggling}
+							id={`todo-${todo.id}`}
+							onCheckedChange={() => onToggle(todo.id, todo.completed)}
+						/>
+						<label
+							className={`${todo.completed ? "line-through" : ""}`}
+							htmlFor={`todo-${todo.id}`}
+						>
+							{todo.text}
+						</label>
+					</div>
+					<Button
+						aria-label="Delete todo"
+						disabled={isDeleting || isToggling}
+						onClick={() => onDelete(todo.id)}
+						size="icon"
+						variant="ghost"
+					>
+						<Trash2 className="h-4 w-4" />
+					</Button>
+				</li>
+			))}
+		</ul>
+	);
+}
+
+function TodoListSkeleton() {
+	return (
+		<ul className="space-y-2">
+			{TODO_LIST_SKELETON_IDS.map((skeletonId) => {
+				return (
+					<li
+						className="flex items-center justify-between rounded-md border p-2"
+						key={skeletonId}
+					>
+						<div className="flex items-center space-x-2">
+							<Skeleton className="h-4 w-4 rounded-sm" />
+							<Skeleton className="h-4 w-40" />
+						</div>
+						<Skeleton className="h-8 w-8 rounded-md" />
+					</li>
+				);
+			})}
+		</ul>
+	);
+}
+
+function TodoListError({ error, resetErrorBoundary }: FallbackProps) {
+	return (
+		<ErrorState
+			error={error}
+			onRetry={resetErrorBoundary}
+			title="Failed to load todos"
+		/>
 	);
 }
