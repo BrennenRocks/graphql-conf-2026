@@ -1,0 +1,1 @@
+CREATE INDEX "plant_room_name_id_idx" ON "plant" USING btree ("room_id","name","id");

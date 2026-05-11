@@ -1,0 +1,1 @@
+CREATE INDEX "room_name_id_idx" ON "room" USING btree ("name","id");

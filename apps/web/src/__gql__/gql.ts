@@ -19,10 +19,11 @@ type Documents = {
     "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n": typeof types.RoomCarePlanQueryDocument,
     "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": typeof types.RoomHeader_RoomFragmentDoc,
     "\n\tfragment RoomListItem_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": typeof types.RoomListItem_RoomFragmentDoc,
-    "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n": typeof types.RoomPlantList_RoomFragmentDoc,
-    "\n\tquery RoomsPlannerLayoutQuery {\n\t\trooms {\n\t\t\tid\n\t\t\t...RoomListItem_room\n\t\t\t...RoomHeader_room\n\t\t\t...RoomPlantList_room\n\t\t}\n\t}\n": typeof types.RoomsPlannerLayoutQueryDocument,
+    "\n\tquery RoomPlantListQuery($roomId: ID!, $first: Int!, $after: String) {\n\t\troom(id: $roomId) {\n\t\t\tid\n\t\t\tplantsConnection(first: $first, after: $after) {\n\t\t\t\tedges {\n\t\t\t\t\tcursor\n\t\t\t\t\tnode {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\t...PlantListItem_plant\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tpageInfo {\n\t\t\t\t\tendCursor\n\t\t\t\t\thasNextPage\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": typeof types.RoomPlantListQueryDocument,
+    "\n\tquery RoomsPlannerLayoutQuery($first: Int!, $after: String) {\n\t\troomsConnection(first: $first, after: $after) {\n\t\t\tedges {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\t...RoomListItem_room\n\t\t\t\t}\n\t\t\t}\n\t\t\tpageInfo {\n\t\t\t\tendCursor\n\t\t\t\thasNextPage\n\t\t\t}\n\t\t}\n\t}\n": typeof types.RoomsPlannerLayoutQueryDocument,
     "\n  query DashboardRouteQuery {\n    privateData {\n      message\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": typeof types.DashboardRouteQueryDocument,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": typeof types.HomeRouteQueryDocument,
+    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n": typeof types.RoomDetailRouteQueryDocument,
     "\n  query TodosRouteQuery {\n    todos {\n      completed\n      id\n      text\n    }\n  }\n": typeof types.TodosRouteQueryDocument,
     "\n  mutation CreateTodoMutation($text: String!) {\n    createTodo(text: $text) {\n      completed\n      id\n      text\n    }\n  }\n": typeof types.CreateTodoMutationDocument,
     "\n  mutation ToggleTodoMutation($completed: Boolean!, $id: Int!) {\n    toggleTodo(completed: $completed, id: $id) {\n      completed\n      id\n      text\n    }\n  }\n": typeof types.ToggleTodoMutationDocument,
@@ -34,10 +35,11 @@ const documents: Documents = {
     "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n": types.RoomCarePlanQueryDocument,
     "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": types.RoomHeader_RoomFragmentDoc,
     "\n\tfragment RoomListItem_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tplantCount\n\t}\n": types.RoomListItem_RoomFragmentDoc,
-    "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n": types.RoomPlantList_RoomFragmentDoc,
-    "\n\tquery RoomsPlannerLayoutQuery {\n\t\trooms {\n\t\t\tid\n\t\t\t...RoomListItem_room\n\t\t\t...RoomHeader_room\n\t\t\t...RoomPlantList_room\n\t\t}\n\t}\n": types.RoomsPlannerLayoutQueryDocument,
+    "\n\tquery RoomPlantListQuery($roomId: ID!, $first: Int!, $after: String) {\n\t\troom(id: $roomId) {\n\t\t\tid\n\t\t\tplantsConnection(first: $first, after: $after) {\n\t\t\t\tedges {\n\t\t\t\t\tcursor\n\t\t\t\t\tnode {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\t...PlantListItem_plant\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tpageInfo {\n\t\t\t\t\tendCursor\n\t\t\t\t\thasNextPage\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.RoomPlantListQueryDocument,
+    "\n\tquery RoomsPlannerLayoutQuery($first: Int!, $after: String) {\n\t\troomsConnection(first: $first, after: $after) {\n\t\t\tedges {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\t...RoomListItem_room\n\t\t\t\t}\n\t\t\t}\n\t\t\tpageInfo {\n\t\t\t\tendCursor\n\t\t\t\thasNextPage\n\t\t\t}\n\t\t}\n\t}\n": types.RoomsPlannerLayoutQueryDocument,
     "\n  query DashboardRouteQuery {\n    privateData {\n      message\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": types.DashboardRouteQueryDocument,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": types.HomeRouteQueryDocument,
+    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n": types.RoomDetailRouteQueryDocument,
     "\n  query TodosRouteQuery {\n    todos {\n      completed\n      id\n      text\n    }\n  }\n": types.TodosRouteQueryDocument,
     "\n  mutation CreateTodoMutation($text: String!) {\n    createTodo(text: $text) {\n      completed\n      id\n      text\n    }\n  }\n": types.CreateTodoMutationDocument,
     "\n  mutation ToggleTodoMutation($completed: Boolean!, $id: Int!) {\n    toggleTodo(completed: $completed, id: $id) {\n      completed\n      id\n      text\n    }\n  }\n": types.ToggleTodoMutationDocument,
@@ -81,11 +83,11 @@ export function graphql(source: "\n\tfragment RoomListItem_room on Room {\n\t\ti
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n"): (typeof documents)["\n\tfragment RoomPlantList_room on Room {\n\t\tid\n\t\tplants {\n\t\t\tid\n\t\t\tname\n\t\t\t...PlantListItem_plant\n\t\t}\n\t}\n"];
+export function graphql(source: "\n\tquery RoomPlantListQuery($roomId: ID!, $first: Int!, $after: String) {\n\t\troom(id: $roomId) {\n\t\t\tid\n\t\t\tplantsConnection(first: $first, after: $after) {\n\t\t\t\tedges {\n\t\t\t\t\tcursor\n\t\t\t\t\tnode {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\t...PlantListItem_plant\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tpageInfo {\n\t\t\t\t\tendCursor\n\t\t\t\t\thasNextPage\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomPlantListQuery($roomId: ID!, $first: Int!, $after: String) {\n\t\troom(id: $roomId) {\n\t\t\tid\n\t\t\tplantsConnection(first: $first, after: $after) {\n\t\t\t\tedges {\n\t\t\t\t\tcursor\n\t\t\t\t\tnode {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\t...PlantListItem_plant\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tpageInfo {\n\t\t\t\t\tendCursor\n\t\t\t\t\thasNextPage\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n\tquery RoomsPlannerLayoutQuery {\n\t\trooms {\n\t\t\tid\n\t\t\t...RoomListItem_room\n\t\t\t...RoomHeader_room\n\t\t\t...RoomPlantList_room\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomsPlannerLayoutQuery {\n\t\trooms {\n\t\t\tid\n\t\t\t...RoomListItem_room\n\t\t\t...RoomHeader_room\n\t\t\t...RoomPlantList_room\n\t\t}\n\t}\n"];
+export function graphql(source: "\n\tquery RoomsPlannerLayoutQuery($first: Int!, $after: String) {\n\t\troomsConnection(first: $first, after: $after) {\n\t\t\tedges {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\t...RoomListItem_room\n\t\t\t\t}\n\t\t\t}\n\t\t\tpageInfo {\n\t\t\t\tendCursor\n\t\t\t\thasNextPage\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomsPlannerLayoutQuery($first: Int!, $after: String) {\n\t\troomsConnection(first: $first, after: $after) {\n\t\t\tedges {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\t...RoomListItem_room\n\t\t\t\t}\n\t\t\t}\n\t\t\tpageInfo {\n\t\t\t\tendCursor\n\t\t\t\thasNextPage\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -94,6 +96,10 @@ export function graphql(source: "\n  query DashboardRouteQuery {\n    privateDat
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query HomeRouteQuery {\n    healthCheck\n  }\n"): (typeof documents)["\n  query HomeRouteQuery {\n    healthCheck\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -1,8 +1,9 @@
+import { Button } from "@graphql-conf/ui/components/button";
 import { useRouterState } from "@tanstack/react-router";
-
+import { useEffect, useRef } from "react";
 import { RoomListEmptyState } from "./room-list-empty-state";
 import { RoomListItem } from "./room-list-item";
-import { useRoomsPlannerContext } from "./rooms-planner-context";
+import type { RoomsPlannerRoom } from "./rooms-planner-layout";
 
 const getSelectedRoomId = (state: {
 	matches: Array<{
@@ -19,15 +20,50 @@ const getSelectedRoomId = (state: {
 	return typeof roomId === "string" ? roomId : undefined;
 };
 
-export function RoomList() {
-	const { rooms } = useRoomsPlannerContext();
+interface RoomListProps {
+	hasNextPage: boolean;
+	isLoadingMore: boolean;
+	onLoadMore: () => void;
+	rooms: RoomsPlannerRoom[];
+}
+
+export function RoomList({
+	hasNextPage,
+	isLoadingMore,
+	onLoadMore,
+	rooms,
+}: RoomListProps) {
+	const loadMoreElementRef = useRef<HTMLDivElement | null>(null);
 	const selectedRoomId = useRouterState({
 		select: getSelectedRoomId,
 	});
 
+	useEffect(() => {
+		const loadMoreElement = loadMoreElementRef.current;
+
+		if (!(hasNextPage && loadMoreElement)) {
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry?.isIntersecting) {
+					onLoadMore();
+				}
+			},
+			{
+				rootMargin: "160px 0px",
+			}
+		);
+
+		observer.observe(loadMoreElement);
+
+		return () => observer.disconnect();
+	}, [hasNextPage, onLoadMore]);
+
 	return (
 		<aside className="flex h-full min-h-0 flex-col">
-			<div className="border-b px-5 py-4">
+			<div className="shrink-0 border-b px-5 py-4">
 				<p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">
 					Houseplant Planner
 				</p>
@@ -41,7 +77,7 @@ export function RoomList() {
 			) : (
 				<nav
 					aria-label="Room list"
-					className="flex-1 overflow-y-auto px-3 py-3"
+					className="min-h-0 flex-1 overflow-y-auto p-3"
 				>
 					<div className="grid gap-3">
 						{rooms.map((room) => {
@@ -53,6 +89,18 @@ export function RoomList() {
 								/>
 							);
 						})}
+						{hasNextPage ? (
+							<div className="flex justify-center" ref={loadMoreElementRef}>
+								<Button
+									disabled={isLoadingMore}
+									onClick={onLoadMore}
+									size="sm"
+									variant="outline"
+								>
+									{isLoadingMore ? "Loading rooms..." : "Load more rooms"}
+								</Button>
+							</div>
+						) : null}
 					</div>
 				</nav>
 			)}

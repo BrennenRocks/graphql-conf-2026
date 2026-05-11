@@ -3,12 +3,16 @@ import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 const createId = () => crypto.randomUUID();
 
-export const room = pgTable("room", {
-	id: text("id").$defaultFn(createId).primaryKey(),
-	name: text("name").notNull().unique(),
-	description: text("description").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const room = pgTable(
+	"room",
+	{
+		id: text("id").$defaultFn(createId).primaryKey(),
+		name: text("name").notNull().unique(),
+		description: text("description").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [index("room_name_id_idx").on(table.name, table.id)]
+);
 
 export const plant = pgTable(
 	"plant",
@@ -23,6 +27,7 @@ export const plant = pgTable(
 	},
 	(table) => [
 		index("plant_name_idx").on(table.name),
+		index("plant_room_name_id_idx").on(table.roomId, table.name, table.id),
 		index("plant_room_id_idx").on(table.roomId),
 	]
 );

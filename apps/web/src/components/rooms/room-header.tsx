@@ -6,10 +6,10 @@ import {
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
-import { useParams } from "@tanstack/react-router";
 import type { FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
+import type { FragmentType } from "@/__gql__/fragment-masking";
 import { ErrorState } from "@/components/shared/error-state";
 
 export const RoomHeaderFragment = graphql(/* GraphQL */ `
@@ -21,14 +21,14 @@ export const RoomHeaderFragment = graphql(/* GraphQL */ `
 	}
 `);
 
-export function RoomHeader() {
-	const { roomId } = useParams({ from: "/rooms/$roomId" });
+interface RoomHeaderProps {
+	room: FragmentType<typeof RoomHeaderFragment>;
+}
+
+export function RoomHeader({ room }: RoomHeaderProps) {
 	const { data } = useSuspenseFragment({
 		fragment: RoomHeaderFragment,
-		from: {
-			__typename: "Room",
-			id: roomId,
-		},
+		from: room,
 	});
 
 	return (

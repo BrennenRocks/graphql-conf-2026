@@ -5,6 +5,11 @@ export type MutationFieldPolicy = {
 	deleteTodo?: FieldPolicy<any> | FieldReadFunction<any>,
 	toggleTodo?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type PageInfoKeySpecifier = ('endCursor' | 'hasNextPage' | PageInfoKeySpecifier)[];
+export type PageInfoFieldPolicy = {
+	endCursor?: FieldPolicy<any> | FieldReadFunction<any>,
+	hasNextPage?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type PlantKeySpecifier = ('id' | 'name' | 'species' | PlantKeySpecifier)[];
 export type PlantFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -18,12 +23,22 @@ export type PlantCareNoteFieldPolicy = {
 	note?: FieldPolicy<any> | FieldReadFunction<any>,
 	species?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type PlantConnectionKeySpecifier = ('edges' | 'pageInfo' | PlantConnectionKeySpecifier)[];
+export type PlantConnectionFieldPolicy = {
+	edges?: FieldPolicy<any> | FieldReadFunction<any>,
+	pageInfo?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type PlantEdgeKeySpecifier = ('cursor' | 'node' | PlantEdgeKeySpecifier)[];
+export type PlantEdgeFieldPolicy = {
+	cursor?: FieldPolicy<any> | FieldReadFunction<any>,
+	node?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type PrivateDataKeySpecifier = ('message' | 'user' | PrivateDataKeySpecifier)[];
 export type PrivateDataFieldPolicy = {
 	message?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('healthCheck' | 'plantCareNote' | 'privateData' | 'room' | 'roomCarePlan' | 'rooms' | 'todos' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('healthCheck' | 'plantCareNote' | 'privateData' | 'room' | 'roomCarePlan' | 'rooms' | 'roomsConnection' | 'todos' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	healthCheck?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantCareNote?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -31,21 +46,33 @@ export type QueryFieldPolicy = {
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	roomCarePlan?: FieldPolicy<any> | FieldReadFunction<any>,
 	rooms?: FieldPolicy<any> | FieldReadFunction<any>,
+	roomsConnection?: FieldPolicy<any> | FieldReadFunction<any>,
 	todos?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type RoomKeySpecifier = ('description' | 'id' | 'name' | 'plantCount' | 'plants' | RoomKeySpecifier)[];
+export type RoomKeySpecifier = ('description' | 'id' | 'name' | 'plantCount' | 'plants' | 'plantsConnection' | RoomKeySpecifier)[];
 export type RoomFieldPolicy = {
 	description?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantCount?: FieldPolicy<any> | FieldReadFunction<any>,
-	plants?: FieldPolicy<any> | FieldReadFunction<any>
+	plants?: FieldPolicy<any> | FieldReadFunction<any>,
+	plantsConnection?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type RoomCarePlanKeySpecifier = ('roomId' | 'summary' | 'tips' | RoomCarePlanKeySpecifier)[];
 export type RoomCarePlanFieldPolicy = {
 	roomId?: FieldPolicy<any> | FieldReadFunction<any>,
 	summary?: FieldPolicy<any> | FieldReadFunction<any>,
 	tips?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RoomConnectionKeySpecifier = ('edges' | 'pageInfo' | RoomConnectionKeySpecifier)[];
+export type RoomConnectionFieldPolicy = {
+	edges?: FieldPolicy<any> | FieldReadFunction<any>,
+	pageInfo?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RoomEdgeKeySpecifier = ('cursor' | 'node' | RoomEdgeKeySpecifier)[];
+export type RoomEdgeFieldPolicy = {
+	cursor?: FieldPolicy<any> | FieldReadFunction<any>,
+	node?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type TodoKeySpecifier = ('completed' | 'id' | 'text' | TodoKeySpecifier)[];
 export type TodoFieldPolicy = {
@@ -64,6 +91,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
 		fields?: MutationFieldPolicy,
 	},
+	PageInfo?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PageInfoKeySpecifier | (() => undefined | PageInfoKeySpecifier),
+		fields?: PageInfoFieldPolicy,
+	},
 	Plant?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantKeySpecifier | (() => undefined | PlantKeySpecifier),
 		fields?: PlantFieldPolicy,
@@ -71,6 +102,14 @@ export type StrictTypedTypePolicies = {
 	PlantCareNote?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantCareNoteKeySpecifier | (() => undefined | PlantCareNoteKeySpecifier),
 		fields?: PlantCareNoteFieldPolicy,
+	},
+	PlantConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PlantConnectionKeySpecifier | (() => undefined | PlantConnectionKeySpecifier),
+		fields?: PlantConnectionFieldPolicy,
+	},
+	PlantEdge?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PlantEdgeKeySpecifier | (() => undefined | PlantEdgeKeySpecifier),
+		fields?: PlantEdgeFieldPolicy,
 	},
 	PrivateData?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PrivateDataKeySpecifier | (() => undefined | PrivateDataKeySpecifier),
@@ -87,6 +126,14 @@ export type StrictTypedTypePolicies = {
 	RoomCarePlan?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | RoomCarePlanKeySpecifier | (() => undefined | RoomCarePlanKeySpecifier),
 		fields?: RoomCarePlanFieldPolicy,
+	},
+	RoomConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RoomConnectionKeySpecifier | (() => undefined | RoomConnectionKeySpecifier),
+		fields?: RoomConnectionFieldPolicy,
+	},
+	RoomEdge?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RoomEdgeKeySpecifier | (() => undefined | RoomEdgeKeySpecifier),
+		fields?: RoomEdgeFieldPolicy,
 	},
 	Todo?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | TodoKeySpecifier | (() => undefined | TodoKeySpecifier),

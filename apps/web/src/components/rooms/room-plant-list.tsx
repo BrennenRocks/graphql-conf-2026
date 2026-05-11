@@ -1,4 +1,4 @@
-import { useLoadableQuery, useSuspenseFragment } from "@apollo/client/react";
+import { useLoadableQuery, useSuspenseQuery } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -8,7 +8,14 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { useParams } from "@tanstack/react-router";
-import { Suspense } from "react";
+import {
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
@@ -28,13 +35,26 @@ const PLANT_GRID_SKELETON_IDS = [
 	"plant-skeleton-charlie",
 ] as const;
 
-export const RoomPlantListFragment = graphql(/* GraphQL */ `
-	fragment RoomPlantList_room on Room {
-		id
-		plants {
+const PLANT_PAGE_SIZE = 24;
+
+export const RoomPlantListQuery = graphql(/* GraphQL */ `
+	query RoomPlantListQuery($roomId: ID!, $first: Int!, $after: String) {
+		room(id: $roomId) {
 			id
-			name
-			...PlantListItem_plant
+			plantsConnection(first: $first, after: $after) {
+				edges {
+					cursor
+					node {
+						id
+						name
+						...PlantListItem_plant
+					}
+				}
+				pageInfo {
+					endCursor
+					hasNextPage
+				}
+			}
 		}
 	}
 `);
@@ -72,16 +92,72 @@ function RoomPlantListPlants({
 	plantCareNoteQueryRef,
 }: RoomPlantListPlantsProps) {
 	const { roomId } = useParams({ from: "/rooms/$roomId" });
-	const { data } = useSuspenseFragment({
-		fragment: RoomPlantListFragment,
-		fragmentName: "RoomPlantList_room",
-		from: {
-			__typename: "Room",
-			id: roomId,
+	const [isFetchingMore, setIsFetchingMore] = useState(false);
+	const [isPending, startTransition] = useTransition();
+	const loadMoreElementRef = useRef<HTMLDivElement | null>(null);
+	const { data, fetchMore } = useSuspenseQuery(RoomPlantListQuery, {
+		variables: {
+			first: PLANT_PAGE_SIZE,
+			roomId,
 		},
 	});
+	const plantsConnection = data.room?.plantsConnection;
+	const plants = plantsConnection?.edges.map((edge) => edge.node) ?? [];
+	const pageInfo = plantsConnection?.pageInfo;
+	const hasNextPage = Boolean(pageInfo?.hasNextPage && pageInfo.endCursor);
+	const isLoadingMore = isFetchingMore || isPending;
+	const loadMorePlants = useCallback(() => {
+		if (!(hasNextPage && pageInfo?.endCursor) || isFetchingMore) {
+			return;
+		}
 
-	if (data.plants.length === 0) {
+		setIsFetchingMore(true);
+		startTransition(() => {
+			fetchMore({
+				variables: {
+					after: pageInfo.endCursor,
+					first: PLANT_PAGE_SIZE,
+					roomId,
+				},
+			}).then(
+				() => setIsFetchingMore(false),
+				() => setIsFetchingMore(false)
+			);
+		});
+	}, [fetchMore, hasNextPage, isFetchingMore, pageInfo?.endCursor, roomId]);
+
+	useEffect(() => {
+		const loadMoreElement = loadMoreElementRef.current;
+
+		if (!(hasNextPage && loadMoreElement)) {
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry?.isIntersecting) {
+					loadMorePlants();
+				}
+			},
+			{
+				rootMargin: "240px 0px",
+			}
+		);
+
+		observer.observe(loadMoreElement);
+
+		return () => observer.disconnect();
+	}, [hasNextPage, loadMorePlants]);
+
+	if (!data.room) {
+		return (
+			<p className="text-muted-foreground text-sm">
+				This room could not be found.
+			</p>
+		);
+	}
+
+	if (plants.length === 0) {
 		return (
 			<p className="text-muted-foreground text-sm">
 				This room does not have any plants yet.
@@ -92,13 +168,25 @@ function RoomPlantListPlants({
 	return (
 		<>
 			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-				{data.plants.map((plant) => {
+				{plants.map((plant) => {
 					return <PlantListItem key={plant.id} plant={plant} />;
 				})}
 			</div>
+			{hasNextPage ? (
+				<div className="mt-4 flex justify-center" ref={loadMoreElementRef}>
+					<Button
+						disabled={isLoadingMore}
+						onClick={loadMorePlants}
+						size="sm"
+						variant="outline"
+					>
+						{isLoadingMore ? "Loading plants..." : "Load more plants"}
+					</Button>
+				</div>
+			) : null}
 			<div className="mt-5 space-y-3 border-t pt-4">
 				<div className="flex flex-wrap gap-2">
-					{data.plants.map((plant) => {
+					{plants.map((plant) => {
 						return (
 							<Button
 								key={plant.id}

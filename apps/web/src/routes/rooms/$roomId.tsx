@@ -1,14 +1,17 @@
 /* biome-ignore-all lint/style/useFilenamingConvention: TanStack Router dynamic segments use $param names */
+import { type QueryRef, useReadQuery } from "@apollo/client/react";
 import {
 	Card,
 	CardContent,
 	CardHeader,
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
+import type { DocumentType } from "@/__gql__";
+import { graphql } from "@/__gql__";
 import {
 	RoomCarePlanPanel,
 	RoomCarePlanQuery,
@@ -16,7 +19,6 @@ import {
 import { RoomHeader } from "@/components/rooms/room-header";
 import { RoomNotFound } from "@/components/rooms/room-not-found";
 import { RoomPlantList } from "@/components/rooms/room-plant-list";
-import { useRoomsPlannerContext } from "@/components/rooms/rooms-planner-context";
 import { ErrorState } from "@/components/shared/error-state";
 import { preloadQuery } from "@/lib/apollo-client";
 
@@ -26,6 +28,17 @@ const ROOM_PLANT_SKELETON_IDS = [
 	"plant-charlie",
 ] as const;
 
+const RoomDetailRouteQuery = graphql(/* GraphQL */ `
+	query RoomDetailRouteQuery($id: ID!) {
+		room(id: $id) {
+			id
+			...RoomHeader_room
+		}
+	}
+`);
+
+type RoomDetailQueryRef = QueryRef<DocumentType<typeof RoomDetailRouteQuery>>;
+
 export const Route = createFileRoute("/rooms/$roomId")({
 	component: RoomDetail,
 	loader: ({ params }) => {
@@ -33,20 +46,18 @@ export const Route = createFileRoute("/rooms/$roomId")({
 			carePlanQueryRef: preloadQuery(RoomCarePlanQuery, {
 				variables: { id: params.roomId },
 			}),
+			roomDetailQueryRef: preloadQuery(RoomDetailRouteQuery, {
+				variables: { id: params.roomId },
+			}) satisfies RoomDetailQueryRef,
 		};
 	},
 });
 
 export function RoomDetail() {
-	const { roomId } = useParams({ from: "/rooms/$roomId" });
-	const { rooms } = useRoomsPlannerContext();
-	const { carePlanQueryRef } = Route.useLoaderData();
+	const { carePlanQueryRef, roomDetailQueryRef } = Route.useLoaderData();
+	const { data } = useReadQuery(roomDetailQueryRef);
 
-	const hasRoom = rooms.some((room) => {
-		return room.id === roomId;
-	});
-
-	if (!hasRoom) {
+	if (!data.room) {
 		return <RoomNotFound />;
 	}
 
@@ -54,7 +65,7 @@ export function RoomDetail() {
 		<div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto p-4 md:p-6">
 			<ErrorBoundary FallbackComponent={RoomHeader.Error}>
 				<Suspense fallback={<RoomHeader.Skeleton />}>
-					<RoomHeader />
+					<RoomHeader room={data.room} />
 				</Suspense>
 			</ErrorBoundary>
 			<ErrorBoundary FallbackComponent={RoomCarePlanPanel.Error}>

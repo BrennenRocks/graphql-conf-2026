@@ -1,6 +1,9 @@
+import { Buffer } from "node:buffer";
+
 import { db } from "@graphql-conf/db";
+import { plant, room } from "@graphql-conf/db/schema/rooms";
 import { todo } from "@graphql-conf/db/schema/todo";
-import { eq } from "drizzle-orm";
+import { and, asc, count, eq, gt, or } from "drizzle-orm";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import z from "zod";
@@ -15,10 +18,75 @@ const toggleTodoSchema = z.object({
 });
 
 const deleteTodoSchema = z.number().int();
+const defaultRoomListLimit = 8;
+const maxRoomListLimit = 50;
+const defaultRoomConnectionPageSize = 8;
+const maxRoomConnectionPageSize = 50;
+const defaultPlantConnectionPageSize = 24;
+const maxPlantConnectionPageSize = 50;
 const plantIdSchema = z.string().uuid("Plant id must be a valid UUID");
 const roomIdSchema = z.string().uuid("Room id must be a valid UUID");
+const roomsArgsSchema = z.object({
+	limit: z.preprocess(
+		(value) => value ?? undefined,
+		z
+			.number()
+			.int("Room limit must be an integer")
+			.min(1, "Room limit must be at least 1")
+			.max(
+				maxRoomListLimit,
+				`Room limit cannot be greater than ${maxRoomListLimit}`
+			)
+			.default(defaultRoomListLimit)
+	),
+});
+const roomConnectionArgsSchema = z.object({
+	after: z.string().trim().min(1, "Room cursor cannot be empty").nullish(),
+	first: z.preprocess(
+		(value) => value ?? undefined,
+		z
+			.number()
+			.int("Room page size must be an integer")
+			.min(1, "Room page size must be at least 1")
+			.max(
+				maxRoomConnectionPageSize,
+				`Room page size cannot be greater than ${maxRoomConnectionPageSize}`
+			)
+			.default(defaultRoomConnectionPageSize)
+	),
+});
+const roomConnectionCursorSchema = z.object({
+	id: z.string().uuid(),
+	name: z.string().min(1),
+});
+const plantConnectionArgsSchema = z.object({
+	after: z.string().trim().min(1, "Plant cursor cannot be empty").nullish(),
+	first: z.preprocess(
+		(value) => value ?? undefined,
+		z
+			.number()
+			.int("Plant page size must be an integer")
+			.min(1, "Plant page size must be at least 1")
+			.max(
+				maxPlantConnectionPageSize,
+				`Plant page size cannot be greater than ${maxPlantConnectionPageSize}`
+			)
+			.default(defaultPlantConnectionPageSize)
+	),
+});
+const plantConnectionCursorSchema = z.object({
+	id: z.string().uuid(),
+	name: z.string().min(1),
+});
 
 type TodoRecord = typeof todo.$inferSelect;
+type RoomRecord = typeof room.$inferSelect;
+type PlantRecord = typeof plant.$inferSelect;
+
+interface RoomParent {
+	id: string;
+	plants?: PlantRecord[];
+}
 
 interface PrivateData {
 	message: string;
@@ -46,6 +114,15 @@ interface RoomArgs {
 	id: string;
 }
 
+interface RoomsArgs {
+	limit?: number | null;
+}
+
+interface RoomsConnectionArgs {
+	after?: string | null;
+	first?: number | null;
+}
+
 interface PlantCareNote {
 	id: string;
 	name: string;
@@ -55,6 +132,11 @@ interface PlantCareNote {
 
 interface PlantCareNoteArgs {
 	id: string;
+}
+
+interface PlantsConnectionArgs {
+	after?: string | null;
+	first?: number | null;
 }
 
 interface RoomCarePlan {
@@ -87,12 +169,38 @@ export const typeDefs = gql`
     species: String!
   }
 
+  type PlantConnection {
+    edges: [PlantEdge!]!
+    pageInfo: PageInfo!
+  }
+
+  type PlantEdge {
+    cursor: String!
+    node: Plant!
+  }
+
+  type PageInfo {
+    endCursor: String
+    hasNextPage: Boolean!
+  }
+
+  type RoomConnection {
+    edges: [RoomEdge!]!
+    pageInfo: PageInfo!
+  }
+
+  type RoomEdge {
+    cursor: String!
+    node: Room!
+  }
+
   type Room {
     id: ID!
     name: String!
     description: String!
     plantCount: Int!
     plants: [Plant!]!
+    plantsConnection(first: Int = 24, after: String): PlantConnection!
   }
 
   type RoomCarePlan {
@@ -114,7 +222,8 @@ export const typeDefs = gql`
     privateData: PrivateData!
     room(id: ID!): Room
     roomCarePlan(id: ID!): RoomCarePlan!
-    rooms: [Room!]!
+    rooms(limit: Int = 8): [Room!]!
+    roomsConnection(first: Int = 8, after: String): RoomConnection!
     todos: [Todo!]!
   }
 
@@ -179,25 +288,104 @@ const requireRecord = <TRecord>(
 	return record;
 };
 
-const getRooms = async () => {
+const getRooms = async (args: RoomsArgs) => {
+	const parsedArgs = roomsArgsSchema.safeParse(args);
+
+	if (!parsedArgs.success) {
+		throw createBadUserInputError(
+			getValidationMessage(
+				parsedArgs.error.issues[0]?.message,
+				"Invalid room list input"
+			)
+		);
+	}
+
 	return await db.query.room.findMany({
+		limit: parsedArgs.data.limit,
 		orderBy: (rooms, { asc }) => [asc(rooms.name)],
-		with: {
-			plants: {
-				orderBy: (plants, { asc }) => [asc(plants.name)],
-			},
-		},
 	});
+};
+
+const encodeRoomConnectionCursor = (roomRecord: RoomRecord) => {
+	return Buffer.from(
+		JSON.stringify({
+			id: roomRecord.id,
+			name: roomRecord.name,
+		})
+	).toString("base64url");
+};
+
+const decodeRoomConnectionCursor = (cursor: string) => {
+	try {
+		const decodedCursor = JSON.parse(
+			Buffer.from(cursor, "base64url").toString("utf8")
+		);
+		const parsedCursor = roomConnectionCursorSchema.safeParse(decodedCursor);
+
+		if (!parsedCursor.success) {
+			throw createBadUserInputError("Invalid room cursor");
+		}
+
+		return parsedCursor.data;
+	} catch (error) {
+		if (error instanceof GraphQLError) {
+			throw error;
+		}
+
+		throw createBadUserInputError("Invalid room cursor");
+	}
+};
+
+const getRoomsConnection = async (args: RoomsConnectionArgs) => {
+	const parsedArgs = roomConnectionArgsSchema.safeParse(args);
+
+	if (!parsedArgs.success) {
+		throw createBadUserInputError(
+			getValidationMessage(
+				parsedArgs.error.issues[0]?.message,
+				"Invalid room pagination input"
+			)
+		);
+	}
+
+	const afterCursor = parsedArgs.data.after
+		? decodeRoomConnectionCursor(parsedArgs.data.after)
+		: null;
+	const afterFilter = afterCursor
+		? or(
+				gt(room.name, afterCursor.name),
+				and(eq(room.name, afterCursor.name), gt(room.id, afterCursor.id))
+			)
+		: undefined;
+	const roomRecords = await db
+		.select()
+		.from(room)
+		.where(afterFilter)
+		.orderBy(asc(room.name), asc(room.id))
+		.limit(parsedArgs.data.first + 1);
+	const visibleRoomRecords = roomRecords.slice(0, parsedArgs.data.first);
+	const lastRoomRecord =
+		visibleRoomRecords.length > 0 ? visibleRoomRecords.at(-1) : undefined;
+
+	return {
+		edges: visibleRoomRecords.map((roomRecord) => {
+			return {
+				cursor: encodeRoomConnectionCursor(roomRecord),
+				node: roomRecord,
+			};
+		}),
+		pageInfo: {
+			endCursor: lastRoomRecord
+				? encodeRoomConnectionCursor(lastRoomRecord)
+				: null,
+			hasNextPage: roomRecords.length > parsedArgs.data.first,
+		},
+	};
 };
 
 const getRoomById = async (id: string) => {
 	return await db.query.room.findFirst({
 		where: (rooms, { eq }) => eq(rooms.id, id),
-		with: {
-			plants: {
-				orderBy: (plants, { asc }) => [asc(plants.name)],
-			},
-		},
 	});
 };
 
@@ -205,6 +393,24 @@ const getPlantById = async (id: string) => {
 	return await db.query.plant.findFirst({
 		where: (plants, { eq }) => eq(plants.id, id),
 	});
+};
+
+const getPlantsByRoomId = async (roomId: string) => {
+	return await db.query.plant.findMany({
+		orderBy: (plants, { asc }) => [asc(plants.name), asc(plants.id)],
+		where: (plants, { eq }) => eq(plants.roomId, roomId),
+	});
+};
+
+const getRoomPlantCount = async (roomId: string) => {
+	const [plantCountRecord] = await db
+		.select({
+			value: count(),
+		})
+		.from(plant)
+		.where(eq(plant.roomId, roomId));
+
+	return plantCountRecord?.value ?? 0;
 };
 
 const getPlantCountLabel = (plantCount: number) => {
@@ -224,6 +430,89 @@ const createRoomCareTips = (plantCount: number) => {
 		"Group plants with similar watering needs together.",
 		"Rotate plants every few weeks so growth stays even.",
 	];
+};
+
+const encodePlantConnectionCursor = (plantRecord: PlantRecord) => {
+	return Buffer.from(
+		JSON.stringify({
+			id: plantRecord.id,
+			name: plantRecord.name,
+		})
+	).toString("base64url");
+};
+
+const decodePlantConnectionCursor = (cursor: string) => {
+	try {
+		const decodedCursor = JSON.parse(
+			Buffer.from(cursor, "base64url").toString("utf8")
+		);
+		const parsedCursor = plantConnectionCursorSchema.safeParse(decodedCursor);
+
+		if (!parsedCursor.success) {
+			throw createBadUserInputError("Invalid plant cursor");
+		}
+
+		return parsedCursor.data;
+	} catch (error) {
+		if (error instanceof GraphQLError) {
+			throw error;
+		}
+
+		throw createBadUserInputError("Invalid plant cursor");
+	}
+};
+
+const getPlantConnection = async (
+	roomId: string,
+	args: PlantsConnectionArgs
+) => {
+	const parsedArgs = plantConnectionArgsSchema.safeParse(args);
+
+	if (!parsedArgs.success) {
+		throw createBadUserInputError(
+			getValidationMessage(
+				parsedArgs.error.issues[0]?.message,
+				"Invalid plant pagination input"
+			)
+		);
+	}
+
+	const afterCursor = parsedArgs.data.after
+		? decodePlantConnectionCursor(parsedArgs.data.after)
+		: null;
+	const afterFilter = afterCursor
+		? or(
+				gt(plant.name, afterCursor.name),
+				and(eq(plant.name, afterCursor.name), gt(plant.id, afterCursor.id))
+			)
+		: undefined;
+	const whereClause = afterFilter
+		? and(eq(plant.roomId, roomId), afterFilter)
+		: eq(plant.roomId, roomId);
+	const plantRecords = await db
+		.select()
+		.from(plant)
+		.where(whereClause)
+		.orderBy(asc(plant.name), asc(plant.id))
+		.limit(parsedArgs.data.first + 1);
+	const visiblePlantRecords = plantRecords.slice(0, parsedArgs.data.first);
+	const lastPlantRecord =
+		visiblePlantRecords.length > 0 ? visiblePlantRecords.at(-1) : undefined;
+
+	return {
+		edges: visiblePlantRecords.map((plantRecord) => {
+			return {
+				cursor: encodePlantConnectionCursor(plantRecord),
+				node: plantRecord,
+			};
+		}),
+		pageInfo: {
+			endCursor: lastPlantRecord
+				? encodePlantConnectionCursor(lastPlantRecord)
+				: null,
+			hasNextPage: plantRecords.length > parsedArgs.data.first,
+		},
+	};
 };
 
 export const resolvers = {
@@ -384,7 +673,7 @@ export const resolvers = {
 				await getRoomById(parsedId.data),
 				"Room"
 			);
-			const plantCount = roomRecord.plants.length;
+			const plantCount = await getRoomPlantCount(roomRecord.id);
 
 			return {
 				roomId: roomRecord.id,
@@ -392,16 +681,30 @@ export const resolvers = {
 				tips: createRoomCareTips(plantCount),
 			};
 		},
-		rooms: async () => {
-			return await getRooms();
+		rooms: async (_parent: unknown, args: RoomsArgs) => {
+			return await getRooms(args);
+		},
+		roomsConnection: async (_parent: unknown, args: RoomsConnectionArgs) => {
+			return await getRoomsConnection(args);
 		},
 		todos: async (): Promise<TodoRecord[]> => {
 			return await db.select().from(todo);
 		},
 	},
 	Room: {
-		plantCount: (roomRecord: { plants?: unknown[] }) => {
-			return roomRecord.plants?.length ?? 0;
+		plantCount: async (roomRecord: RoomParent) => {
+			return (
+				roomRecord.plants?.length ?? (await getRoomPlantCount(roomRecord.id))
+			);
+		},
+		plants: async (roomRecord: RoomParent) => {
+			return roomRecord.plants ?? (await getPlantsByRoomId(roomRecord.id));
+		},
+		plantsConnection: async (
+			roomRecord: RoomParent,
+			args: PlantsConnectionArgs
+		) => {
+			return await getPlantConnection(roomRecord.id, args);
 		},
 	},
 };
