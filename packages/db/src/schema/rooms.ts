@@ -11,7 +11,7 @@ export const room = pgTable(
 		description: text("description").notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
-	(table) => [index("room_name_id_idx").on(table.name, table.id)]
+	(table) => [index("room_created_at_id_idx").on(table.createdAt, table.id)]
 );
 
 export const plant = pgTable(

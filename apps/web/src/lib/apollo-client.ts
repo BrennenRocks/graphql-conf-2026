@@ -1,8 +1,11 @@
 import {
 	ApolloClient,
 	ApolloLink,
+	type FieldFunctionOptions,
 	HttpLink,
 	InMemoryCache,
+	type Reference,
+	type StoreObject,
 } from "@apollo/client";
 import { CombinedGraphQLErrors } from "@apollo/client/errors";
 import { ErrorLink } from "@apollo/client/link/error";
@@ -12,6 +15,49 @@ import { env } from "@graphql-conf/env/web";
 import { toast } from "sonner";
 
 import type { TypedTypePolicies } from "@/__gql__/apollo-helpers";
+
+type ConnectionEdge = Reference | StoreObject;
+
+interface Connection {
+	edges?: readonly ConnectionEdge[];
+}
+
+const roomsConnectionPagination = relayStylePagination();
+
+const dedupeConnectionEdges = <TConnection extends Connection | null>(
+	connection: TConnection,
+	readField: FieldFunctionOptions["readField"]
+) => {
+	if (!connection?.edges) {
+		return connection;
+	}
+
+	const seenNodeIds = new Set<string>();
+	const edges = connection.edges.filter((edge) => {
+		const node = readField<Reference | StoreObject>("node", edge);
+		const nodeId = node ? readField<string>("id", node) : undefined;
+
+		if (!nodeId) {
+			return true;
+		}
+
+		if (seenNodeIds.has(nodeId)) {
+			return false;
+		}
+
+		seenNodeIds.add(nodeId);
+		return true;
+	});
+
+	if (edges.length === connection.edges.length) {
+		return connection;
+	}
+
+	return {
+		...connection,
+		edges,
+	};
+};
 
 const errorLink = new ErrorLink(({ error }) => {
 	const message = CombinedGraphQLErrors.is(error)
@@ -35,7 +81,15 @@ const httpLink = new HttpLink({
 const typePolicies = {
 	Query: {
 		fields: {
-			roomsConnection: relayStylePagination(),
+			roomsConnection: {
+				...roomsConnectionPagination,
+				read(existing, options) {
+					const connection =
+						roomsConnectionPagination.read?.(existing, options) ?? existing;
+
+					return dedupeConnectionEdges(connection, options.readField);
+				},
+			},
 		},
 	},
 	Room: {

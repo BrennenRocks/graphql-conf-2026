@@ -8,7 +8,7 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { Outlet } from "@tanstack/react-router";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 
 import { graphql } from "@/__gql__";
 import type { RoomsPlannerLayoutQueryQuery } from "@/__gql__/graphql";
@@ -53,6 +53,8 @@ export type RoomsPlannerRoom =
 export function RoomsPlannerLayout() {
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	const [isPending, startTransition] = useTransition();
+	const exhaustedCursorRef = useRef<string | null>(null);
+	const pendingCursorRef = useRef<string | null>(null);
 	const { data, fetchMore } = useSuspenseQuery(RoomsPlannerLayoutQuery, {
 		variables: {
 			first: ROOM_PAGE_SIZE,
@@ -61,26 +63,55 @@ export function RoomsPlannerLayout() {
 	const roomsConnection = data.roomsConnection;
 	const rooms = roomsConnection.edges.map((edge) => edge.node);
 	const { pageInfo } = roomsConnection;
-	const hasNextPage = Boolean(pageInfo.hasNextPage && pageInfo.endCursor);
+	const endCursor = pageInfo.endCursor ?? null;
+	const hasNextPage = Boolean(
+		pageInfo.hasNextPage &&
+			endCursor &&
+			exhaustedCursorRef.current !== endCursor
+	);
 	const isLoadingMore = isFetchingMore || isPending;
 	const loadMoreRooms = useCallback(() => {
-		if (!(hasNextPage && pageInfo.endCursor) || isFetchingMore) {
+		if (!(hasNextPage && endCursor) || pendingCursorRef.current === endCursor) {
 			return;
 		}
 
+		pendingCursorRef.current = endCursor;
 		setIsFetchingMore(true);
 		startTransition(() => {
 			fetchMore({
 				variables: {
-					after: pageInfo.endCursor,
+					after: endCursor,
 					first: ROOM_PAGE_SIZE,
 				},
 			}).then(
-				() => setIsFetchingMore(false),
-				() => setIsFetchingMore(false)
+				({ data: fetchMoreData }) => {
+					if (!fetchMoreData) {
+						exhaustedCursorRef.current = endCursor;
+						pendingCursorRef.current = null;
+						setIsFetchingMore(false);
+						return;
+					}
+
+					const nextPageInfo = fetchMoreData.roomsConnection.pageInfo;
+					const nextEndCursor = nextPageInfo.endCursor ?? null;
+
+					if (
+						fetchMoreData.roomsConnection.edges.length === 0 ||
+						nextEndCursor === endCursor
+					) {
+						exhaustedCursorRef.current = endCursor;
+					}
+
+					pendingCursorRef.current = null;
+					setIsFetchingMore(false);
+				},
+				() => {
+					pendingCursorRef.current = null;
+					setIsFetchingMore(false);
+				}
 			);
 		});
-	}, [fetchMore, hasNextPage, isFetchingMore, pageInfo.endCursor]);
+	}, [endCursor, fetchMore, hasNextPage]);
 
 	return (
 		<div className="grid h-full min-h-0 grid-cols-1 overflow-hidden md:grid-cols-[23rem_minmax(0,1fr)]">

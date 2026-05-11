@@ -1,9 +1,11 @@
 import { Button } from "@graphql-conf/ui/components/button";
 import { useRouterState } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import type { UIEvent } from "react";
 import { RoomListEmptyState } from "./room-list-empty-state";
 import { RoomListItem } from "./room-list-item";
 import type { RoomsPlannerRoom } from "./rooms-planner-layout";
+
+const SCROLL_LOAD_THRESHOLD_PX = 160;
 
 const getSelectedRoomId = (state: {
 	matches: Array<{
@@ -33,33 +35,22 @@ export function RoomList({
 	onLoadMore,
 	rooms,
 }: RoomListProps) {
-	const loadMoreElementRef = useRef<HTMLDivElement | null>(null);
 	const selectedRoomId = useRouterState({
 		select: getSelectedRoomId,
 	});
 
-	useEffect(() => {
-		const loadMoreElement = loadMoreElementRef.current;
-
-		if (!(hasNextPage && loadMoreElement)) {
+	const handleScroll = (event: UIEvent<HTMLElement>) => {
+		if (!(hasNextPage && !isLoadingMore)) {
 			return;
 		}
 
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				if (entry?.isIntersecting) {
-					onLoadMore();
-				}
-			},
-			{
-				rootMargin: "160px 0px",
-			}
-		);
+		const { clientHeight, scrollHeight, scrollTop } = event.currentTarget;
+		const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-		observer.observe(loadMoreElement);
-
-		return () => observer.disconnect();
-	}, [hasNextPage, onLoadMore]);
+		if (distanceFromBottom <= SCROLL_LOAD_THRESHOLD_PX) {
+			onLoadMore();
+		}
+	};
 
 	return (
 		<aside className="flex h-full min-h-0 flex-col">
@@ -78,6 +69,7 @@ export function RoomList({
 				<nav
 					aria-label="Room list"
 					className="min-h-0 flex-1 overflow-y-auto p-3"
+					onScroll={handleScroll}
 				>
 					<div className="grid gap-3">
 						{rooms.map((room) => {
@@ -90,7 +82,7 @@ export function RoomList({
 							);
 						})}
 						{hasNextPage ? (
-							<div className="flex justify-center" ref={loadMoreElementRef}>
+							<div className="flex justify-center">
 								<Button
 									disabled={isLoadingMore}
 									onClick={onLoadMore}

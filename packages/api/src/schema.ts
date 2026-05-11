@@ -3,7 +3,7 @@ import { Buffer } from "node:buffer";
 import { db } from "@graphql-conf/db";
 import { plant, room } from "@graphql-conf/db/schema/rooms";
 import { todo } from "@graphql-conf/db/schema/todo";
-import { and, asc, count, eq, gt, or } from "drizzle-orm";
+import { and, asc, count, eq, gt, or, sql } from "drizzle-orm";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import z from "zod";
@@ -56,6 +56,7 @@ const roomConnectionArgsSchema = z.object({
 	),
 });
 const roomConnectionCursorSchema = z.object({
+	createdAt: z.string().min(1),
 	id: z.string().uuid(),
 	name: z.string().min(1),
 });
@@ -82,6 +83,10 @@ const plantConnectionCursorSchema = z.object({
 type TodoRecord = typeof todo.$inferSelect;
 type RoomRecord = typeof room.$inferSelect;
 type PlantRecord = typeof plant.$inferSelect;
+
+interface RoomConnectionRecord extends RoomRecord {
+	cursorCreatedAt: string;
+}
 
 interface RoomParent {
 	id: string;
@@ -302,13 +307,18 @@ const getRooms = async (args: RoomsArgs) => {
 
 	return await db.query.room.findMany({
 		limit: parsedArgs.data.limit,
-		orderBy: (rooms, { asc }) => [asc(rooms.name)],
+		orderBy: (rooms, { asc }) => [asc(rooms.createdAt), asc(rooms.id)],
 	});
 };
 
-const encodeRoomConnectionCursor = (roomRecord: RoomRecord) => {
+const getRoomCreatedAtCursorValue = () => {
+	return sql<string>`to_char(${room.createdAt}, 'YYYY-MM-DD"T"HH24:MI:SS.US')`;
+};
+
+const encodeRoomConnectionCursor = (roomRecord: RoomConnectionRecord) => {
 	return Buffer.from(
 		JSON.stringify({
+			createdAt: roomRecord.cursorCreatedAt,
 			id: roomRecord.id,
 			name: roomRecord.name,
 		})
@@ -326,7 +336,11 @@ const decodeRoomConnectionCursor = (cursor: string) => {
 			throw createBadUserInputError("Invalid room cursor");
 		}
 
-		return parsedCursor.data;
+		return {
+			createdAt: parsedCursor.data.createdAt,
+			id: parsedCursor.data.id,
+			name: parsedCursor.data.name,
+		};
 	} catch (error) {
 		if (error instanceof GraphQLError) {
 			throw error;
@@ -351,17 +365,27 @@ const getRoomsConnection = async (args: RoomsConnectionArgs) => {
 	const afterCursor = parsedArgs.data.after
 		? decodeRoomConnectionCursor(parsedArgs.data.after)
 		: null;
+	const createdAtCursorValue = getRoomCreatedAtCursorValue();
+	const afterCreatedAt = afterCursor
+		? sql<Date>`${afterCursor.createdAt}::timestamp`
+		: null;
 	const afterFilter = afterCursor
 		? or(
-				gt(room.name, afterCursor.name),
-				and(eq(room.name, afterCursor.name), gt(room.id, afterCursor.id))
+				gt(room.createdAt, afterCreatedAt),
+				and(eq(room.createdAt, afterCreatedAt), gt(room.id, afterCursor.id))
 			)
 		: undefined;
 	const roomRecords = await db
-		.select()
+		.select({
+			createdAt: room.createdAt,
+			cursorCreatedAt: createdAtCursorValue,
+			description: room.description,
+			id: room.id,
+			name: room.name,
+		})
 		.from(room)
 		.where(afterFilter)
-		.orderBy(asc(room.name), asc(room.id))
+		.orderBy(asc(room.createdAt), asc(room.id))
 		.limit(parsedArgs.data.first + 1);
 	const visibleRoomRecords = roomRecords.slice(0, parsedArgs.data.first);
 	const lastRoomRecord =

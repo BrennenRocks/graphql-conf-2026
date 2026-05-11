@@ -22,6 +22,13 @@
       "when": 1778528894548,
       "tag": "0002_mixed_nitro",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778530842122,
+      "tag": "0003_vengeful_wrecker",
+      "breakpoints": true
     }
   ]
 }
