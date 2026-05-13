@@ -1,19 +1,36 @@
 import type { FieldPolicy, FieldReadFunction, TypePolicies, TypePolicy } from '@apollo/client/cache';
-export type MutationKeySpecifier = ('createTodo' | 'deleteTodo' | 'toggleTodo' | MutationKeySpecifier)[];
+export type CreatePlantPayloadKeySpecifier = ('plant' | 'plantEdge' | 'previousRoom' | 'room' | CreatePlantPayloadKeySpecifier)[];
+export type CreatePlantPayloadFieldPolicy = {
+	plant?: FieldPolicy<any> | FieldReadFunction<any>,
+	plantEdge?: FieldPolicy<any> | FieldReadFunction<any>,
+	previousRoom?: FieldPolicy<any> | FieldReadFunction<any>,
+	room?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type CreateRoomPayloadKeySpecifier = ('room' | 'roomEdge' | CreateRoomPayloadKeySpecifier)[];
+export type CreateRoomPayloadFieldPolicy = {
+	room?: FieldPolicy<any> | FieldReadFunction<any>,
+	roomEdge?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('createPlant' | 'createRoom' | 'createTodo' | 'deleteTodo' | 'toggleTodo' | 'updatePlant' | 'updateRoom' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
+	createPlant?: FieldPolicy<any> | FieldReadFunction<any>,
+	createRoom?: FieldPolicy<any> | FieldReadFunction<any>,
 	createTodo?: FieldPolicy<any> | FieldReadFunction<any>,
 	deleteTodo?: FieldPolicy<any> | FieldReadFunction<any>,
-	toggleTodo?: FieldPolicy<any> | FieldReadFunction<any>
+	toggleTodo?: FieldPolicy<any> | FieldReadFunction<any>,
+	updatePlant?: FieldPolicy<any> | FieldReadFunction<any>,
+	updateRoom?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PageInfoKeySpecifier = ('endCursor' | 'hasNextPage' | PageInfoKeySpecifier)[];
 export type PageInfoFieldPolicy = {
 	endCursor?: FieldPolicy<any> | FieldReadFunction<any>,
 	hasNextPage?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantKeySpecifier = ('id' | 'name' | 'species' | PlantKeySpecifier)[];
+export type PlantKeySpecifier = ('id' | 'name' | 'roomId' | 'species' | PlantKeySpecifier)[];
 export type PlantFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	roomId?: FieldPolicy<any> | FieldReadFunction<any>,
 	species?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PlantCareNoteKeySpecifier = ('id' | 'name' | 'note' | 'species' | PlantCareNoteKeySpecifier)[];
@@ -80,6 +97,18 @@ export type TodoFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	text?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type UpdatePlantPayloadKeySpecifier = ('plant' | 'plantEdge' | 'previousRoom' | 'room' | UpdatePlantPayloadKeySpecifier)[];
+export type UpdatePlantPayloadFieldPolicy = {
+	plant?: FieldPolicy<any> | FieldReadFunction<any>,
+	plantEdge?: FieldPolicy<any> | FieldReadFunction<any>,
+	previousRoom?: FieldPolicy<any> | FieldReadFunction<any>,
+	room?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type UpdateRoomPayloadKeySpecifier = ('room' | 'roomEdge' | UpdateRoomPayloadKeySpecifier)[];
+export type UpdateRoomPayloadFieldPolicy = {
+	room?: FieldPolicy<any> | FieldReadFunction<any>,
+	roomEdge?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type ViewerKeySpecifier = ('email' | 'id' | 'name' | ViewerKeySpecifier)[];
 export type ViewerFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -87,6 +116,14 @@ export type ViewerFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
+	CreatePlantPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CreatePlantPayloadKeySpecifier | (() => undefined | CreatePlantPayloadKeySpecifier),
+		fields?: CreatePlantPayloadFieldPolicy,
+	},
+	CreateRoomPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CreateRoomPayloadKeySpecifier | (() => undefined | CreateRoomPayloadKeySpecifier),
+		fields?: CreateRoomPayloadFieldPolicy,
+	},
 	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
 		fields?: MutationFieldPolicy,
@@ -138,6 +175,14 @@ export type StrictTypedTypePolicies = {
 	Todo?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | TodoKeySpecifier | (() => undefined | TodoKeySpecifier),
 		fields?: TodoFieldPolicy,
+	},
+	UpdatePlantPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UpdatePlantPayloadKeySpecifier | (() => undefined | UpdatePlantPayloadKeySpecifier),
+		fields?: UpdatePlantPayloadFieldPolicy,
+	},
+	UpdateRoomPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UpdateRoomPayloadKeySpecifier | (() => undefined | UpdateRoomPayloadKeySpecifier),
+		fields?: UpdateRoomPayloadFieldPolicy,
 	},
 	Viewer?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ViewerKeySpecifier | (() => undefined | ViewerKeySpecifier),

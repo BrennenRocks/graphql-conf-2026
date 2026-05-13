@@ -1,4 +1,5 @@
-import { useSuspenseFragment } from "@apollo/client/react";
+import { useMutation, useSuspenseFragment } from "@apollo/client/react";
+import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
 	CardContent,
@@ -6,11 +7,17 @@ import {
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
+import { Pencil } from "lucide-react";
+import { useState } from "react";
 import type { FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
 import type { FragmentType } from "@/__gql__/fragment-masking";
 import { ErrorState } from "@/components/shared/error-state";
+
+import { replaceRoomEdgeInRoomsConnection } from "./room-cache";
+import { RoomForm } from "./room-form";
+import { UpdateRoomMutation } from "./room-operations";
 
 export const RoomHeaderFragment = graphql(/* GraphQL */ `
 	fragment RoomHeader_room on Room {
@@ -26,10 +33,63 @@ interface RoomHeaderProps {
 }
 
 export function RoomHeader({ room }: RoomHeaderProps) {
+	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
 		fragment: RoomHeaderFragment,
 		from: room,
 	});
+	const [updateRoom, { loading: isUpdatingRoom }] = useMutation(
+		UpdateRoomMutation,
+		{
+			update(cache, { data: mutationData }) {
+				const roomEdge = mutationData?.updateRoom.roomEdge;
+
+				if (roomEdge) {
+					replaceRoomEdgeInRoomsConnection(cache, roomEdge);
+				}
+			},
+		}
+	);
+
+	const handleUpdateRoom = async (values: {
+		description: string;
+		name: string;
+	}) => {
+		await updateRoom({
+			optimisticResponse: {
+				__typename: "Mutation",
+				updateRoom: {
+					__typename: "UpdateRoomPayload",
+					room: {
+						__typename: "Room",
+						description: values.description,
+						id: data.id,
+						name: values.name,
+						plantCount: data.plantCount,
+					},
+					roomEdge: {
+						__typename: "RoomEdge",
+						cursor: `optimistic-room-${data.id}`,
+						node: {
+							__typename: "Room",
+							description: values.description,
+							id: data.id,
+							name: values.name,
+							plantCount: data.plantCount,
+						},
+					},
+				},
+			},
+			variables: {
+				input: {
+					description: values.description,
+					id: data.id,
+					name: values.name,
+				},
+			},
+		});
+		setIsEditing(false);
+	};
 
 	return (
 		<Card className="border border-border/80 bg-card/80">
@@ -39,13 +99,40 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 						<p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">
 							Plant Room
 						</p>
-						<CardTitle className="text-2xl">{data.name}</CardTitle>
-						<p className="max-w-2xl text-muted-foreground text-sm">
-							{data.description}
-						</p>
+						{isEditing ? (
+							<div className="w-full min-w-[min(20rem,100%)] max-w-xl rounded-md border border-border/80 bg-background/70 p-3">
+								<RoomForm
+									defaultValues={{
+										description: data.description,
+										name: data.name,
+									}}
+									isSubmitting={isUpdatingRoom}
+									onCancel={() => setIsEditing(false)}
+									onSubmit={(values) => handleUpdateRoom(values)}
+									submitLabel="Save room"
+								/>
+							</div>
+						) : (
+							<>
+								<CardTitle className="text-2xl">{data.name}</CardTitle>
+								<p className="max-w-2xl text-muted-foreground text-sm">
+									{data.description}
+								</p>
+							</>
+						)}
 					</div>
-					<div className="rounded-full border border-border/80 bg-background/80 px-3 py-1 font-medium text-xs">
-						{data.plantCount} plants
+					<div className="flex items-center gap-2">
+						<div className="rounded-full border border-border/80 bg-background/80 px-3 py-1 font-medium text-xs">
+							{data.plantCount} plants
+						</div>
+						<Button
+							aria-label={`Edit ${data.name}`}
+							onClick={() => setIsEditing((isOpen) => !isOpen)}
+							size="icon"
+							variant="outline"
+						>
+							<Pencil />
+						</Button>
 					</div>
 				</div>
 			</CardHeader>

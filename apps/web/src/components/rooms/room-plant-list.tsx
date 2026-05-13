@@ -1,4 +1,9 @@
-import { useLoadableQuery, useSuspenseQuery } from "@apollo/client/react";
+import {
+	useApolloClient,
+	useLoadableQuery,
+	useMutation,
+	useSuspenseQuery,
+} from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -8,6 +13,7 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { useParams } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import {
 	Suspense,
 	useCallback,
@@ -21,13 +27,15 @@ import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { graphql } from "@/__gql__";
 import type { PlantCareNoteQueryQueryVariables } from "@/__gql__/graphql";
 import { ErrorState } from "@/components/shared/error-state";
-
 import {
 	PlantCareNotePanel,
 	PlantCareNoteQuery,
 	type PlantCareNoteQueryRef,
 } from "./plant-care-note-panel";
+import { PlantForm } from "./plant-form";
 import { PlantListItem } from "./plant-list-item";
+import { addOrReplacePlantEdgeInRoom, readRoomPlantCount } from "./room-cache";
+import { CreatePlantMutation, RoomPickerQuery } from "./room-operations";
 
 const PLANT_GRID_SKELETON_IDS = [
 	"plant-skeleton-alpha",
@@ -91,8 +99,10 @@ function RoomPlantListPlants({
 	loadPlantCareNote,
 	plantCareNoteQueryRef,
 }: RoomPlantListPlantsProps) {
+	const apolloClient = useApolloClient();
 	const { roomId } = useParams({ from: "/rooms/$roomId" });
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
+	const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const loadMoreElementRef = useRef<HTMLDivElement | null>(null);
 	const { data, fetchMore } = useSuspenseQuery(RoomPlantListQuery, {
@@ -101,8 +111,28 @@ function RoomPlantListPlants({
 			roomId,
 		},
 	});
+	const { data: roomPickerData } = useSuspenseQuery(RoomPickerQuery);
+	const [createPlant, { loading: isCreatingPlant }] = useMutation(
+		CreatePlantMutation,
+		{
+			update(cache, { data: mutationData }) {
+				const payload = mutationData?.createPlant;
+
+				if (payload) {
+					addOrReplacePlantEdgeInRoom(
+						cache,
+						payload.room.id,
+						payload.plantEdge
+					);
+				}
+			},
+		}
+	);
 	const plantsConnection = data.room?.plantsConnection;
 	const plants = plantsConnection?.edges.map((edge) => edge.node) ?? [];
+	const roomOptions = roomPickerData.roomsConnection.edges.map((edge) => {
+		return edge.node;
+	});
 	const pageInfo = plantsConnection?.pageInfo;
 	const hasNextPage = Boolean(pageInfo?.hasNextPage && pageInfo.endCursor);
 	const isLoadingMore = isFetchingMore || isPending;
@@ -149,6 +179,57 @@ function RoomPlantListPlants({
 		return () => observer.disconnect();
 	}, [hasNextPage, loadMorePlants]);
 
+	const handleCreatePlant = async (values: {
+		name: string;
+		roomId: string;
+		species: string;
+	}) => {
+		const plantId = crypto.randomUUID();
+		const plantCount = readRoomPlantCount(apolloClient.cache, roomId);
+
+		await createPlant({
+			optimisticResponse: {
+				__typename: "Mutation",
+				createPlant: {
+					__typename: "CreatePlantPayload",
+					plant: {
+						__typename: "Plant",
+						id: plantId,
+						name: values.name,
+						roomId,
+						species: values.species,
+					},
+					plantEdge: {
+						__typename: "PlantEdge",
+						cursor: `optimistic-plant-${plantId}`,
+						node: {
+							__typename: "Plant",
+							id: plantId,
+							name: values.name,
+							roomId,
+							species: values.species,
+						},
+					},
+					previousRoom: null,
+					room: {
+						__typename: "Room",
+						id: roomId,
+						plantCount: plantCount + 1,
+					},
+				},
+			},
+			variables: {
+				input: {
+					id: plantId,
+					name: values.name,
+					roomId,
+					species: values.species,
+				},
+			},
+		});
+		setIsCreateFormOpen(false);
+	};
+
 	if (!data.room) {
 		return (
 			<p className="text-muted-foreground text-sm">
@@ -159,17 +240,75 @@ function RoomPlantListPlants({
 
 	if (plants.length === 0) {
 		return (
-			<p className="text-muted-foreground text-sm">
-				This room does not have any plants yet.
-			</p>
+			<div className="grid gap-4">
+				<div className="flex justify-end">
+					<Button
+						onClick={() => setIsCreateFormOpen((isOpen) => !isOpen)}
+						size="sm"
+						variant="outline"
+					>
+						<Plus />
+						Add plant
+					</Button>
+				</div>
+				{isCreateFormOpen ? (
+					<div className="rounded-md border border-border/80 bg-background/70 p-3">
+						<PlantForm
+							defaultValues={{
+								name: "",
+								roomId,
+								species: "",
+							}}
+							isSubmitting={isCreatingPlant}
+							onCancel={() => setIsCreateFormOpen(false)}
+							onSubmit={(values) => handleCreatePlant(values)}
+							submitLabel="Add plant"
+						/>
+					</div>
+				) : null}
+				<p className="text-muted-foreground text-sm">
+					This room does not have any plants yet.
+				</p>
+			</div>
 		);
 	}
 
 	return (
 		<>
+			<div className="mb-4 flex justify-end">
+				<Button
+					onClick={() => setIsCreateFormOpen((isOpen) => !isOpen)}
+					size="sm"
+					variant="outline"
+				>
+					<Plus />
+					Add plant
+				</Button>
+			</div>
+			{isCreateFormOpen ? (
+				<div className="mb-4 rounded-md border border-border/80 bg-background/70 p-3">
+					<PlantForm
+						defaultValues={{
+							name: "",
+							roomId,
+							species: "",
+						}}
+						isSubmitting={isCreatingPlant}
+						onCancel={() => setIsCreateFormOpen(false)}
+						onSubmit={(values) => handleCreatePlant(values)}
+						submitLabel="Add plant"
+					/>
+				</div>
+			) : null}
 			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
 				{plants.map((plant) => {
-					return <PlantListItem key={plant.id} plant={plant} />;
+					return (
+						<PlantListItem
+							key={plant.id}
+							plant={plant}
+							roomOptions={roomOptions}
+						/>
+					);
 				})}
 			</div>
 			{hasNextPage ? (

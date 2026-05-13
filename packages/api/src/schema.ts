@@ -3,7 +3,7 @@ import { Buffer } from "node:buffer";
 import { db } from "@graphql-conf/db";
 import { plant, room } from "@graphql-conf/db/schema/rooms";
 import { todo } from "@graphql-conf/db/schema/todo";
-import { and, asc, count, eq, gt, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import z from "zod";
@@ -26,6 +26,46 @@ const defaultPlantConnectionPageSize = 24;
 const maxPlantConnectionPageSize = 50;
 const plantIdSchema = z.string().uuid("Plant id must be a valid UUID");
 const roomIdSchema = z.string().uuid("Room id must be a valid UUID");
+const optionalPlantIdSchema = z
+	.string()
+	.uuid("Plant id must be a valid UUID")
+	.optional();
+const optionalRoomIdSchema = z
+	.string()
+	.uuid("Room id must be a valid UUID")
+	.optional();
+const roomNameSchema = z.string().trim().min(1, "Room name is required");
+const roomDescriptionSchema = z
+	.string()
+	.trim()
+	.min(1, "Room description is required");
+const plantNameSchema = z.string().trim().min(1, "Plant name is required");
+const plantSpeciesSchema = z
+	.string()
+	.trim()
+	.min(1, "Plant species is required");
+const createRoomInputSchema = z.object({
+	description: roomDescriptionSchema,
+	id: optionalRoomIdSchema,
+	name: roomNameSchema,
+});
+const updateRoomInputSchema = z.object({
+	description: roomDescriptionSchema,
+	id: roomIdSchema,
+	name: roomNameSchema,
+});
+const createPlantInputSchema = z.object({
+	id: optionalPlantIdSchema,
+	name: plantNameSchema,
+	roomId: roomIdSchema,
+	species: plantSpeciesSchema,
+});
+const updatePlantInputSchema = z.object({
+	id: plantIdSchema,
+	name: plantNameSchema,
+	roomId: roomIdSchema,
+	species: plantSpeciesSchema,
+});
 const roomsArgsSchema = z.object({
 	limit: z.preprocess(
 		(value) => value ?? undefined,
@@ -115,6 +155,22 @@ interface CreateTodoArgs {
 	text: string;
 }
 
+interface CreateRoomArgs {
+	input: z.input<typeof createRoomInputSchema>;
+}
+
+interface UpdateRoomArgs {
+	input: z.input<typeof updateRoomInputSchema>;
+}
+
+interface CreatePlantArgs {
+	input: z.input<typeof createPlantInputSchema>;
+}
+
+interface UpdatePlantArgs {
+	input: z.input<typeof updatePlantInputSchema>;
+}
+
 interface RoomArgs {
 	id: string;
 }
@@ -150,6 +206,24 @@ interface RoomCarePlan {
 	tips: string[];
 }
 
+interface RoomPayload {
+	room: RoomRecord;
+	roomEdge: {
+		cursor: string;
+		node: RoomRecord;
+	};
+}
+
+interface PlantPayload {
+	plant: PlantRecord;
+	plantEdge: {
+		cursor: string;
+		node: PlantRecord;
+	};
+	previousRoom: RoomRecord | null;
+	room: RoomRecord;
+}
+
 export const typeDefs = gql`
   type Todo {
     id: Int!
@@ -170,6 +244,7 @@ export const typeDefs = gql`
 
   type Plant {
     id: ID!
+    roomId: ID!
     name: String!
     species: String!
   }
@@ -221,6 +296,56 @@ export const typeDefs = gql`
     note: String!
   }
 
+  input CreateRoomInput {
+    id: ID
+    name: String!
+    description: String!
+  }
+
+  input UpdateRoomInput {
+    id: ID!
+    name: String!
+    description: String!
+  }
+
+  input CreatePlantInput {
+    id: ID
+    roomId: ID!
+    name: String!
+    species: String!
+  }
+
+  input UpdatePlantInput {
+    id: ID!
+    roomId: ID!
+    name: String!
+    species: String!
+  }
+
+  type CreateRoomPayload {
+    room: Room!
+    roomEdge: RoomEdge!
+  }
+
+  type UpdateRoomPayload {
+    room: Room!
+    roomEdge: RoomEdge!
+  }
+
+  type CreatePlantPayload {
+    plant: Plant!
+    plantEdge: PlantEdge!
+    room: Room!
+    previousRoom: Room
+  }
+
+  type UpdatePlantPayload {
+    plant: Plant!
+    plantEdge: PlantEdge!
+    room: Room!
+    previousRoom: Room
+  }
+
   type Query {
     healthCheck: String!
     plantCareNote(id: ID!): PlantCareNote!
@@ -234,6 +359,10 @@ export const typeDefs = gql`
 
   type Mutation {
     createTodo(text: String!): Todo!
+    createRoom(input: CreateRoomInput!): CreateRoomPayload!
+    updateRoom(input: UpdateRoomInput!): UpdateRoomPayload!
+    createPlant(input: CreatePlantInput!): CreatePlantPayload!
+    updatePlant(input: UpdatePlantInput!): UpdatePlantPayload!
     toggleTodo(id: Int!, completed: Boolean!): Todo!
     deleteTodo(id: Int!): Int!
   }
@@ -253,6 +382,22 @@ const createNotFoundError = (resource: string) => {
 			code: "NOT_FOUND",
 		},
 	});
+};
+
+const createDuplicateRoomNameError = (name: string) => {
+	return createBadUserInputError(`A room named "${name}" already exists.`);
+};
+
+const isDatabaseError = (error: unknown): error is { code?: string } => {
+	return typeof error === "object" && error !== null && "code" in error;
+};
+
+const throwDuplicateRoomNameIfNeeded = (error: unknown, name: string) => {
+	if (isDatabaseError(error) && error.code === "23505") {
+		throw createDuplicateRoomNameError(name);
+	}
+
+	throw error;
 };
 
 const getValidationMessage = (
@@ -307,7 +452,7 @@ const getRooms = async (args: RoomsArgs) => {
 
 	return await db.query.room.findMany({
 		limit: parsedArgs.data.limit,
-		orderBy: (rooms, { asc }) => [asc(rooms.createdAt), asc(rooms.id)],
+		orderBy: (rooms, { desc }) => [desc(rooms.createdAt), desc(rooms.id)],
 	});
 };
 
@@ -371,8 +516,8 @@ const getRoomsConnection = async (args: RoomsConnectionArgs) => {
 		: null;
 	const afterFilter = afterCursor
 		? or(
-				gt(room.createdAt, afterCreatedAt),
-				and(eq(room.createdAt, afterCreatedAt), gt(room.id, afterCursor.id))
+				lt(room.createdAt, afterCreatedAt),
+				and(eq(room.createdAt, afterCreatedAt), lt(room.id, afterCursor.id))
 			)
 		: undefined;
 	const roomRecords = await db
@@ -385,7 +530,7 @@ const getRoomsConnection = async (args: RoomsConnectionArgs) => {
 		})
 		.from(room)
 		.where(afterFilter)
-		.orderBy(asc(room.createdAt), asc(room.id))
+		.orderBy(desc(room.createdAt), desc(room.id))
 		.limit(parsedArgs.data.first + 1);
 	const visibleRoomRecords = roomRecords.slice(0, parsedArgs.data.first);
 	const lastRoomRecord =
@@ -411,6 +556,56 @@ const getRoomById = async (id: string) => {
 	return await db.query.room.findFirst({
 		where: (rooms, { eq }) => eq(rooms.id, id),
 	});
+};
+
+const getRoomConnectionRecordById = async (id: string) => {
+	const createdAtCursorValue = getRoomCreatedAtCursorValue();
+	const [roomRecord] = await db
+		.select({
+			createdAt: room.createdAt,
+			cursorCreatedAt: createdAtCursorValue,
+			description: room.description,
+			id: room.id,
+			name: room.name,
+		})
+		.from(room)
+		.where(eq(room.id, id))
+		.limit(1);
+
+	return roomRecord;
+};
+
+const getRoomEdge = async (id: string) => {
+	const roomRecord = requireRecord(
+		await getRoomConnectionRecordById(id),
+		"Room"
+	);
+
+	return {
+		cursor: encodeRoomConnectionCursor(roomRecord),
+		node: roomRecord,
+	};
+};
+
+const getRoomByName = async (name: string, excludedRoomId?: string) => {
+	const duplicateFilter = excludedRoomId
+		? and(eq(room.name, name), ne(room.id, excludedRoomId))
+		: eq(room.name, name);
+
+	return await db.query.room.findFirst({
+		where: duplicateFilter,
+	});
+};
+
+const ensureRoomNameAvailable = async (
+	name: string,
+	excludedRoomId?: string
+) => {
+	const duplicateRoom = await getRoomByName(name, excludedRoomId);
+
+	if (duplicateRoom) {
+		throw createDuplicateRoomNameError(name);
+	}
 };
 
 const getPlantById = async (id: string) => {
@@ -541,6 +736,82 @@ const getPlantConnection = async (
 
 export const resolvers = {
 	Mutation: {
+		createPlant: async (
+			_parent: unknown,
+			args: CreatePlantArgs
+		): Promise<PlantPayload> => {
+			const parsedArgs = createPlantInputSchema.safeParse(args.input);
+
+			if (!parsedArgs.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedArgs.error.issues[0]?.message,
+						"Invalid plant input"
+					)
+				);
+			}
+
+			const targetRoom = requireRecord(
+				await getRoomById(parsedArgs.data.roomId),
+				"Room"
+			);
+			const [createdPlant] = await db
+				.insert(plant)
+				.values({
+					...(parsedArgs.data.id ? { id: parsedArgs.data.id } : {}),
+					name: parsedArgs.data.name,
+					roomId: targetRoom.id,
+					species: parsedArgs.data.species,
+				})
+				.returning();
+			const plantRecord = requireRecord(createdPlant, "Plant");
+
+			return {
+				plant: plantRecord,
+				plantEdge: {
+					cursor: encodePlantConnectionCursor(plantRecord),
+					node: plantRecord,
+				},
+				previousRoom: null,
+				room: targetRoom,
+			};
+		},
+		createRoom: async (
+			_parent: unknown,
+			args: CreateRoomArgs
+		): Promise<RoomPayload> => {
+			const parsedArgs = createRoomInputSchema.safeParse(args.input);
+
+			if (!parsedArgs.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedArgs.error.issues[0]?.message,
+						"Invalid room input"
+					)
+				);
+			}
+
+			await ensureRoomNameAvailable(parsedArgs.data.name);
+
+			try {
+				const [createdRoom] = await db
+					.insert(room)
+					.values({
+						...(parsedArgs.data.id ? { id: parsedArgs.data.id } : {}),
+						description: parsedArgs.data.description,
+						name: parsedArgs.data.name,
+					})
+					.returning();
+				const roomRecord = requireRecord(createdRoom, "Room");
+
+				return {
+					room: roomRecord,
+					roomEdge: await getRoomEdge(roomRecord.id),
+				};
+			} catch (error) {
+				throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
+			}
+		},
 		createTodo: async (
 			_parent: unknown,
 			args: CreateTodoArgs
@@ -615,6 +886,91 @@ export const resolvers = {
 				.returning();
 
 			return requireTodo(updatedTodo);
+		},
+		updatePlant: async (
+			_parent: unknown,
+			args: UpdatePlantArgs
+		): Promise<PlantPayload> => {
+			const parsedArgs = updatePlantInputSchema.safeParse(args.input);
+
+			if (!parsedArgs.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedArgs.error.issues[0]?.message,
+						"Invalid plant input"
+					)
+				);
+			}
+
+			const existingPlant = requireRecord(
+				await getPlantById(parsedArgs.data.id),
+				"Plant"
+			);
+			const targetRoom = requireRecord(
+				await getRoomById(parsedArgs.data.roomId),
+				"Room"
+			);
+			const previousRoom =
+				existingPlant.roomId === targetRoom.id
+					? null
+					: requireRecord(await getRoomById(existingPlant.roomId), "Room");
+			const [updatedPlant] = await db
+				.update(plant)
+				.set({
+					name: parsedArgs.data.name,
+					roomId: targetRoom.id,
+					species: parsedArgs.data.species,
+				})
+				.where(eq(plant.id, parsedArgs.data.id))
+				.returning();
+			const plantRecord = requireRecord(updatedPlant, "Plant");
+
+			return {
+				plant: plantRecord,
+				plantEdge: {
+					cursor: encodePlantConnectionCursor(plantRecord),
+					node: plantRecord,
+				},
+				previousRoom,
+				room: targetRoom,
+			};
+		},
+		updateRoom: async (
+			_parent: unknown,
+			args: UpdateRoomArgs
+		): Promise<RoomPayload> => {
+			const parsedArgs = updateRoomInputSchema.safeParse(args.input);
+
+			if (!parsedArgs.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedArgs.error.issues[0]?.message,
+						"Invalid room input"
+					)
+				);
+			}
+
+			requireRecord(await getRoomById(parsedArgs.data.id), "Room");
+			await ensureRoomNameAvailable(parsedArgs.data.name, parsedArgs.data.id);
+
+			try {
+				const [updatedRoom] = await db
+					.update(room)
+					.set({
+						description: parsedArgs.data.description,
+						name: parsedArgs.data.name,
+					})
+					.where(eq(room.id, parsedArgs.data.id))
+					.returning();
+				const roomRecord = requireRecord(updatedRoom, "Room");
+
+				return {
+					room: roomRecord,
+					roomEdge: await getRoomEdge(roomRecord.id),
+				};
+			} catch (error) {
+				throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
+			}
 		},
 	},
 	Query: {

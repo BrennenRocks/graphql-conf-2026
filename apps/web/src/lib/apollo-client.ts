@@ -94,7 +94,12 @@ const typePolicies = {
 	},
 	Room: {
 		fields: {
-			plantsConnection: relayStylePagination(),
+			plantsConnection: {
+				...relayStylePagination(),
+				read(existing, options) {
+					return dedupeConnectionEdges(existing, options.readField);
+				},
+			},
 		},
 	},
 } satisfies TypedTypePolicies;
