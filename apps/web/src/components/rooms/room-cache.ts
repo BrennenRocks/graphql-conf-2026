@@ -177,43 +177,6 @@ export const addRoomEdgeToRoomsConnection = (
 	});
 };
 
-export const replaceRoomEdgeInRoomsConnection = (
-	cache: ApolloCache,
-	roomEdge: CacheRoomEdge
-) => {
-	cache.modify({
-		fields: {
-			roomsConnection(
-				existing: ExistingConnection,
-				options: CacheModifierOptions
-			) {
-				const edge = createRoomEdge(roomEdge, options.toReference);
-
-				if (!(isConnection(existing) && edge)) {
-					return existing;
-				}
-
-				const roomId = roomEdge.node.id;
-				const edges = existing.edges ?? [];
-				let didReplace = false;
-				const nextEdges = edges.map((existingEdge) => {
-					if (getEdgeNodeId(existingEdge, options.readField) !== roomId) {
-						return existingEdge;
-					}
-
-					didReplace = true;
-					return edge;
-				});
-
-				return {
-					...existing,
-					edges: didReplace ? nextEdges : [edge, ...nextEdges],
-				};
-			},
-		},
-	});
-};
-
 export const addOrReplacePlantEdgeInRoom = (
 	cache: ApolloCache,
 	roomId: string,

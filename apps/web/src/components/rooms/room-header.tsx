@@ -15,7 +15,6 @@ import { graphql } from "@/__gql__";
 import type { FragmentType } from "@/__gql__/fragment-masking";
 import { ErrorState } from "@/components/shared/error-state";
 
-import { replaceRoomEdgeInRoomsConnection } from "./room-cache";
 import { RoomForm } from "./room-form";
 import { UpdateRoomMutation } from "./room-operations";
 
@@ -38,18 +37,8 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 		fragment: RoomHeaderFragment,
 		from: room,
 	});
-	const [updateRoom, { loading: isUpdatingRoom }] = useMutation(
-		UpdateRoomMutation,
-		{
-			update(cache, { data: mutationData }) {
-				const roomEdge = mutationData?.updateRoom.roomEdge;
-
-				if (roomEdge) {
-					replaceRoomEdgeInRoomsConnection(cache, roomEdge);
-				}
-			},
-		}
-	);
+	const [updateRoom, { loading: isUpdatingRoom }] =
+		useMutation(UpdateRoomMutation);
 
 	const handleUpdateRoom = async (values: {
 		description: string;
