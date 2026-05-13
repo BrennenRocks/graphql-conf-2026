@@ -36,7 +36,7 @@ export const RoomsPlannerLayoutQuery = graphql(/* GraphQL */ `
 				cursor
 				node {
 					id
-					...RoomListItem_room
+					...RoomListItem_room @nonreactive
 				}
 			}
 			pageInfo {
