@@ -29,7 +29,7 @@ type Documents = {
     "\n\tquery RoomsPlannerLayoutQuery($first: Int!, $after: String) {\n\t\troomsConnection(first: $first, after: $after) {\n\t\t\tedges {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\t...RoomListItem_room @nonreactive\n\t\t\t\t}\n\t\t\t}\n\t\t\tpageInfo {\n\t\t\t\tendCursor\n\t\t\t\thasNextPage\n\t\t\t}\n\t\t}\n\t}\n": typeof types.RoomsPlannerLayoutQueryDocument,
     "\n  query DashboardRouteQuery {\n    privateData {\n      message\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": typeof types.DashboardRouteQueryDocument,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": typeof types.HomeRouteQueryDocument,
-    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n": typeof types.RoomDetailRouteQueryDocument,
+    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t}\n\t}\n": typeof types.RoomDetailRouteQueryDocument,
     "\n  query TodosRouteQuery {\n    todos {\n      completed\n      id\n      text\n    }\n  }\n": typeof types.TodosRouteQueryDocument,
     "\n  mutation CreateTodoMutation($text: String!) {\n    createTodo(text: $text) {\n      completed\n      id\n      text\n    }\n  }\n": typeof types.CreateTodoMutationDocument,
     "\n  mutation ToggleTodoMutation($completed: Boolean!, $id: Int!) {\n    toggleTodo(completed: $completed, id: $id) {\n      completed\n      id\n      text\n    }\n  }\n": typeof types.ToggleTodoMutationDocument,
@@ -51,7 +51,7 @@ const documents: Documents = {
     "\n\tquery RoomsPlannerLayoutQuery($first: Int!, $after: String) {\n\t\troomsConnection(first: $first, after: $after) {\n\t\t\tedges {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\t...RoomListItem_room @nonreactive\n\t\t\t\t}\n\t\t\t}\n\t\t\tpageInfo {\n\t\t\t\tendCursor\n\t\t\t\thasNextPage\n\t\t\t}\n\t\t}\n\t}\n": types.RoomsPlannerLayoutQueryDocument,
     "\n  query DashboardRouteQuery {\n    privateData {\n      message\n      user {\n        email\n        id\n        name\n      }\n    }\n  }\n": types.DashboardRouteQueryDocument,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": types.HomeRouteQueryDocument,
-    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n": types.RoomDetailRouteQueryDocument,
+    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t}\n\t}\n": types.RoomDetailRouteQueryDocument,
     "\n  query TodosRouteQuery {\n    todos {\n      completed\n      id\n      text\n    }\n  }\n": types.TodosRouteQueryDocument,
     "\n  mutation CreateTodoMutation($text: String!) {\n    createTodo(text: $text) {\n      completed\n      id\n      text\n    }\n  }\n": types.CreateTodoMutationDocument,
     "\n  mutation ToggleTodoMutation($completed: Boolean!, $id: Int!) {\n    toggleTodo(completed: $completed, id: $id) {\n      completed\n      id\n      text\n    }\n  }\n": types.ToggleTodoMutationDocument,
@@ -135,7 +135,7 @@ export function graphql(source: "\n  query HomeRouteQuery {\n    healthCheck\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room\n\t\t}\n\t}\n"];
+export function graphql(source: "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t}\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

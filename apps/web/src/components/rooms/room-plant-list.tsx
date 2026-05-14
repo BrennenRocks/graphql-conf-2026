@@ -28,7 +28,7 @@ import {
 import { PlantForm } from "./plant-form";
 import { PlantListItem } from "./plant-list-item";
 import { addOrReplacePlantEdgeInRoom, readRoomPlantCount } from "./room-cache";
-import { CreatePlantMutation, RoomPickerQuery } from "./room-operations";
+import { CreatePlantMutation } from "./room-operations";
 
 const PLANT_GRID_SKELETON_IDS = [
 	"plant-skeleton-alpha",
@@ -103,7 +103,6 @@ function RoomPlantListPlants({
 			roomId,
 		},
 	});
-	const { data: roomPickerData } = useSuspenseQuery(RoomPickerQuery);
 	const [createPlant, { loading: isCreatingPlant }] = useMutation(
 		CreatePlantMutation,
 		{
@@ -122,9 +121,6 @@ function RoomPlantListPlants({
 	);
 	const plantsConnection = data.room?.plantsConnection;
 	const plants = plantsConnection?.edges.map((edge) => edge.node) ?? [];
-	const roomOptions = roomPickerData.roomsConnection.edges.map((edge) => {
-		return edge.node;
-	});
 	const pageInfo = plantsConnection?.pageInfo;
 	const hasNextPage = Boolean(pageInfo?.hasNextPage && pageInfo.endCursor);
 	const loadMorePlants = useCallback(() => {
@@ -291,13 +287,7 @@ function RoomPlantListPlants({
 			) : null}
 			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
 				{plants.map((plant) => {
-					return (
-						<PlantListItem
-							key={plant.id}
-							plant={plant}
-							roomOptions={roomOptions}
-						/>
-					);
+					return <PlantListItem key={plant.id} plant={plant} />;
 				})}
 			</div>
 			{hasNextPage ? (

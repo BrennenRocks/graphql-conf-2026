@@ -32,7 +32,7 @@ const RoomDetailRouteQuery = graphql(/* GraphQL */ `
 	query RoomDetailRouteQuery($id: ID!) {
 		room(id: $id) {
 			id
-			...RoomHeader_room
+			...RoomHeader_room @nonreactive
 		}
 	}
 `);

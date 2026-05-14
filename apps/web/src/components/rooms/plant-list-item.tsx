@@ -33,17 +33,11 @@ export const PlantListItemFragment = graphql(/* GraphQL */ `
 	}
 `);
 
-interface RoomOption {
-	id: string;
-	name: string;
-}
-
 interface PlantListItemProps {
 	plant: FragmentType<typeof PlantListItemFragment>;
-	roomOptions: RoomOption[];
 }
 
-export function PlantListItem({ plant, roomOptions }: PlantListItemProps) {
+export function PlantListItem({ plant }: PlantListItemProps) {
 	const apolloClient = useApolloClient();
 	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
@@ -164,7 +158,7 @@ export function PlantListItem({ plant, roomOptions }: PlantListItemProps) {
 						isSubmitting={isUpdatingPlant}
 						onCancel={() => setIsEditing(false)}
 						onSubmit={(values) => handleUpdatePlant(values)}
-						roomOptions={roomOptions}
+						showRoomSelect
 						submitLabel="Save plant"
 					/>
 				) : (

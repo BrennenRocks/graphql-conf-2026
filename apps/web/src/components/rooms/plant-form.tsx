@@ -1,13 +1,11 @@
+import { useSuspenseQuery } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import { Input } from "@graphql-conf/ui/components/input";
 import { Label } from "@graphql-conf/ui/components/label";
 import { Loader2 } from "lucide-react";
-import { type SubmitEvent, useId, useState } from "react";
+import { type SubmitEvent, Suspense, useId, useState } from "react";
 
-interface RoomOption {
-	id: string;
-	name: string;
-}
+import { RoomPickerQuery } from "./room-operations";
 
 export interface PlantFormValues {
 	name: string;
@@ -21,8 +19,8 @@ interface PlantFormProps {
 	isSubmitting: boolean;
 	onCancel?: () => void;
 	onSubmit: (values: PlantFormValues) => Promise<void> | void;
-	roomOptions?: RoomOption[];
 	roomSelectError?: string;
+	showRoomSelect?: boolean;
 	submitLabel: string;
 }
 
@@ -32,8 +30,8 @@ export function PlantForm({
 	isSubmitting,
 	onCancel,
 	onSubmit,
-	roomOptions,
 	roomSelectError,
+	showRoomSelect = false,
 	submitLabel,
 }: PlantFormProps) {
 	const id = useId();
@@ -84,24 +82,19 @@ export function PlantForm({
 					value={species}
 				/>
 			</div>
-			{roomOptions ? (
+			{showRoomSelect ? (
 				<div className="grid gap-1.5">
 					<Label htmlFor={`${id}-plant-room`}>Room</Label>
-					<select
-						className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-xs/relaxed dark:bg-input/30"
-						disabled={isSubmitting || isRoomSelectDisabled}
-						id={`${id}-plant-room`}
-						onChange={(event) => setRoomId(event.target.value)}
-						value={roomId}
+					<Suspense
+						fallback={<PlantRoomSelectSkeleton id={`${id}-plant-room`} />}
 					>
-						{roomOptions.map((roomOption) => {
-							return (
-								<option key={roomOption.id} value={roomOption.id}>
-									{roomOption.name}
-								</option>
-							);
-						})}
-					</select>
+						<PlantRoomSelect
+							id={`${id}-plant-room`}
+							isDisabled={isSubmitting || isRoomSelectDisabled}
+							onChange={setRoomId}
+							value={roomId}
+						/>
+					</Suspense>
 					{roomSelectError ? (
 						<p className="text-destructive text-xs">{roomSelectError}</p>
 					) : null}
@@ -124,5 +117,55 @@ export function PlantForm({
 				</Button>
 			</div>
 		</form>
+	);
+}
+
+interface PlantRoomSelectProps {
+	id: string;
+	isDisabled: boolean;
+	onChange: (roomId: string) => void;
+	value: string;
+}
+
+function PlantRoomSelect({
+	id,
+	isDisabled,
+	onChange,
+	value,
+}: PlantRoomSelectProps) {
+	const { data } = useSuspenseQuery(RoomPickerQuery);
+	const roomOptions = data.roomsConnection.edges.map((edge) => {
+		return edge.node;
+	});
+
+	return (
+		<select
+			className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-xs/relaxed dark:bg-input/30"
+			disabled={isDisabled}
+			id={id}
+			onChange={(event) => onChange(event.target.value)}
+			value={value}
+		>
+			{roomOptions.map((roomOption) => {
+				return (
+					<option key={roomOption.id} value={roomOption.id}>
+						{roomOption.name}
+					</option>
+				);
+			})}
+		</select>
+	);
+}
+
+function PlantRoomSelectSkeleton({ id }: { id: string }) {
+	return (
+		<select
+			aria-busy="true"
+			className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-muted-foreground text-sm outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-xs/relaxed dark:bg-input/30"
+			disabled
+			id={id}
+		>
+			<option>Loading rooms</option>
+		</select>
 	);
 }
