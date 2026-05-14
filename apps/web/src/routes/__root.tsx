@@ -1,6 +1,5 @@
 import { Toaster } from "@graphql-conf/ui/components/sonner";
 import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -46,7 +45,7 @@ function RootComponent() {
 				</div>
 				<Toaster richColors />
 			</ThemeProvider>
-			<TanStackRouterDevtools position="top-right" />
+			{/* <TanStackRouterDevtools position="top-right" /> */}
 		</>
 	);
 }

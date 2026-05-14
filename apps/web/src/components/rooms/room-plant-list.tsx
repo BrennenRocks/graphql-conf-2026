@@ -14,14 +14,7 @@ import {
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { useParams } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
-import {
-	Suspense,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-	useTransition,
-} from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
@@ -103,7 +96,6 @@ function RoomPlantListPlants({
 	const { roomId } = useParams({ from: "/rooms/$roomId" });
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
 	const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
-	const [isPending, startTransition] = useTransition();
 	const loadMoreElementRef = useRef<HTMLDivElement | null>(null);
 	const { data, fetchMore } = useSuspenseQuery(RoomPlantListQuery, {
 		variables: {
@@ -135,25 +127,22 @@ function RoomPlantListPlants({
 	});
 	const pageInfo = plantsConnection?.pageInfo;
 	const hasNextPage = Boolean(pageInfo?.hasNextPage && pageInfo.endCursor);
-	const isLoadingMore = isFetchingMore || isPending;
 	const loadMorePlants = useCallback(() => {
 		if (!(hasNextPage && pageInfo?.endCursor) || isFetchingMore) {
 			return;
 		}
 
 		setIsFetchingMore(true);
-		startTransition(() => {
-			fetchMore({
-				variables: {
-					after: pageInfo.endCursor,
-					first: PLANT_PAGE_SIZE,
-					roomId,
-				},
-			}).then(
-				() => setIsFetchingMore(false),
-				() => setIsFetchingMore(false)
-			);
-		});
+		fetchMore({
+			variables: {
+				after: pageInfo.endCursor,
+				first: PLANT_PAGE_SIZE,
+				roomId,
+			},
+		}).then(
+			() => setIsFetchingMore(false),
+			() => setIsFetchingMore(false)
+		);
 	}, [fetchMore, hasNextPage, isFetchingMore, pageInfo?.endCursor, roomId]);
 
 	useEffect(() => {
@@ -314,12 +303,12 @@ function RoomPlantListPlants({
 			{hasNextPage ? (
 				<div className="mt-4 flex justify-center" ref={loadMoreElementRef}>
 					<Button
-						disabled={isLoadingMore}
+						disabled={isFetchingMore}
 						onClick={loadMorePlants}
 						size="sm"
 						variant="outline"
 					>
-						{isLoadingMore ? "Loading plants..." : "Load more plants"}
+						{isFetchingMore ? "Loading plants..." : "Load more plants"}
 					</Button>
 				</div>
 			) : null}

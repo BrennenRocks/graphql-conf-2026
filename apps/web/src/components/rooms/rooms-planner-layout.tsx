@@ -8,7 +8,7 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { Outlet } from "@tanstack/react-router";
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { graphql } from "@/__gql__";
 import type { RoomsPlannerLayoutQueryQuery } from "@/__gql__/graphql";
@@ -52,7 +52,6 @@ export type RoomsPlannerRoom =
 
 export function RoomsPlannerLayout() {
 	const [isFetchingMore, setIsFetchingMore] = useState(false);
-	const [isPending, startTransition] = useTransition();
 	const exhaustedCursorRef = useRef<string | null>(null);
 	const pendingCursorRef = useRef<string | null>(null);
 	const { data, fetchMore } = useSuspenseQuery(RoomsPlannerLayoutQuery, {
@@ -69,7 +68,6 @@ export function RoomsPlannerLayout() {
 			endCursor &&
 			exhaustedCursorRef.current !== endCursor
 	);
-	const isLoadingMore = isFetchingMore || isPending;
 	const loadMoreRooms = useCallback(() => {
 		if (!(hasNextPage && endCursor) || pendingCursorRef.current === endCursor) {
 			return;
@@ -77,40 +75,38 @@ export function RoomsPlannerLayout() {
 
 		pendingCursorRef.current = endCursor;
 		setIsFetchingMore(true);
-		startTransition(() => {
-			fetchMore({
-				variables: {
-					after: endCursor,
-					first: ROOM_PAGE_SIZE,
-				},
-			}).then(
-				({ data: fetchMoreData }) => {
-					if (!fetchMoreData) {
-						exhaustedCursorRef.current = endCursor;
-						pendingCursorRef.current = null;
-						setIsFetchingMore(false);
-						return;
-					}
-
-					const nextPageInfo = fetchMoreData.roomsConnection.pageInfo;
-					const nextEndCursor = nextPageInfo.endCursor ?? null;
-
-					if (
-						fetchMoreData.roomsConnection.edges.length === 0 ||
-						nextEndCursor === endCursor
-					) {
-						exhaustedCursorRef.current = endCursor;
-					}
-
+		fetchMore({
+			variables: {
+				after: endCursor,
+				first: ROOM_PAGE_SIZE,
+			},
+		}).then(
+			({ data: fetchMoreData }) => {
+				if (!fetchMoreData) {
+					exhaustedCursorRef.current = endCursor;
 					pendingCursorRef.current = null;
 					setIsFetchingMore(false);
-				},
-				() => {
-					pendingCursorRef.current = null;
-					setIsFetchingMore(false);
+					return;
 				}
-			);
-		});
+
+				const nextPageInfo = fetchMoreData.roomsConnection.pageInfo;
+				const nextEndCursor = nextPageInfo.endCursor ?? null;
+
+				if (
+					fetchMoreData.roomsConnection.edges.length === 0 ||
+					nextEndCursor === endCursor
+				) {
+					exhaustedCursorRef.current = endCursor;
+				}
+
+				pendingCursorRef.current = null;
+				setIsFetchingMore(false);
+			},
+			() => {
+				pendingCursorRef.current = null;
+				setIsFetchingMore(false);
+			}
+		);
 	}, [endCursor, fetchMore, hasNextPage]);
 
 	return (
@@ -118,7 +114,7 @@ export function RoomsPlannerLayout() {
 			<div className="min-h-0 overflow-hidden border-border/80 border-b bg-card/40 md:border-r md:border-b-0">
 				<RoomList
 					hasNextPage={hasNextPage}
-					isLoadingMore={isLoadingMore}
+					isLoadingMore={isFetchingMore}
 					onLoadMore={loadMoreRooms}
 					rooms={rooms}
 				/>
