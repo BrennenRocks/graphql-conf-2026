@@ -2,7 +2,8 @@ import { Button } from "@graphql-conf/ui/components/button";
 import { Input } from "@graphql-conf/ui/components/input";
 import { Label } from "@graphql-conf/ui/components/label";
 import { Loader2 } from "lucide-react";
-import { type SubmitEvent, useId, useState } from "react";
+import { useEffect, useId } from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
 
 interface RoomFormValues {
 	description: string;
@@ -30,54 +31,77 @@ export function RoomForm({
 	submitLabel,
 }: RoomFormProps) {
 	const id = useId();
-	const [description, setDescription] = useState(defaultValues.description);
-	const [name, setName] = useState(defaultValues.name);
+	const { description: defaultDescription, name: defaultName } = defaultValues;
+	const {
+		formState: { isSubmitting: isFormSubmitting },
+		handleSubmit,
+		register,
+		reset,
+		watch,
+	} = useForm<RoomFormValues>({
+		defaultValues,
+	});
+	const description = watch("description");
+	const name = watch("name");
+	const isDisabled = isSubmitting || isFormSubmitting;
 	const trimmedDescription = description.trim();
 	const trimmedName = name.trim();
-	const canSubmit = Boolean(trimmedDescription && trimmedName && !isSubmitting);
+	const canSubmit = Boolean(trimmedDescription && trimmedName && !isDisabled);
+	const descriptionField = register("description", {
+		validate: (value) => value.trim().length > 0,
+	});
+	const nameField = register("name", {
+		validate: (value) => value.trim().length > 0,
+	});
 
-	const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-		event.preventDefault();
+	useEffect(() => {
+		reset({
+			description: defaultDescription,
+			name: defaultName,
+		});
+	}, [defaultDescription, defaultName, reset]);
 
-		if (!canSubmit) {
+	const handleValidSubmit: SubmitHandler<RoomFormValues> = async (values) => {
+		const nextDescription = values.description.trim();
+		const nextName = values.name.trim();
+
+		if (!(nextDescription && nextName)) {
 			return;
 		}
 
-		Promise.resolve(
+		await Promise.resolve(
 			onSubmit({
-				description: trimmedDescription,
-				name: trimmedName,
+				description: nextDescription,
+				name: nextName,
 			})
 		).catch(() => undefined);
 	};
 
 	return (
-		<form className="grid gap-3" onSubmit={handleSubmit}>
+		<form className="grid gap-3" onSubmit={handleSubmit(handleValidSubmit)}>
 			<div className="grid gap-1.5">
 				<Label htmlFor={`${id}-room-name`}>Name</Label>
 				<Input
-					disabled={isSubmitting}
+					disabled={isDisabled}
 					id={`${id}-room-name`}
-					onChange={(event) => setName(event.target.value)}
 					placeholder="Sunroom"
-					value={name}
+					{...nameField}
 				/>
 			</div>
 			<div className="grid gap-1.5">
 				<Label htmlFor={`${id}-room-description`}>Description</Label>
 				<textarea
 					className="min-h-16 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-1 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-xs/relaxed dark:bg-input/30"
-					disabled={isSubmitting}
+					disabled={isDisabled}
 					id={`${id}-room-description`}
-					onChange={(event) => setDescription(event.target.value)}
 					placeholder="Bright afternoon light with space for shelves."
-					value={description}
+					{...descriptionField}
 				/>
 			</div>
 			<div className="flex flex-wrap justify-end gap-2">
 				{onCancel ? (
 					<Button
-						disabled={isSubmitting}
+						disabled={isDisabled}
 						onClick={onCancel}
 						type="button"
 						variant="outline"
@@ -86,7 +110,7 @@ export function RoomForm({
 					</Button>
 				) : null}
 				<Button disabled={!canSubmit} type="submit">
-					{isSubmitting ? <Loader2 className="animate-spin" /> : null}
+					{isDisabled ? <Loader2 className="animate-spin" /> : null}
 					{submitLabel}
 				</Button>
 			</div>

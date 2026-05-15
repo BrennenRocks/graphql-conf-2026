@@ -9,7 +9,6 @@ import {
 	type Context as GraphQLContext,
 } from "@graphql-conf/api/context";
 import { resolvers, typeDefs } from "@graphql-conf/api/schema";
-import { auth } from "@graphql-conf/auth";
 import { env } from "@graphql-conf/env/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -118,12 +117,9 @@ app.use(
 	cors({
 		allowHeaders: GRAPHQL_ALLOWED_HEADERS,
 		allowMethods: ["GET", "POST", "OPTIONS"],
-		credentials: true,
 		origin: env.CORS_ORIGIN,
 	})
 );
-
-app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.all("/graphql", async (c) => {
 	const httpGraphQLResponse = await apolloServer.executeHTTPGraphQLRequest({

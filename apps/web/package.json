@@ -15,14 +15,10 @@
   "dependencies": {
     "@apollo/client": "catalog:",
     "@graphql-conf/api": "workspace:*",
-    "@graphql-conf/auth": "workspace:*",
     "@graphql-conf/env": "workspace:*",
     "@graphql-conf/ui": "workspace:*",
-    "@hookform/resolvers": "^5.1.1",
     "@tailwindcss/vite": "^4.1.18",
-    "@tanstack/react-form": "^1.28.0",
     "@tanstack/react-router": "^1.141.1",
-    "better-auth": "^1.6.2",
     "dotenv": "catalog:",
     "graphql": "catalog:",
     "lucide-react": "^1.8.0",
@@ -30,6 +26,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-error-boundary": "^6.1.1",
+    "react-hook-form": "^7.75.0",
     "react-scan": "^0.5.3",
     "sonner": "catalog:",
     "zod": "catalog:"

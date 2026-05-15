@@ -3,7 +3,12 @@ import { Button } from "@graphql-conf/ui/components/button";
 import { Input } from "@graphql-conf/ui/components/input";
 import { Label } from "@graphql-conf/ui/components/label";
 import { Loader2 } from "lucide-react";
-import { type SubmitEvent, Suspense, useId, useState } from "react";
+import { Suspense, useEffect, useId } from "react";
+import {
+	type SubmitHandler,
+	type UseFormRegisterReturn,
+	useForm,
+} from "react-hook-form";
 
 import { RoomPickerQuery } from "./room-operations";
 
@@ -35,51 +40,82 @@ export function PlantForm({
 	submitLabel,
 }: PlantFormProps) {
 	const id = useId();
-	const [name, setName] = useState(defaultValues.name);
-	const [roomId, setRoomId] = useState(defaultValues.roomId);
-	const [species, setSpecies] = useState(defaultValues.species);
+	const {
+		name: defaultName,
+		roomId: defaultRoomId,
+		species: defaultSpecies,
+	} = defaultValues;
+	const {
+		formState: { isSubmitting: isFormSubmitting },
+		handleSubmit,
+		register,
+		reset,
+		watch,
+	} = useForm<PlantFormValues>({
+		defaultValues,
+	});
+	const name = watch("name");
+	const roomId = watch("roomId");
+	const species = watch("species");
+	const isDisabled = isSubmitting || isFormSubmitting;
 	const trimmedName = name.trim();
 	const trimmedSpecies = species.trim();
 	const canSubmit = Boolean(
-		trimmedName && trimmedSpecies && roomId && !isSubmitting
+		trimmedName && trimmedSpecies && roomId && !isDisabled
 	);
+	const nameField = register("name", {
+		validate: (value) => value.trim().length > 0,
+	});
+	const roomIdField = register("roomId", {
+		validate: (value) => value.trim().length > 0,
+	});
+	const speciesField = register("species", {
+		validate: (value) => value.trim().length > 0,
+	});
 
-	const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
-		event.preventDefault();
+	useEffect(() => {
+		reset({
+			name: defaultName,
+			roomId: defaultRoomId,
+			species: defaultSpecies,
+		});
+	}, [defaultName, defaultRoomId, defaultSpecies, reset]);
 
-		if (!canSubmit) {
+	const handleValidSubmit: SubmitHandler<PlantFormValues> = async (values) => {
+		const nextName = values.name.trim();
+		const nextSpecies = values.species.trim();
+
+		if (!(nextName && nextSpecies && values.roomId)) {
 			return;
 		}
 
-		Promise.resolve(
+		await Promise.resolve(
 			onSubmit({
-				name: trimmedName,
-				roomId,
-				species: trimmedSpecies,
+				name: nextName,
+				roomId: values.roomId,
+				species: nextSpecies,
 			})
 		).catch(() => undefined);
 	};
 
 	return (
-		<form className="grid gap-3" onSubmit={handleSubmit}>
+		<form className="grid gap-3" onSubmit={handleSubmit(handleValidSubmit)}>
 			<div className="grid gap-1.5">
 				<Label htmlFor={`${id}-plant-name`}>Name</Label>
 				<Input
-					disabled={isSubmitting}
+					disabled={isDisabled}
 					id={`${id}-plant-name`}
-					onChange={(event) => setName(event.target.value)}
 					placeholder="Monstera"
-					value={name}
+					{...nameField}
 				/>
 			</div>
 			<div className="grid gap-1.5">
 				<Label htmlFor={`${id}-plant-species`}>Species</Label>
 				<Input
-					disabled={isSubmitting}
+					disabled={isDisabled}
 					id={`${id}-plant-species`}
-					onChange={(event) => setSpecies(event.target.value)}
 					placeholder="Monstera deliciosa"
-					value={species}
+					{...speciesField}
 				/>
 			</div>
 			{showRoomSelect ? (
@@ -90,20 +126,21 @@ export function PlantForm({
 					>
 						<PlantRoomSelect
 							id={`${id}-plant-room`}
-							isDisabled={isSubmitting || isRoomSelectDisabled}
-							onChange={setRoomId}
-							value={roomId}
+							isDisabled={isDisabled || isRoomSelectDisabled}
+							registration={roomIdField}
 						/>
 					</Suspense>
 					{roomSelectError ? (
 						<p className="text-destructive text-xs">{roomSelectError}</p>
 					) : null}
 				</div>
-			) : null}
+			) : (
+				<input type="hidden" {...roomIdField} />
+			)}
 			<div className="flex flex-wrap justify-end gap-2">
 				{onCancel ? (
 					<Button
-						disabled={isSubmitting}
+						disabled={isDisabled}
 						onClick={onCancel}
 						type="button"
 						variant="outline"
@@ -112,7 +149,7 @@ export function PlantForm({
 					</Button>
 				) : null}
 				<Button disabled={!canSubmit} type="submit">
-					{isSubmitting ? <Loader2 className="animate-spin" /> : null}
+					{isDisabled ? <Loader2 className="animate-spin" /> : null}
 					{submitLabel}
 				</Button>
 			</div>
@@ -123,15 +160,13 @@ export function PlantForm({
 interface PlantRoomSelectProps {
 	id: string;
 	isDisabled: boolean;
-	onChange: (roomId: string) => void;
-	value: string;
+	registration: UseFormRegisterReturn<"roomId">;
 }
 
 function PlantRoomSelect({
 	id,
 	isDisabled,
-	onChange,
-	value,
+	registration,
 }: PlantRoomSelectProps) {
 	const { data } = useSuspenseQuery(RoomPickerQuery);
 	const roomOptions = data.roomsConnection.edges.map((edge) => {
@@ -143,8 +178,7 @@ function PlantRoomSelect({
 			className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-xs/relaxed dark:bg-input/30"
 			disabled={isDisabled}
 			id={id}
-			onChange={(event) => onChange(event.target.value)}
-			value={value}
+			{...registration}
 		>
 			{roomOptions.map((roomOption) => {
 				return (

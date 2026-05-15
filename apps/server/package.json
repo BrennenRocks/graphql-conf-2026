@@ -12,10 +12,8 @@
   "dependencies": {
     "@apollo/server": "catalog:",
     "@graphql-conf/api": "workspace:*",
-    "@graphql-conf/auth": "workspace:*",
     "@graphql-conf/db": "workspace:*",
     "@graphql-conf/env": "workspace:*",
-    "better-auth": "catalog:",
     "dotenv": "catalog:",
     "graphql": "catalog:",
     "hono": "catalog:",

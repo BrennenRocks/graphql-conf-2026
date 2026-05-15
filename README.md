@@ -1,6 +1,6 @@
 # graphql-conf
 
-This project is a Bun monorepo that combines React, TanStack Router, Hono, Apollo Server, Apollo Client, Better Auth, and Drizzle.
+This project is a Bun monorepo that combines React, TanStack Router, Hono, Apollo Server, Apollo Client, and Drizzle.
 
 ## Features
 
@@ -14,7 +14,6 @@ This project is a Bun monorepo that combines React, TanStack Router, Hono, Apoll
 - **Bun** - Runtime environment
 - **Drizzle** - TypeScript-first ORM
 - **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
 - **Biome** - Linting and formatting
 - **Turborepo** - Optimized monorepo build system
 
@@ -88,7 +87,6 @@ graphql-conf/
 ├── packages/
 │   ├── ui/          # Shared shadcn/ui components and styles
 │   ├── api/         # GraphQL schema, resolvers, and shared context
-│   ├── auth/        # Authentication configuration & logic
 │   └── db/          # Database schema & queries
 ```
 

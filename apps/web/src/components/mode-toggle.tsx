@@ -6,8 +6,7 @@ import {
 	DropdownMenuTrigger,
 } from "@graphql-conf/ui/components/dropdown-menu";
 import { Moon, Sun } from "lucide-react";
-
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "next-themes";
 
 export function ModeToggle() {
 	const { setTheme } = useTheme();

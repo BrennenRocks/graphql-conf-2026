@@ -74,7 +74,6 @@ const errorLink = new ErrorLink(({ error }) => {
 });
 
 const httpLink = new HttpLink({
-	credentials: "include",
 	uri: `${env.VITE_SERVER_URL}/graphql`,
 });
 

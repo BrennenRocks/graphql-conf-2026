@@ -2,22 +2,11 @@ import { Buffer } from "node:buffer";
 
 import { db } from "@graphql-conf/db";
 import { plant, room } from "@graphql-conf/db/schema/rooms";
-import { todo } from "@graphql-conf/db/schema/todo";
 import { and, asc, count, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
 import { GraphQLError } from "graphql";
 import gql from "graphql-tag";
 import z from "zod";
 
-import type { Context } from "./context";
-
-const createTodoSchema = z.string().trim().min(1, "Todo text is required");
-
-const toggleTodoSchema = z.object({
-	completed: z.boolean(),
-	id: z.number().int(),
-});
-
-const deleteTodoSchema = z.number().int();
 const defaultRoomListLimit = 8;
 const maxRoomListLimit = 50;
 const defaultRoomConnectionPageSize = 8;
@@ -120,7 +109,6 @@ const plantConnectionCursorSchema = z.object({
 	name: z.string().min(1),
 });
 
-type TodoRecord = typeof todo.$inferSelect;
 type RoomRecord = typeof room.$inferSelect;
 type PlantRecord = typeof plant.$inferSelect;
 
@@ -131,28 +119,6 @@ interface RoomConnectionRecord extends RoomRecord {
 interface RoomParent {
 	id: string;
 	plants?: PlantRecord[];
-}
-
-interface PrivateData {
-	message: string;
-	user: {
-		email: string;
-		id: string;
-		name: string;
-	};
-}
-
-interface TodoMutationArgs {
-	completed: boolean;
-	id: number;
-}
-
-interface DeleteTodoArgs {
-	id: number;
-}
-
-interface CreateTodoArgs {
-	text: string;
 }
 
 interface CreateRoomArgs {
@@ -225,23 +191,6 @@ interface PlantPayload {
 }
 
 export const typeDefs = gql`
-  type Todo {
-    id: Int!
-    text: String!
-    completed: Boolean!
-  }
-
-  type Viewer {
-    id: ID!
-    name: String!
-    email: String!
-  }
-
-  type PrivateData {
-    message: String!
-    user: Viewer!
-  }
-
   type Plant {
     id: ID!
     roomId: ID!
@@ -349,22 +298,17 @@ export const typeDefs = gql`
   type Query {
     healthCheck: String!
     plantCareNote(id: ID!): PlantCareNote!
-    privateData: PrivateData!
     room(id: ID!): Room
     roomCarePlan(id: ID!): RoomCarePlan!
     rooms(limit: Int = 8): [Room!]!
     roomsConnection(first: Int = 8, after: String): RoomConnection!
-    todos: [Todo!]!
   }
 
   type Mutation {
-    createTodo(text: String!): Todo!
     createRoom(input: CreateRoomInput!): CreateRoomPayload!
     updateRoom(input: UpdateRoomInput!): UpdateRoomPayload!
     createPlant(input: CreatePlantInput!): CreatePlantPayload!
     updatePlant(input: UpdatePlantInput!): UpdatePlantPayload!
-    toggleTodo(id: Int!, completed: Boolean!): Todo!
-    deleteTodo(id: Int!): Int!
   }
 `;
 
@@ -392,7 +336,10 @@ const isDatabaseError = (error: unknown): error is { code?: string } => {
 	return typeof error === "object" && error !== null && "code" in error;
 };
 
-const throwDuplicateRoomNameIfNeeded = (error: unknown, name: string) => {
+const throwDuplicateRoomNameIfNeeded = (
+	error: unknown,
+	name: string
+): never => {
 	if (isDatabaseError(error) && error.code === "23505") {
 		throw createDuplicateRoomNameError(name);
 	}
@@ -405,26 +352,6 @@ const getValidationMessage = (
 	fallback: string
 ) => {
 	return message?.trim() ? message : fallback;
-};
-
-const requireSession = (context: Context) => {
-	if (!context.session) {
-		throw new GraphQLError("Authentication required", {
-			extensions: {
-				code: "UNAUTHENTICATED",
-			},
-		});
-	}
-
-	return context.session;
-};
-
-const requireTodo = (todoRecord: TodoRecord | undefined) => {
-	if (!todoRecord) {
-		throw createNotFoundError("Todo");
-	}
-
-	return todoRecord;
 };
 
 const requireRecord = <TRecord>(
@@ -511,14 +438,15 @@ const getRoomsConnection = async (args: RoomsConnectionArgs) => {
 		? decodeRoomConnectionCursor(parsedArgs.data.after)
 		: null;
 	const createdAtCursorValue = getRoomCreatedAtCursorValue();
-	const afterCreatedAt = afterCursor
-		? sql<Date>`${afterCursor.createdAt}::timestamp`
-		: null;
 	const afterFilter = afterCursor
-		? or(
-				lt(room.createdAt, afterCreatedAt),
-				and(eq(room.createdAt, afterCreatedAt), lt(room.id, afterCursor.id))
-			)
+		? (() => {
+				const afterCreatedAt = sql<Date>`${afterCursor.createdAt}::timestamp`;
+
+				return or(
+					lt(room.createdAt, afterCreatedAt),
+					and(eq(room.createdAt, afterCreatedAt), lt(room.id, afterCursor.id))
+				);
+			})()
 		: undefined;
 	const roomRecords = await db
 		.select({
@@ -809,83 +737,8 @@ export const resolvers = {
 					roomEdge: await getRoomEdge(roomRecord.id),
 				};
 			} catch (error) {
-				throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
+				return throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
 			}
-		},
-		createTodo: async (
-			_parent: unknown,
-			args: CreateTodoArgs
-		): Promise<TodoRecord> => {
-			const parsedText = createTodoSchema.safeParse(args.text);
-
-			if (!parsedText.success) {
-				throw createBadUserInputError(
-					getValidationMessage(
-						parsedText.error.issues[0]?.message,
-						"Todo text is required"
-					)
-				);
-			}
-
-			const [createdTodo] = await db
-				.insert(todo)
-				.values({
-					text: parsedText.data,
-				})
-				.returning();
-
-			return requireTodo(createdTodo);
-		},
-		deleteTodo: async (
-			_parent: unknown,
-			args: DeleteTodoArgs
-		): Promise<number> => {
-			const parsedId = deleteTodoSchema.safeParse(args.id);
-
-			if (!parsedId.success) {
-				throw createBadUserInputError(
-					getValidationMessage(
-						parsedId.error.issues[0]?.message,
-						"Invalid todo id"
-					)
-				);
-			}
-
-			const [deletedTodo] = await db
-				.delete(todo)
-				.where(eq(todo.id, parsedId.data))
-				.returning({ id: todo.id });
-
-			if (!deletedTodo) {
-				throw createNotFoundError("Todo");
-			}
-
-			return deletedTodo.id;
-		},
-		toggleTodo: async (
-			_parent: unknown,
-			args: TodoMutationArgs
-		): Promise<TodoRecord> => {
-			const parsedArgs = toggleTodoSchema.safeParse(args);
-
-			if (!parsedArgs.success) {
-				throw createBadUserInputError(
-					getValidationMessage(
-						parsedArgs.error.issues[0]?.message,
-						"Invalid todo input"
-					)
-				);
-			}
-
-			const [updatedTodo] = await db
-				.update(todo)
-				.set({
-					completed: parsedArgs.data.completed,
-				})
-				.where(eq(todo.id, parsedArgs.data.id))
-				.returning();
-
-			return requireTodo(updatedTodo);
 		},
 		updatePlant: async (
 			_parent: unknown,
@@ -969,7 +822,7 @@ export const resolvers = {
 					roomEdge: await getRoomEdge(roomRecord.id),
 				};
 			} catch (error) {
-				throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
+				return throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
 			}
 		},
 	},
@@ -1002,22 +855,6 @@ export const resolvers = {
 				name: plantRecord.name,
 				note: `Keep ${plantRecord.name} on a steady care rhythm for ${plantRecord.species}.`,
 				species: plantRecord.species,
-			};
-		},
-		privateData: (
-			_parent: unknown,
-			_args: unknown,
-			context: Context
-		): PrivateData => {
-			const session = requireSession(context);
-
-			return {
-				message: "This is private",
-				user: {
-					email: session.user.email,
-					id: session.user.id,
-					name: session.user.name,
-				},
 			};
 		},
 		room: async (_parent: unknown, args: RoomArgs) => {
@@ -1066,9 +903,6 @@ export const resolvers = {
 		},
 		roomsConnection: async (_parent: unknown, args: RoomsConnectionArgs) => {
 			return await getRoomsConnection(args);
-		},
-		todos: async (): Promise<TodoRecord[]> => {
-			return await db.select().from(todo);
 		},
 	},
 	Room: {
