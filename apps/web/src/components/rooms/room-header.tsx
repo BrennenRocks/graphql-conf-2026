@@ -1,4 +1,8 @@
-import { useMutation, useSuspenseFragment } from "@apollo/client/react";
+import {
+	useApolloClient,
+	useMutation,
+	useSuspenseFragment,
+} from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -8,22 +12,25 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import type { FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
 import type { FragmentType } from "@/__gql__/fragment-masking";
 import { ErrorState } from "@/components/shared/error-state";
-
+import { readRoomPlantCount } from "./room-cache";
 import { RoomForm } from "./room-form";
 import { UpdateRoomMutation } from "./room-operations";
+import {
+	RoomPlantCountBadge,
+	RoomPlantCountBadgeSkeleton,
+} from "./room-plant-count-badge";
 
 export const RoomHeaderFragment = graphql(/* GraphQL */ `
 	fragment RoomHeader_room on Room {
 		id
 		name
 		description
-		plantCount
 	}
 `);
 
@@ -32,6 +39,7 @@ interface RoomHeaderProps {
 }
 
 export function RoomHeader({ room }: RoomHeaderProps) {
+	const apolloClient = useApolloClient();
 	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
 		fragment: RoomHeaderFragment,
@@ -44,6 +52,8 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 		description: string;
 		name: string;
 	}) => {
+		const plantCount = readRoomPlantCount(apolloClient.cache, data.id);
+
 		await updateRoom({
 			optimisticResponse: {
 				__typename: "Mutation",
@@ -54,7 +64,7 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 						description: values.description,
 						id: data.id,
 						name: values.name,
-						plantCount: data.plantCount,
+						plantCount,
 					},
 					roomEdge: {
 						__typename: "RoomEdge",
@@ -64,7 +74,7 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 							description: values.description,
 							id: data.id,
 							name: values.name,
-							plantCount: data.plantCount,
+							plantCount,
 						},
 					},
 				},
@@ -111,9 +121,9 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 						)}
 					</div>
 					<div className="flex items-center gap-2">
-						<div className="rounded-full border border-border/80 bg-background/80 px-3 py-1 font-medium text-xs">
-							{data.plantCount} plants
-						</div>
+						<Suspense fallback={<RoomPlantCountBadgeSkeleton />}>
+							<RoomPlantCountBadge roomId={data.id} />
+						</Suspense>
 						<Button
 							aria-label={`Edit ${data.name}`}
 							onClick={() => setIsEditing((isOpen) => !isOpen)}

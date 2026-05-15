@@ -37,6 +37,7 @@ export const RoomsPlannerLayoutQuery = graphql(/* GraphQL */ `
 				node {
 					id
 					...RoomListItem_room @nonreactive
+					...RoomPlantCountBadge_room @nonreactive
 				}
 			}
 			pageInfo {

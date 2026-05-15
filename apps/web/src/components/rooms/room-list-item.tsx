@@ -1,4 +1,8 @@
-import { useMutation, useSuspenseFragment } from "@apollo/client/react";
+import {
+	useApolloClient,
+	useMutation,
+	useSuspenseFragment,
+} from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -8,21 +12,25 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { graphql } from "@/__gql__";
 import type { FragmentType } from "@/__gql__/fragment-masking";
 import { cn } from "@/lib/utils";
 
+import { readRoomPlantCount } from "./room-cache";
 import { RoomForm } from "./room-form";
 import { UpdateRoomMutation } from "./room-operations";
+import {
+	RoomPlantCountBadge,
+	RoomPlantCountBadgeSkeleton,
+} from "./room-plant-count-badge";
 
 export const RoomListItemFragment = graphql(/* GraphQL */ `
 	fragment RoomListItem_room on Room {
 		id
 		name
 		description
-		plantCount
 	}
 `);
 
@@ -32,6 +40,7 @@ interface RoomListItemProps {
 }
 
 export function RoomListItem({ isActive, room }: RoomListItemProps) {
+	const apolloClient = useApolloClient();
 	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
 		fragment: RoomListItemFragment,
@@ -44,6 +53,8 @@ export function RoomListItem({ isActive, room }: RoomListItemProps) {
 		description: string;
 		name: string;
 	}) => {
+		const plantCount = readRoomPlantCount(apolloClient.cache, data.id);
+
 		await updateRoom({
 			optimisticResponse: {
 				__typename: "Mutation",
@@ -54,7 +65,7 @@ export function RoomListItem({ isActive, room }: RoomListItemProps) {
 						description: values.description,
 						id: data.id,
 						name: values.name,
-						plantCount: data.plantCount,
+						plantCount,
 					},
 					roomEdge: {
 						__typename: "RoomEdge",
@@ -64,7 +75,7 @@ export function RoomListItem({ isActive, room }: RoomListItemProps) {
 							description: values.description,
 							id: data.id,
 							name: values.name,
-							plantCount: data.plantCount,
+							plantCount,
 						},
 					},
 				},
@@ -98,9 +109,9 @@ export function RoomListItem({ isActive, room }: RoomListItemProps) {
 						<CardTitle className="text-base">{data.name}</CardTitle>
 					</Link>
 					<div className="flex items-center gap-2">
-						<div className="rounded-full border border-border/80 bg-background/80 px-2 py-1 font-medium text-[0.7rem]">
-							{data.plantCount} plants
-						</div>
+						<Suspense fallback={<RoomPlantCountBadgeSkeleton size="sm" />}>
+							<RoomPlantCountBadge roomId={data.id} size="sm" />
+						</Suspense>
 						<Button
 							aria-label={`Edit ${data.name}`}
 							onClick={() => setIsEditing((isOpen) => !isOpen)}

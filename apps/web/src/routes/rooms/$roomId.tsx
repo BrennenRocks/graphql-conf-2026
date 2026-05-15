@@ -33,6 +33,7 @@ const RoomDetailRouteQuery = graphql(/* GraphQL */ `
 		room(id: $id) {
 			id
 			...RoomHeader_room @nonreactive
+			...RoomPlantCountBadge_room @nonreactive
 		}
 	}
 `);
