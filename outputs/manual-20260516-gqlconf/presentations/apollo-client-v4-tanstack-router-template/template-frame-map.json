@@ -1,0 +1,98 @@
+{
+  "outputSlides": [
+    {
+      "outputSlide": 1,
+      "sourceSlide": 1,
+      "narrativeRole": "opening title",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "subtitle"]
+    },
+    {
+      "outputSlide": 2,
+      "sourceSlide": 3,
+      "narrativeRole": "AI and library judgment",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "three-part claim"]
+    },
+    {
+      "outputSlide": 3,
+      "sourceSlide": 3,
+      "narrativeRole": "route-level preload rule",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "preload flow"]
+    },
+    {
+      "outputSlide": 4,
+      "sourceSlide": 3,
+      "narrativeRole": "useLoadableQuery and useBackgroundQuery",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "repo example", "honorable mention"]
+    },
+    {
+      "outputSlide": 5,
+      "sourceSlide": 3,
+      "narrativeRole": "fragment colocation example",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "user/avatar fragments"]
+    },
+    {
+      "outputSlide": 6,
+      "sourceSlide": 3,
+      "narrativeRole": "bad shared query anti-pattern",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "bad example"]
+    },
+    {
+      "outputSlide": 7,
+      "sourceSlide": 3,
+      "narrativeRole": "normalized cache mental model",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "cache flow"]
+    },
+    {
+      "outputSlide": 8,
+      "sourceSlide": 3,
+      "narrativeRole": "optimistic update flow",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "mutation sequence"]
+    },
+    {
+      "outputSlide": 9,
+      "sourceSlide": 3,
+      "narrativeRole": "nonreactive rerender boundary",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "before after"]
+    },
+    {
+      "outputSlide": 10,
+      "sourceSlide": 3,
+      "narrativeRole": "performance summary",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "three habits"]
+    },
+    {
+      "outputSlide": 11,
+      "sourceSlide": 3,
+      "narrativeRole": "demo checklist",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "step list"]
+    },
+    {
+      "outputSlide": 12,
+      "sourceSlide": 5,
+      "narrativeRole": "closing takeaways",
+      "reuseMode": "duplicate-slide",
+      "editTargets": ["title", "takeaways"]
+    }
+  ],
+  "omittedSourceSlides": [
+    {
+      "sourceSlide": 2,
+      "reason": "compact title/end style not needed once title and close slides are mapped"
+    },
+    {
+      "sourceSlide": 4,
+      "reason": "near-duplicate content skeleton; source slide 3 used for consistency"
+    }
+  ]
+}

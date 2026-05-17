@@ -1,0 +1,505 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/jkl08s",
+    "id": "jkl08s",
+    "slide": 12,
+    "layoutId": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 960,
+      "height": 540
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/x0nuxc3y",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        960,
+        540
+      ],
+      "alt": "GraphQLConf template side background",
+      "contentType": "image/png",
+      "asset": {
+        "assetId": "01c946ec-93fc-45fa-a403-eff38287076f",
+        "contentType": "image/png",
+        "byteLength": 94753
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/vu9knih4",
+      "id": "2",
+      "bbox": [
+        58,
+        92,
+        650,
+        78
+      ],
+      "geometry": "rect",
+      "text": "Modern Apollo is more explicit.",
+      "textPreview": "Modern Apollo is more explicit.",
+      "resolvedFontSize": 42,
+      "resolvedTextStyle": {
+        "fontSize": 42,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Modern Apollo is more explicit."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Modern Apollo is more explicit.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Modern Apollo is more explicit.",
+              "fontSize": 42,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/29gr2p8n",
+      "id": "3",
+      "bbox": [
+        72,
+        225,
+        18,
+        18
+      ],
+      "geometry": "rect",
+      "fillColor": "#E10098",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/d8bat47y",
+      "id": "4",
+      "bbox": [
+        112,
+        220,
+        500,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Preload at the route.",
+      "textPreview": "Preload at the route.",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Preload at the route."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Preload at the route.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Preload at the route.",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/knih4byh",
+      "id": "5",
+      "bbox": [
+        72,
+        279,
+        18,
+        18
+      ],
+      "geometry": "rect",
+      "fillColor": "#029FD6",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/v6psfil0",
+      "id": "6",
+      "bbox": [
+        112,
+        274,
+        500,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Colocate the fragment.",
+      "textPreview": "Colocate the fragment.",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Colocate the fragment."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Colocate the fragment.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Colocate the fragment.",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/2lszqtcj",
+      "id": "7",
+      "bbox": [
+        72,
+        333,
+        18,
+        18
+      ],
+      "geometry": "rect",
+      "fillColor": "#B7D93A",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dcbulwva",
+      "id": "8",
+      "bbox": [
+        112,
+        328,
+        500,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Trust the normalized cache.",
+      "textPreview": "Trust the normalized cache.",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Trust the normalized cache."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Trust the normalized cache.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Trust the normalized cache.",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kre1w7mp",
+      "id": "9",
+      "bbox": [
+        72,
+        387,
+        18,
+        18
+      ],
+      "geometry": "rect",
+      "fillColor": "#F1CD33",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/6psfil0r",
+      "id": "10",
+      "bbox": [
+        112,
+        382,
+        500,
+        28
+      ],
+      "geometry": "rect",
+      "text": "Make rerenders intentional.",
+      "textPreview": "Make rerenders intentional.",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Make rerenders intentional."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Make rerenders intentional.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Make rerenders intentional.",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/val87ed8",
+      "id": "11",
+      "bbox": [
+        72,
+        458,
+        610,
+        28
+      ],
+      "geometry": "rect",
+      "text": "AI can help you type the pattern. You still choose the pattern.",
+      "textPreview": "AI can help you type the pattern. You still choose the pattern.",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "AI can help you type the pattern. You still choose the pattern."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "AI can help you type the pattern. You still choose the pattern.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "AI can help you type the pattern. You still choose the pattern.",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#4D4D4D"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/kre1w7mp",
+      "id": "12",
+      "bbox": [
+        66,
+        523,
+        760,
+        12
+      ],
+      "geometry": "rect",
+      "text": "Closing line: simpler mental model, better perceived performance.",
+      "textPreview": "Closing line: simpler mental model, better perceived performance.",
+      "resolvedFontSize": 8.51,
+      "resolvedTextStyle": {
+        "fontSize": 8.51,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Closing line: simpler mental model, better perceived performance."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Closing line: simpler mental model, better perceived performance.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Closing line: simpler mental model, better perceived performance.",
+              "fontSize": 8.51,
+              "typeface": "Arial",
+              "color": "#FFFFFF"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

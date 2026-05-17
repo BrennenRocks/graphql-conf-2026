@@ -1,0 +1,715 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/httr3a",
+    "id": "httr3a",
+    "slide": 7,
+    "layoutId": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 960,
+      "height": 540
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/x0nuxc3y",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        960,
+        540
+      ],
+      "alt": "GraphQLConf template content background",
+      "contentType": "image/png",
+      "asset": {
+        "assetId": "847530ef-01aa-4f0c-9995-a3c547d31e9c",
+        "contentType": "image/png",
+        "byteLength": 49345
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3q5o7qpg",
+      "id": "2",
+      "bbox": [
+        50,
+        17,
+        720,
+        34
+      ],
+      "geometry": "rect",
+      "text": "Cache model",
+      "textPreview": "Cache model",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "fontSize": 23,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Cache model"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Cache model",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Cache model",
+              "fontSize": 23,
+              "typeface": "Arial",
+              "color": "#FFFFFF",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/e9cvixcz",
+      "id": "3",
+      "bbox": [
+        66,
+        108,
+        820,
+        84
+      ],
+      "geometry": "rect",
+      "text": "The cache is an entity graph, not a response drawer.",
+      "textPreview": "The cache is an entity graph, not a response drawer.",
+      "resolvedFontSize": 34,
+      "resolvedTextStyle": {
+        "fontSize": 34,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "The cache is an entity graph, not a response"
+          },
+          {
+            "index": 2,
+            "text": "drawer."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "The cache is an entity graph, not a response drawer.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "The cache is an entity graph, not a response drawer.",
+              "fontSize": 34,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/loj2t83i",
+      "id": "4",
+      "bbox": [
+        98,
+        278,
+        178,
+        78
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DADADA",
+      "lineWidth": 1
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/w3m94fu1",
+      "id": "5",
+      "bbox": [
+        98,
+        278,
+        8,
+        78
+      ],
+      "geometry": "rect",
+      "fillColor": "#E10098",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/3itgfmlk",
+      "id": "6",
+      "bbox": [
+        116,
+        292,
+        142,
+        46
+      ],
+      "geometry": "rect",
+      "text": "server result",
+      "textPreview": "server result",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "server result"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "server result",
+          "runs": [
+            {
+              "index": 1,
+              "text": "server result",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ex0nuxc3",
+      "id": "7",
+      "bbox": [
+        294,
+        316,
+        86,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#E10098",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/lkjm1cfa",
+      "id": "8",
+      "bbox": [
+        372,
+        300,
+        18,
+        32
+      ],
+      "geometry": "rect",
+      "text": ">",
+      "textPreview": ">",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": ">"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": ">",
+          "runs": [
+            {
+              "index": 1,
+              "text": ">",
+              "fontSize": 24,
+              "typeface": "Arial",
+              "color": "#E10098",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/szqtcj6t",
+      "id": "9",
+      "bbox": [
+        400,
+        252,
+        190,
+        130
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DADADA",
+      "lineWidth": 1
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/il0rqd4v",
+      "id": "10",
+      "bbox": [
+        400,
+        252,
+        8,
+        130
+      ],
+      "geometry": "rect",
+      "fillColor": "#029FD6",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/b6xkf6dc",
+      "id": "11",
+      "bbox": [
+        418,
+        266,
+        154,
+        98
+      ],
+      "geometry": "rect",
+      "text": "normalized\ncache",
+      "textPreview": "normalized | cache",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "fontSize": 22,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "normalized"
+          },
+          {
+            "index": 2,
+            "text": "cache"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "normalized",
+          "runs": [
+            {
+              "index": 1,
+              "text": "normalized",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "text": "cache",
+          "runs": [
+            {
+              "index": 1,
+              "text": "cache",
+              "fontSize": 22,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0rqd4vmt",
+      "id": "12",
+      "bbox": [
+        610,
+        316,
+        86,
+        3
+      ],
+      "geometry": "rect",
+      "fillColor": "#029FD6",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/tcj6tova",
+      "id": "13",
+      "bbox": [
+        688,
+        300,
+        18,
+        32
+      ],
+      "geometry": "rect",
+      "text": ">",
+      "textPreview": ">",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "fontSize": 24,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": ">"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": ">",
+          "runs": [
+            {
+              "index": 1,
+              "text": ">",
+              "fontSize": 24,
+              "typeface": "Arial",
+              "color": "#029FD6",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/idonyd0z",
+      "id": "14",
+      "bbox": [
+        716,
+        278,
+        178,
+        78
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DADADA",
+      "lineWidth": 1
+    },
+    {
+      "order": 15,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/byhgn29g",
+      "id": "15",
+      "bbox": [
+        716,
+        278,
+        8,
+        78
+      ],
+      "geometry": "rect",
+      "fillColor": "#B7D93A",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 16,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0je9cvix",
+      "id": "16",
+      "bbox": [
+        734,
+        292,
+        142,
+        46
+      ],
+      "geometry": "rect",
+      "text": "component\nreads",
+      "textPreview": "component | reads",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "component"
+          },
+          {
+            "index": 2,
+            "text": "reads"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "component",
+          "runs": [
+            {
+              "index": 1,
+              "text": "component",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "text": "reads",
+          "runs": [
+            {
+              "index": 1,
+              "text": "reads",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 17,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/t47y1kre",
+      "id": "17",
+      "bbox": [
+        98,
+        424,
+        740,
+        46
+      ],
+      "geometry": "rect",
+      "text": "When the graph is right, refetching becomes the exception.",
+      "textPreview": "When the graph is right, refetching becomes the exception.",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "fontSize": 18,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "When the graph is right, refetching becomes the exception."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "When the graph is right, refetching becomes the exception.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "When the graph is right, refetching becomes the exception.",
+              "fontSize": 18,
+              "typeface": "Arial",
+              "color": "#4D4D4D"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 18,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/i9s36hcr",
+      "id": "18",
+      "bbox": [
+        66,
+        523,
+        760,
+        12
+      ],
+      "geometry": "rect",
+      "text": "Demo cue: mutation result updates the cache, UI follows.",
+      "textPreview": "Demo cue: mutation result updates the cache, UI follows.",
+      "resolvedFontSize": 8.51,
+      "resolvedTextStyle": {
+        "fontSize": 8.51,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Demo cue: mutation result updates the cache, UI follows."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Demo cue: mutation result updates the cache, UI follows.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Demo cue: mutation result updates the cache, UI follows.",
+              "fontSize": 8.51,
+              "typeface": "Arial",
+              "color": "#FFFFFF"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

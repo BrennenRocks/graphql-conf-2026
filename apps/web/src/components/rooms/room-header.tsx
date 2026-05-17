@@ -1,8 +1,4 @@
-import {
-	useApolloClient,
-	useMutation,
-	useSuspenseFragment,
-} from "@apollo/client/react";
+import { useSuspenseFragment } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -11,20 +7,19 @@ import {
 	CardTitle,
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Suspense, useState } from "react";
 import type { FallbackProps } from "react-error-boundary";
 
 import { graphql } from "@/__gql__";
-import type { FragmentType } from "@/__gql__/fragment-masking";
 import { ErrorState } from "@/components/shared/error-state";
-import { readRoomPlantCount } from "./room-cache";
 import { RoomForm } from "./room-form";
-import { UpdateRoomMutation } from "./room-operations";
 import {
 	RoomPlantCountBadge,
 	RoomPlantCountBadgeSkeleton,
 } from "./room-plant-count-badge";
+import { useDeleteRoom } from "./use-delete-room";
+import { useUpdateRoom } from "./use-update-room";
 
 export const RoomHeaderFragment = graphql(/* GraphQL */ `
 	fragment RoomHeader_room on Room {
@@ -35,50 +30,26 @@ export const RoomHeaderFragment = graphql(/* GraphQL */ `
 `);
 
 interface RoomHeaderProps {
-	room: FragmentType<typeof RoomHeaderFragment>;
+	roomId: string;
 }
 
-export function RoomHeader({ room }: RoomHeaderProps) {
-	const apolloClient = useApolloClient();
+export function RoomHeader({ roomId }: RoomHeaderProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
 		fragment: RoomHeaderFragment,
-		from: room,
+		from: {
+			__typename: "Room",
+			id: roomId,
+		},
 	});
-	const [updateRoom, { loading: isUpdatingRoom }] =
-		useMutation(UpdateRoomMutation);
+	const [updateRoom, { loading: isUpdatingRoom }] = useUpdateRoom();
+	const [deleteRoom, { loading: isDeletingRoom }] = useDeleteRoom();
 
 	const handleUpdateRoom = async (values: {
 		description: string;
 		name: string;
 	}) => {
-		const plantCount = readRoomPlantCount(apolloClient.cache, data.id);
-
 		await updateRoom({
-			optimisticResponse: {
-				__typename: "Mutation",
-				updateRoom: {
-					__typename: "UpdateRoomPayload",
-					room: {
-						__typename: "Room",
-						description: values.description,
-						id: data.id,
-						name: values.name,
-						plantCount,
-					},
-					roomEdge: {
-						__typename: "RoomEdge",
-						cursor: `optimistic-room-${data.id}`,
-						node: {
-							__typename: "Room",
-							description: values.description,
-							id: data.id,
-							name: values.name,
-							plantCount,
-						},
-					},
-				},
-			},
 			variables: {
 				input: {
 					description: values.description,
@@ -88,6 +59,16 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 			},
 		});
 		setIsEditing(false);
+	};
+
+	const handleDeleteRoom = async () => {
+		await deleteRoom({
+			variables: {
+				input: {
+					id: data.id,
+				},
+			},
+		});
 	};
 
 	return (
@@ -126,11 +107,21 @@ export function RoomHeader({ room }: RoomHeaderProps) {
 						</Suspense>
 						<Button
 							aria-label={`Edit ${data.name}`}
+							disabled={isDeletingRoom}
 							onClick={() => setIsEditing((isOpen) => !isOpen)}
 							size="icon"
 							variant="outline"
 						>
 							<Pencil />
+						</Button>
+						<Button
+							aria-label={`Delete ${data.name}`}
+							disabled={isDeletingRoom}
+							onClick={handleDeleteRoom}
+							size="icon"
+							variant="destructive"
+						>
+							<Trash2 />
 						</Button>
 					</div>
 				</div>

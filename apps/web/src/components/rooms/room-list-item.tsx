@@ -1,8 +1,4 @@
-import {
-	useApolloClient,
-	useMutation,
-	useSuspenseFragment,
-} from "@apollo/client/react";
+import { useSuspenseFragment } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
@@ -18,13 +14,12 @@ import { graphql } from "@/__gql__";
 import type { FragmentType } from "@/__gql__/fragment-masking";
 import { cn } from "@/lib/utils";
 
-import { readRoomPlantCount } from "./room-cache";
 import { RoomForm } from "./room-form";
-import { UpdateRoomMutation } from "./room-operations";
 import {
 	RoomPlantCountBadge,
 	RoomPlantCountBadgeSkeleton,
 } from "./room-plant-count-badge";
+import { useUpdateRoom } from "./use-update-room";
 
 export const RoomListItemFragment = graphql(/* GraphQL */ `
 	fragment RoomListItem_room on Room {
@@ -40,46 +35,18 @@ interface RoomListItemProps {
 }
 
 export function RoomListItem({ isActive, room }: RoomListItemProps) {
-	const apolloClient = useApolloClient();
 	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
 		fragment: RoomListItemFragment,
 		from: room,
 	});
-	const [updateRoom, { loading: isUpdatingRoom }] =
-		useMutation(UpdateRoomMutation);
+	const [updateRoom, { loading: isUpdatingRoom }] = useUpdateRoom();
 
 	const handleUpdateRoom = async (values: {
 		description: string;
 		name: string;
 	}) => {
-		const plantCount = readRoomPlantCount(apolloClient.cache, data.id);
-
 		await updateRoom({
-			optimisticResponse: {
-				__typename: "Mutation",
-				updateRoom: {
-					__typename: "UpdateRoomPayload",
-					room: {
-						__typename: "Room",
-						description: values.description,
-						id: data.id,
-						name: values.name,
-						plantCount,
-					},
-					roomEdge: {
-						__typename: "RoomEdge",
-						cursor: `optimistic-room-${data.id}`,
-						node: {
-							__typename: "Room",
-							description: values.description,
-							id: data.id,
-							name: values.name,
-							plantCount,
-						},
-					},
-				},
-			},
 			variables: {
 				input: {
 					description: values.description,

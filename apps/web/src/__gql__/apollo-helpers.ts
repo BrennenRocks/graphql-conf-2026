@@ -11,10 +11,21 @@ export type CreateRoomPayloadFieldPolicy = {
 	room?: FieldPolicy<any> | FieldReadFunction<any>,
 	roomEdge?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('createPlant' | 'createRoom' | 'updatePlant' | 'updateRoom' | MutationKeySpecifier)[];
+export type DeletePlantPayloadKeySpecifier = ('plant' | 'room' | DeletePlantPayloadKeySpecifier)[];
+export type DeletePlantPayloadFieldPolicy = {
+	plant?: FieldPolicy<any> | FieldReadFunction<any>,
+	room?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type DeleteRoomPayloadKeySpecifier = ('id' | DeleteRoomPayloadKeySpecifier)[];
+export type DeleteRoomPayloadFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('createPlant' | 'createRoom' | 'deletePlant' | 'deleteRoom' | 'updatePlant' | 'updateRoom' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	createPlant?: FieldPolicy<any> | FieldReadFunction<any>,
 	createRoom?: FieldPolicy<any> | FieldReadFunction<any>,
+	deletePlant?: FieldPolicy<any> | FieldReadFunction<any>,
+	deleteRoom?: FieldPolicy<any> | FieldReadFunction<any>,
 	updatePlant?: FieldPolicy<any> | FieldReadFunction<any>,
 	updateRoom?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -101,6 +112,14 @@ export type StrictTypedTypePolicies = {
 	CreateRoomPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CreateRoomPayloadKeySpecifier | (() => undefined | CreateRoomPayloadKeySpecifier),
 		fields?: CreateRoomPayloadFieldPolicy,
+	},
+	DeletePlantPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | DeletePlantPayloadKeySpecifier | (() => undefined | DeletePlantPayloadKeySpecifier),
+		fields?: DeletePlantPayloadFieldPolicy,
+	},
+	DeleteRoomPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | DeleteRoomPayloadKeySpecifier | (() => undefined | DeleteRoomPayloadKeySpecifier),
+		fields?: DeleteRoomPayloadFieldPolicy,
 	},
 	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),

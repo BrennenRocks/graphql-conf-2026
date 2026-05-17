@@ -66,7 +66,7 @@ export function RoomDetail() {
 		<div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto p-4 md:p-6">
 			<ErrorBoundary FallbackComponent={RoomHeader.Error}>
 				<Suspense fallback={<RoomHeader.Skeleton />}>
-					<RoomHeader room={data.room} />
+					<RoomHeader roomId={data.room.id} />
 				</Suspense>
 			</ErrorBoundary>
 			<ErrorBoundary FallbackComponent={RoomCarePlanPanel.Error}>

@@ -1,0 +1,21 @@
+Source template: /Users/brennen/Downloads/graphqlconf_26_ppt.pptx
+
+Template system:
+- 16:9, 960x540 source render.
+- Brand language is GraphQLConf 2026 magenta stripe photography/texture, white content field, and dark purple footer.
+- Reusable types: full-bleed title/end slide, blank content slide with top magenta band, content slide with right magenta side rail.
+
+Reusable slide choices:
+- source slide 1: conference title opener.
+- source slide 2: compact magenta title/end background.
+- source slide 3/4: main technical content skeleton.
+- source slide 5: side-rail close or transition skeleton.
+
+Weak spots:
+- Placeholder bboxes inspect as zero-size in the supplied deck, so direct placeholder editing is not reliable.
+- The template has little built-in content furniture; final slides need lightweight editable overlays.
+
+Insertion contract:
+- Preserve the magenta header, white field, and purple footer rhythm.
+- Keep text sparse and high contrast.
+- Use diagrams and short code blocks as foreground content only.

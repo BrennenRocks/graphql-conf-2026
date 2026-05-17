@@ -1,0 +1,252 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/bhtvhs",
+    "id": "bhtvhs",
+    "slide": 1,
+    "layoutId": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 960,
+      "height": 540
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/obm58z25",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        960,
+        540
+      ],
+      "alt": "GraphQLConf template title background",
+      "contentType": "image/png",
+      "asset": {
+        "assetId": "972de74b-6d08-45aa-859a-60d306bc6b7f",
+        "contentType": "image/png",
+        "byteLength": 356778
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/a9w3m94f",
+      "id": "2",
+      "bbox": [
+        104,
+        405,
+        752,
+        74
+      ],
+      "geometry": "rect",
+      "fillColor": "rgba(0, 0, 0, 0.33333)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/zupwb2hw",
+      "id": "3",
+      "bbox": [
+        126,
+        418,
+        708,
+        34
+      ],
+      "geometry": "rect",
+      "text": "Apollo Client v4 + TanStack Router",
+      "textPreview": "Apollo Client v4 + TanStack Router",
+      "resolvedFontSize": 27,
+      "resolvedTextStyle": {
+        "fontSize": 27,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "center"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Apollo Client v4 + TanStack Router"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Apollo Client v4 + TanStack Router",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Apollo Client v4 + TanStack Router",
+              "fontSize": 27,
+              "typeface": "Arial",
+              "color": "#FFFFFF",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/orytsvu9",
+      "id": "4",
+      "bbox": [
+        126,
+        454,
+        708,
+        18
+      ],
+      "geometry": "rect",
+      "text": "preload, colocate, cache, render less",
+      "textPreview": "preload, colocate, cache, render less",
+      "resolvedFontSize": 14,
+      "resolvedTextStyle": {
+        "fontSize": 14,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "center"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "preload, colocate, cache, render less"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "preload, colocate, cache, render less",
+          "runs": [
+            {
+              "index": 1,
+              "text": "preload, colocate, cache, render less",
+              "fontSize": 14,
+              "typeface": "Arial",
+              "color": "#B7D93A",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/hcrmhk3q",
+      "id": "5",
+      "bbox": [
+        66,
+        523,
+        760,
+        12
+      ],
+      "geometry": "rect",
+      "text": "Talk guide deck",
+      "textPreview": "Talk guide deck",
+      "resolvedFontSize": 8.51,
+      "resolvedTextStyle": {
+        "fontSize": 8.51,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Talk guide deck"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Talk guide deck",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Talk guide deck",
+              "fontSize": 8.51,
+              "typeface": "Arial",
+              "color": "#FFFFFF"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

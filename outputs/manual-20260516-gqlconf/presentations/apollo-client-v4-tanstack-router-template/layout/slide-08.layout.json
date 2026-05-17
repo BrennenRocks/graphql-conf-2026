@@ -1,0 +1,601 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/fqsy88",
+    "id": "fqsy88",
+    "slide": 8,
+    "layoutId": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 960,
+      "height": 540
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Arial"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "4f318be0-8498-40cc-bc38-86875b2d8c90",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "424eb135-1e65-49f2-bb47-f7228f7a83a9",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "image",
+      "scope": "slide",
+      "aid": "im/gn29gr2p",
+      "id": "1",
+      "bbox": [
+        0,
+        0,
+        960,
+        540
+      ],
+      "alt": "GraphQLConf template content background",
+      "contentType": "image/png",
+      "asset": {
+        "assetId": "dbb9bce9-4174-4852-b915-e11302cfecf7",
+        "contentType": "image/png",
+        "byteLength": 49345
+      }
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/qxs72x4n",
+      "id": "2",
+      "bbox": [
+        50,
+        17,
+        720,
+        34
+      ],
+      "geometry": "rect",
+      "text": "Optimistic UI",
+      "textPreview": "Optimistic UI",
+      "resolvedFontSize": 23,
+      "resolvedTextStyle": {
+        "fontSize": 23,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Optimistic UI"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Optimistic UI",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Optimistic UI",
+              "fontSize": 23,
+              "typeface": "Arial",
+              "color": "#FFFFFF",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fil0rqd4",
+      "id": "3",
+      "bbox": [
+        66,
+        108,
+        780,
+        84
+      ],
+      "geometry": "rect",
+      "text": "Latency should not hide what the user just did.",
+      "textPreview": "Latency should not hide what the user just did.",
+      "resolvedFontSize": 35,
+      "resolvedTextStyle": {
+        "fontSize": 35,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Latency should not hide what the user just"
+          },
+          {
+            "index": 2,
+            "text": "did."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Latency should not hide what the user just did.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Latency should not hide what the user just did.",
+              "fontSize": 35,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4fu18jqh",
+      "id": "4",
+      "bbox": [
+        82,
+        272,
+        232,
+        96
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DADADA",
+      "lineWidth": 1
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/x0nuxc3y",
+      "id": "5",
+      "bbox": [
+        82,
+        272,
+        8,
+        96
+      ],
+      "geometry": "rect",
+      "fillColor": "#B7D93A",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/m94fu18j",
+      "id": "6",
+      "bbox": [
+        100,
+        286,
+        196,
+        64
+      ],
+      "geometry": "rect",
+      "text": "useMutation\noptimisticResponse",
+      "textPreview": "useMutation | optimisticResponse",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "useMutation"
+          },
+          {
+            "index": 2,
+            "text": "optimisticResponse"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "useMutation",
+          "runs": [
+            {
+              "index": 1,
+              "text": "useMutation",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "text": "optimisticResponse",
+          "runs": [
+            {
+              "index": 1,
+              "text": "optimisticResponse",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/fu18jqh0",
+      "id": "7",
+      "bbox": [
+        364,
+        272,
+        232,
+        96
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DADADA",
+      "lineWidth": 1
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/4r65wjud",
+      "id": "8",
+      "bbox": [
+        364,
+        272,
+        8,
+        96
+      ],
+      "geometry": "rect",
+      "fillColor": "#029FD6",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/xc3ylc7u",
+      "id": "9",
+      "bbox": [
+        382,
+        286,
+        196,
+        64
+      ],
+      "geometry": "rect",
+      "text": "useMutation\nupdate(cache, result)",
+      "textPreview": "useMutation | update(cache, result)",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "useMutation"
+          },
+          {
+            "index": 2,
+            "text": "update(cache, result)"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "useMutation",
+          "runs": [
+            {
+              "index": 1,
+              "text": "useMutation",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "text": "update(cache, result)",
+          "runs": [
+            {
+              "index": 1,
+              "text": "update(cache, result)",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/9cvixcze",
+      "id": "10",
+      "bbox": [
+        646,
+        272,
+        232,
+        96
+      ],
+      "geometry": "rect",
+      "fillColor": "#FFFFFF",
+      "lineColor": "#DADADA",
+      "lineWidth": 1
+    },
+    {
+      "order": 11,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/gr2p8nqx",
+      "id": "11",
+      "bbox": [
+        646,
+        272,
+        8,
+        96
+      ],
+      "geometry": "rect",
+      "fillColor": "#F1CD33",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 12,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/r65wjudg",
+      "id": "12",
+      "bbox": [
+        664,
+        286,
+        196,
+        64
+      ],
+      "geometry": "rect",
+      "text": "UI renders\nfrom cache",
+      "textPreview": "UI renders | from cache",
+      "resolvedFontSize": 16,
+      "resolvedTextStyle": {
+        "fontSize": 16,
+        "typeface": "Arial",
+        "bold": true,
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "UI renders"
+          },
+          {
+            "index": 2,
+            "text": "from cache"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "UI renders",
+          "runs": [
+            {
+              "index": 1,
+              "text": "UI renders",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "text": "from cache",
+          "runs": [
+            {
+              "index": 1,
+              "text": "from cache",
+              "fontSize": 16,
+              "typeface": "Arial",
+              "color": "#111111",
+              "bold": true
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 13,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ylc7u54z",
+      "id": "13",
+      "bbox": [
+        82,
+        416,
+        780,
+        46
+      ],
+      "geometry": "rect",
+      "text": "In the app: createPlant uses optimisticResponse, then update writes the returned edge into the room cache.",
+      "textPreview": "In the app: createPlant uses optimisticResponse, then update writes the returned edge into the room cache.",
+      "resolvedFontSize": 17,
+      "resolvedTextStyle": {
+        "fontSize": 17,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 2,
+        "lines": [
+          {
+            "index": 1,
+            "text": "In the app: createPlant uses optimisticResponse, then update writes the returned edge into the room"
+          },
+          {
+            "index": 2,
+            "text": "cache."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "In the app: createPlant uses optimisticResponse, then update writes the returned edge into the room cache.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "In the app: createPlant uses optimisticResponse, then update writes the returned edge into the room cache.",
+              "fontSize": 17,
+              "typeface": "Arial",
+              "color": "#4D4D4D"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    },
+    {
+      "order": 14,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/5o7qpg3e",
+      "id": "14",
+      "bbox": [
+        66,
+        523,
+        760,
+        12
+      ],
+      "geometry": "rect",
+      "text": "Repo cue: useMutation(CreatePlantMutation, { update }) in RoomPlantList.",
+      "textPreview": "Repo cue: useMutation(CreatePlantMutation, { update }) in RoomPlantList.",
+      "resolvedFontSize": 8.51,
+      "resolvedTextStyle": {
+        "fontSize": 8.51,
+        "typeface": "Arial",
+        "alignment": "left"
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "Repo cue: useMutation(CreatePlantMutation, { update }) in RoomPlantList."
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "Repo cue: useMutation(CreatePlantMutation, { update }) in RoomPlantList.",
+          "runs": [
+            {
+              "index": 1,
+              "text": "Repo cue: useMutation(CreatePlantMutation, { update }) in RoomPlantList.",
+              "fontSize": 8.51,
+              "typeface": "Arial",
+              "color": "#FFFFFF"
+            }
+          ]
+        }
+      ],
+      "fillColor": "rgba(0, 0, 0, 0)",
+      "lineColor": "rgba(0, 0, 0, 0)",
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

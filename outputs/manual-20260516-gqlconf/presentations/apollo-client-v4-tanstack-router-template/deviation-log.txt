@@ -1,0 +1,1 @@
+Direct source slide duplication was inspected, but the usable placeholders in the supplied template report zero-size bboxes through the headless tooling. The final deck uses full-slide rendered template frames as background images with editable text and shapes layered above them. This preserves the visual template accurately while keeping the talk content editable.

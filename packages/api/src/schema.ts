@@ -43,6 +43,9 @@ const updateRoomInputSchema = z.object({
 	id: roomIdSchema,
 	name: roomNameSchema,
 });
+const deleteRoomInputSchema = z.object({
+	id: roomIdSchema,
+});
 const createPlantInputSchema = z.object({
 	id: optionalPlantIdSchema,
 	name: plantNameSchema,
@@ -54,6 +57,9 @@ const updatePlantInputSchema = z.object({
 	name: plantNameSchema,
 	roomId: roomIdSchema,
 	species: plantSpeciesSchema,
+});
+const deletePlantInputSchema = z.object({
+	id: plantIdSchema,
 });
 const roomsArgsSchema = z.object({
 	limit: z.preprocess(
@@ -129,12 +135,20 @@ interface UpdateRoomArgs {
 	input: z.input<typeof updateRoomInputSchema>;
 }
 
+interface DeleteRoomArgs {
+	input: z.input<typeof deleteRoomInputSchema>;
+}
+
 interface CreatePlantArgs {
 	input: z.input<typeof createPlantInputSchema>;
 }
 
 interface UpdatePlantArgs {
 	input: z.input<typeof updatePlantInputSchema>;
+}
+
+interface DeletePlantArgs {
+	input: z.input<typeof deletePlantInputSchema>;
 }
 
 interface RoomArgs {
@@ -180,6 +194,10 @@ interface RoomPayload {
 	};
 }
 
+interface DeleteRoomPayload {
+	id: string;
+}
+
 interface PlantPayload {
 	plant: PlantRecord;
 	plantEdge: {
@@ -187,6 +205,11 @@ interface PlantPayload {
 		node: PlantRecord;
 	};
 	previousRoom: RoomRecord | null;
+	room: RoomRecord;
+}
+
+interface DeletePlantPayload {
+	plant: PlantRecord;
 	room: RoomRecord;
 }
 
@@ -257,6 +280,10 @@ export const typeDefs = gql`
     description: String!
   }
 
+  input DeleteRoomInput {
+    id: ID!
+  }
+
   input CreatePlantInput {
     id: ID
     roomId: ID!
@@ -269,6 +296,10 @@ export const typeDefs = gql`
     roomId: ID!
     name: String!
     species: String!
+  }
+
+  input DeletePlantInput {
+    id: ID!
   }
 
   type CreateRoomPayload {
@@ -295,6 +326,15 @@ export const typeDefs = gql`
     previousRoom: Room
   }
 
+  type DeleteRoomPayload {
+    id: ID!
+  }
+
+  type DeletePlantPayload {
+    plant: Plant!
+    room: Room!
+  }
+
   type Query {
     healthCheck: String!
     plantCareNote(id: ID!): PlantCareNote!
@@ -307,8 +347,10 @@ export const typeDefs = gql`
   type Mutation {
     createRoom(input: CreateRoomInput!): CreateRoomPayload!
     updateRoom(input: UpdateRoomInput!): UpdateRoomPayload!
+    deleteRoom(input: DeleteRoomInput!): DeleteRoomPayload!
     createPlant(input: CreatePlantInput!): CreatePlantPayload!
     updatePlant(input: UpdatePlantInput!): UpdatePlantPayload!
+    deletePlant(input: DeletePlantInput!): DeletePlantPayload!
   }
 `;
 
@@ -739,6 +781,63 @@ export const resolvers = {
 			} catch (error) {
 				return throwDuplicateRoomNameIfNeeded(error, parsedArgs.data.name);
 			}
+		},
+		deletePlant: async (
+			_parent: unknown,
+			args: DeletePlantArgs
+		): Promise<DeletePlantPayload> => {
+			const parsedArgs = deletePlantInputSchema.safeParse(args.input);
+
+			if (!parsedArgs.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedArgs.error.issues[0]?.message,
+						"Invalid plant input"
+					)
+				);
+			}
+
+			const existingPlant = requireRecord(
+				await getPlantById(parsedArgs.data.id),
+				"Plant"
+			);
+			const targetRoom = requireRecord(
+				await getRoomById(existingPlant.roomId),
+				"Room"
+			);
+
+			await db.delete(plant).where(eq(plant.id, existingPlant.id));
+
+			return {
+				plant: existingPlant,
+				room: targetRoom,
+			};
+		},
+		deleteRoom: async (
+			_parent: unknown,
+			args: DeleteRoomArgs
+		): Promise<DeleteRoomPayload> => {
+			const parsedArgs = deleteRoomInputSchema.safeParse(args.input);
+
+			if (!parsedArgs.success) {
+				throw createBadUserInputError(
+					getValidationMessage(
+						parsedArgs.error.issues[0]?.message,
+						"Invalid room input"
+					)
+				);
+			}
+
+			const existingRoom = requireRecord(
+				await getRoomById(parsedArgs.data.id),
+				"Room"
+			);
+
+			await db.delete(room).where(eq(room.id, existingRoom.id));
+
+			return {
+				id: existingRoom.id,
+			};
 		},
 		updatePlant: async (
 			_parent: unknown,

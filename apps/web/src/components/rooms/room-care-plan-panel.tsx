@@ -22,12 +22,8 @@ export const RoomCarePlanQuery = graphql(/* GraphQL */ `
 	}
 `);
 
-export type RoomCarePlanQueryRef = QueryRef<
-	DocumentType<typeof RoomCarePlanQuery>
->;
-
 interface RoomCarePlanPanelProps {
-	queryRef: RoomCarePlanQueryRef;
+	queryRef: QueryRef<DocumentType<typeof RoomCarePlanQuery>>;
 }
 
 export function RoomCarePlanPanel({ queryRef }: RoomCarePlanPanelProps) {

@@ -177,6 +177,31 @@ export const addRoomEdgeToRoomsConnection = (
 	});
 };
 
+export const removeRoomEdgeFromRoomsConnection = (
+	cache: ApolloCache,
+	roomId: string
+) => {
+	cache.modify({
+		fields: {
+			roomsConnection(
+				existing: ExistingConnection,
+				options: CacheModifierOptions
+			) {
+				if (!isConnection(existing)) {
+					return existing;
+				}
+
+				return {
+					...existing,
+					edges: (existing.edges ?? []).filter((edge) => {
+						return getEdgeNodeId(edge, options.readField) !== roomId;
+					}),
+				};
+			},
+		},
+	});
+};
+
 export const addOrReplacePlantEdgeInRoom = (
 	cache: ApolloCache,
 	roomId: string,
@@ -223,6 +248,38 @@ export const addOrReplacePlantEdgeInRoom = (
 			},
 		},
 	});
+};
+
+export const evictRoomFromCache = (cache: ApolloCache, roomId: string) => {
+	const roomCacheId = cache.identify({
+		__typename: "Room",
+		id: roomId,
+	});
+
+	cache.evict({
+		args: { id: roomId },
+		fieldName: "room",
+		id: "ROOT_QUERY",
+	});
+
+	if (roomCacheId) {
+		cache.evict({ id: roomCacheId });
+	}
+
+	cache.gc();
+};
+
+export const evictPlantFromCache = (cache: ApolloCache, plantId: string) => {
+	const plantCacheId = cache.identify({
+		__typename: "Plant",
+		id: plantId,
+	});
+
+	if (plantCacheId) {
+		cache.evict({ id: plantCacheId });
+	}
+
+	cache.gc();
 };
 
 export const removePlantEdgeFromRoom = (

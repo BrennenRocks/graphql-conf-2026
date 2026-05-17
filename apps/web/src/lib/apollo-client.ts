@@ -26,7 +26,8 @@ const roomsConnectionPagination = relayStylePagination();
 
 const dedupeConnectionEdges = <TConnection extends Connection | null>(
 	connection: TConnection,
-	readField: FieldFunctionOptions["readField"]
+	readField: FieldFunctionOptions["readField"],
+	canRead: FieldFunctionOptions["canRead"]
 ) => {
 	if (!connection?.edges) {
 		return connection;
@@ -35,7 +36,12 @@ const dedupeConnectionEdges = <TConnection extends Connection | null>(
 	const seenNodeIds = new Set<string>();
 	const edges = connection.edges.filter((edge) => {
 		const node = readField<Reference | StoreObject>("node", edge);
-		const nodeId = node ? readField<string>("id", node) : undefined;
+
+		if (!(node && canRead(node))) {
+			return false;
+		}
+
+		const nodeId = readField<string>("id", node);
 
 		if (!nodeId) {
 			return true;
@@ -86,7 +92,11 @@ const typePolicies = {
 					const connection =
 						roomsConnectionPagination.read?.(existing, options) ?? existing;
 
-					return dedupeConnectionEdges(connection, options.readField);
+					return dedupeConnectionEdges(
+						connection,
+						options.readField,
+						options.canRead
+					);
 				},
 			},
 		},
@@ -96,7 +106,11 @@ const typePolicies = {
 			plantsConnection: {
 				...relayStylePagination(),
 				read(existing, options) {
-					return dedupeConnectionEdges(existing, options.readField);
+					return dedupeConnectionEdges(
+						existing,
+						options.readField,
+						options.canRead
+					);
 				},
 			},
 		},
@@ -108,6 +122,9 @@ export const apolloClient = new ApolloClient({
 		typePolicies,
 	}),
 	link: ApolloLink.from([errorLink, httpLink]),
+	devtools: {
+		enabled: true,
+	},
 });
 
 export const preloadQuery = createQueryPreloader(apolloClient);

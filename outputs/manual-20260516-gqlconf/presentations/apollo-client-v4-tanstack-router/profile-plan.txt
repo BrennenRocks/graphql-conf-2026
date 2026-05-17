@@ -1,0 +1,18 @@
+task mode: create
+primary deck-profile: engineering-platform
+secondary gates: product-platform clarity, live-demo pacing
+required proof objects:
+- router-level preload workflow
+- cache and fragment ownership diagram
+- optimistic mutation flow
+- rerender/refetch reduction pattern
+source/asset requirements:
+- no external brand assets needed
+- technical claims checked against Apollo Client docs for useFragment, @nonreactive, and preloading
+brand authenticity constraints:
+- avoid Apollo/TanStack logos unless supplied; use text labels only
+profile-specific QA gates:
+- technical labels remain legible at thumbnail scale
+- each slide has one talk-track claim and one concrete proof object or cue
+known missing inputs:
+- exact app name and repo screenshots not provided; deck is intentionally screenshot-free for live demo support

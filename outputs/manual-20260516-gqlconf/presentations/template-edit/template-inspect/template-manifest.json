@@ -1,0 +1,147 @@
+{
+  "sourcePptx": "/Users/brennen/Downloads/graphqlconf_26_ppt.pptx",
+  "workspace": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit",
+  "outDir": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect",
+  "generatedAt": "2026-05-16T06:38:19.957Z",
+  "slideCount": 5,
+  "slideArtifacts": [
+    {
+      "slide": 1,
+      "previewPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/source-slides/source-slide-01.png",
+      "previewRelativePath": "template-inspect/source-slides/source-slide-01.png",
+      "layoutPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/layouts/source-slide-01.layout.json",
+      "layoutRelativePath": "template-inspect/layouts/source-slide-01.layout.json"
+    },
+    {
+      "slide": 2,
+      "previewPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/source-slides/source-slide-02.png",
+      "previewRelativePath": "template-inspect/source-slides/source-slide-02.png",
+      "layoutPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/layouts/source-slide-02.layout.json",
+      "layoutRelativePath": "template-inspect/layouts/source-slide-02.layout.json"
+    },
+    {
+      "slide": 3,
+      "previewPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/source-slides/source-slide-03.png",
+      "previewRelativePath": "template-inspect/source-slides/source-slide-03.png",
+      "layoutPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/layouts/source-slide-03.layout.json",
+      "layoutRelativePath": "template-inspect/layouts/source-slide-03.layout.json"
+    },
+    {
+      "slide": 4,
+      "previewPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/source-slides/source-slide-04.png",
+      "previewRelativePath": "template-inspect/source-slides/source-slide-04.png",
+      "layoutPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/layouts/source-slide-04.layout.json",
+      "layoutRelativePath": "template-inspect/layouts/source-slide-04.layout.json"
+    },
+    {
+      "slide": 5,
+      "previewPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/source-slides/source-slide-05.png",
+      "previewRelativePath": "template-inspect/source-slides/source-slide-05.png",
+      "layoutPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/layouts/source-slide-05.layout.json",
+      "layoutRelativePath": "template-inspect/layouts/source-slide-05.layout.json"
+    }
+  ],
+  "inspectPath": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/template-inspect.ndjson",
+  "inspectRelativePath": "template-inspect/template-inspect.ndjson",
+  "inspectTruncated": false,
+  "inspectMetadata": {
+    "revision": "6tpeit",
+    "target": {
+      "id": "pr/g3jb8x"
+    },
+    "kind": {
+      "requested": "slide,textbox,shape,image,table,chart",
+      "tokens": [
+        "slide",
+        "textbox",
+        "shape",
+        "image",
+        "table",
+        "chart"
+      ]
+    },
+    "include": {
+      "tokens": []
+    },
+    "exclude": {
+      "tokens": []
+    },
+    "notices": []
+  },
+  "extractedMedia": [
+    {
+      "entry": "ppt/media/image2.png",
+      "path": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/assets/ppt/media/image2.png",
+      "relativePath": "template-inspect/assets/ppt/media/image2.png",
+      "bytes": 24254
+    },
+    {
+      "entry": "ppt/media/image4.jpg",
+      "path": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/assets/ppt/media/image4.jpg",
+      "relativePath": "template-inspect/assets/ppt/media/image4.jpg",
+      "bytes": 1680615
+    },
+    {
+      "entry": "ppt/media/image1.jpg",
+      "path": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/assets/ppt/media/image1.jpg",
+      "relativePath": "template-inspect/assets/ppt/media/image1.jpg",
+      "bytes": 4129545
+    },
+    {
+      "entry": "ppt/media/image3.svg",
+      "path": "/Users/brennen/Documents/code/personal/graphql-conf/outputs/manual-20260516-gqlconf/presentations/template-edit/template-inspect/assets/ppt/media/image3.svg",
+      "relativePath": "template-inspect/assets/ppt/media/image3.svg",
+      "bytes": 31684
+    }
+  ],
+  "fonts": [
+    "+mj-ea",
+    "+mn-cs",
+    "+mn-ea",
+    "+mn-lt",
+    "Angsana New",
+    "Arial",
+    "Calibri",
+    "Calibri Light",
+    "Cordia New",
+    "DaunPenh",
+    "DengXian",
+    "DengXian Light",
+    "DokChampa",
+    "Estrangelo Edessa",
+    "Euphemia",
+    "Gautami",
+    "Helvetica Neue Light",
+    "Iskoola Pota",
+    "Kalinga",
+    "Kartika",
+    "Latha",
+    "MV Boli",
+    "Mangal",
+    "Microsoft Himalaya",
+    "Microsoft Uighur",
+    "Microsoft Yi Baiti",
+    "Mongolian Baiti",
+    "MoolBoran",
+    "Nyala",
+    "Plantagenet Cherokee",
+    "Raavi",
+    "Shruti",
+    "Sylfaen",
+    "Times New Roman",
+    "Tunga",
+    "Vrinda",
+    "Yu Gothic",
+    "Yu Gothic Light",
+    "宋体",
+    "新細明體",
+    "맑은 고딕",
+    "ＭＳ Ｐゴシック"
+  ],
+  "packageParts": {
+    "mediaCount": 4,
+    "slideXmlCount": 5,
+    "chartCount": 0,
+    "tableSlideCount": 0
+  }
+}
