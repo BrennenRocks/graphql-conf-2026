@@ -9,6 +9,9 @@ export const room = pgTable(
 		id: text("id").$defaultFn(createId).primaryKey(),
 		name: text("name").notNull().unique(),
 		description: text("description").notNull(),
+		lightProfile: text("light_profile")
+			.default("Bright indirect light")
+			.notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	(table) => [index("room_created_at_id_idx").on(table.createdAt, table.id)]

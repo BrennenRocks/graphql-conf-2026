@@ -250,6 +250,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     description: String!
+    lightProfile: String!
     plantCount: Int!
     plants: [Plant!]!
     plantsConnection(first: Int = 24, after: String): PlantConnection!
@@ -606,19 +607,55 @@ const getPlantCountLabel = (plantCount: number) => {
 	return `${plantCount} plant${plantCount === 1 ? "" : "s"}`;
 };
 
-const createRoomCareTips = (plantCount: number) => {
-	if (plantCount === 0) {
-		return [
-			"Add one plant before creating a care routine.",
-			"Choose a spot with steady light and easy watering access.",
-		];
+const emptyRoomCareTips = [
+	"Add one plant before creating a care routine.",
+	"Choose a spot with steady light and easy watering access.",
+	"Start with one hardy plant so the room's light pattern is easy to learn.",
+	"Keep the first plant near the room's most consistent light source.",
+	"Leave space for future plants before filling shelves or window ledges.",
+] as const;
+
+const plantedRoomCareTips = [
+	"Check light and soil moisture before watering.",
+	"Group plants with similar watering needs together.",
+	"Rotate plants every few weeks so growth stays even.",
+	"Wipe broad leaves when dust starts blocking light.",
+	"Move thirsty plants closer to the easiest watering path.",
+	"Inspect leaf edges weekly for early signs of dry air.",
+	"Keep trailing plants clear of vents and door swings.",
+	"Adjust watering after long cloudy stretches or heat waves.",
+	"Place new plants near similar species before changing the room layout.",
+	"Review the room once a month for crowding, pests, and uneven growth.",
+] as const;
+
+const getCareTipOffset = (roomId: string) => {
+	let offset = 0;
+
+	for (const character of roomId) {
+		offset += character.charCodeAt(0);
 	}
 
-	return [
-		"Check light and soil moisture before watering.",
-		"Group plants with similar watering needs together.",
-		"Rotate plants every few weeks so growth stays even.",
-	];
+	return offset;
+};
+
+const selectCareTips = (
+	tips: readonly string[],
+	offset: number,
+	tipCount: number
+) => {
+	return Array.from({ length: tipCount }, (_, index) => {
+		return tips[(offset + index) % tips.length] ?? tips[0];
+	});
+};
+
+const createRoomCareTips = (plantCount: number, roomId: string) => {
+	const offset = getCareTipOffset(roomId);
+
+	if (plantCount === 0) {
+		return selectCareTips(emptyRoomCareTips, offset, 2);
+	}
+
+	return selectCareTips(plantedRoomCareTips, offset + plantCount, 3);
 };
 
 const encodePlantConnectionCursor = (plantRecord: PlantRecord) => {
@@ -994,7 +1031,7 @@ export const resolvers = {
 			return {
 				roomId: roomRecord.id,
 				summary: `${roomRecord.name} has ${getPlantCountLabel(plantCount)} to keep on schedule.`,
-				tips: createRoomCareTips(plantCount),
+				tips: createRoomCareTips(plantCount, roomRecord.id),
 			};
 		},
 		rooms: async (_parent: unknown, args: RoomsArgs) => {

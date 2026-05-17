@@ -1,0 +1,1 @@
+ALTER TABLE "room" ADD COLUMN "light_profile" text DEFAULT 'Bright indirect light' NOT NULL;

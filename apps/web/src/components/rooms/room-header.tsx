@@ -26,6 +26,7 @@ export const RoomHeaderFragment = graphql(/* GraphQL */ `
 		id
 		name
 		description
+		lightProfile
 	}
 `);
 
@@ -128,7 +129,7 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 			</CardHeader>
 			<CardContent>
 				<p className="text-[0.7rem] text-muted-foreground uppercase tracking-[0.2em]">
-					Room Overview
+					{data.lightProfile}
 				</p>
 			</CardContent>
 		</Card>

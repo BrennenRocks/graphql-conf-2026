@@ -67,10 +67,11 @@ export type QueryFieldPolicy = {
 	rooms?: FieldPolicy<any> | FieldReadFunction<any>,
 	roomsConnection?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type RoomKeySpecifier = ('description' | 'id' | 'name' | 'plantCount' | 'plants' | 'plantsConnection' | RoomKeySpecifier)[];
+export type RoomKeySpecifier = ('description' | 'id' | 'lightProfile' | 'name' | 'plantCount' | 'plants' | 'plantsConnection' | RoomKeySpecifier)[];
 export type RoomFieldPolicy = {
 	description?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	lightProfile?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantCount?: FieldPolicy<any> | FieldReadFunction<any>,
 	plants?: FieldPolicy<any> | FieldReadFunction<any>,

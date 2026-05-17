@@ -25,6 +25,7 @@ interface SeedPlant {
 interface SeedRoom {
 	description: string;
 	id: string;
+	lightProfile: string;
 	name: string;
 	plants: SeedPlant[];
 }
@@ -33,6 +34,7 @@ const defaultSeedRooms = [
 	{
 		description: "A bright gathering room with steady indirect light.",
 		id: "00000000-0000-4000-8000-000000000001",
+		lightProfile: "Bright indirect light",
 		name: "Living Room",
 		plants: [
 			{
@@ -50,6 +52,7 @@ const defaultSeedRooms = [
 	{
 		description: "A calm workspace with morning sun near the desk.",
 		id: "00000000-0000-4000-8000-000000000002",
+		lightProfile: "Morning sun",
 		name: "Office",
 		plants: [
 			{
@@ -67,6 +70,7 @@ const defaultSeedRooms = [
 	{
 		description: "A humid room that works well for moisture-loving plants.",
 		id: "00000000-0000-4000-8000-000000000003",
+		lightProfile: "Humid filtered light",
 		name: "Bathroom",
 		plants: [
 			{
@@ -79,6 +83,7 @@ const defaultSeedRooms = [
 	{
 		description: "A warm cooking space with a sunny windowsill.",
 		id: "00000000-0000-4000-8000-000000000004",
+		lightProfile: "Sunny windowsill",
 		name: "Kitchen",
 		plants: [
 			{
@@ -96,6 +101,7 @@ const defaultSeedRooms = [
 	{
 		description: "A quiet sleeping space with soft filtered light.",
 		id: "00000000-0000-4000-8000-000000000005",
+		lightProfile: "Soft filtered light",
 		name: "Bedroom",
 		plants: [
 			{
@@ -110,27 +116,103 @@ const defaultSeedRooms = [
 const roomTemplates = [
 	{
 		description: "A bright gathering room with steady indirect light.",
+		lightProfile: "Bright indirect light",
 		name: "Living Room",
 	},
 	{
 		description: "A calm workspace with morning sun near the desk.",
+		lightProfile: "Morning sun",
 		name: "Office",
 	},
 	{
 		description: "A humid room that works well for moisture-loving plants.",
+		lightProfile: "Humid filtered light",
 		name: "Bathroom",
 	},
 	{
 		description: "A warm cooking space with a sunny windowsill.",
+		lightProfile: "Sunny windowsill",
 		name: "Kitchen",
 	},
 	{
 		description: "A quiet sleeping space with soft filtered light.",
+		lightProfile: "Soft filtered light",
 		name: "Bedroom",
 	},
 	{
 		description: "A compact room with flexible light for hardy plants.",
+		lightProfile: "Flexible indirect light",
 		name: "Plant Room",
+	},
+	{
+		description: "A glassy corner room with strong afternoon brightness.",
+		lightProfile: "Afternoon direct light",
+		name: "Sunroom",
+	},
+	{
+		description: "A sheltered entry space with short bursts of daylight.",
+		lightProfile: "Low indirect light",
+		name: "Entryway",
+	},
+	{
+		description: "A quiet reading nook with a north-facing window.",
+		lightProfile: "Cool north light",
+		name: "Library",
+	},
+	{
+		description: "A finished basement room with stable temperatures.",
+		lightProfile: "Supplemental grow light",
+		name: "Basement",
+	},
+	{
+		description: "A laundry area with warm air and occasional humidity.",
+		lightProfile: "Warm filtered light",
+		name: "Laundry Room",
+	},
+	{
+		description: "A dining space with bright midday exposure.",
+		lightProfile: "Midday bright light",
+		name: "Dining Room",
+	},
+	{
+		description: "A hallway landing with gentle ambient light.",
+		lightProfile: "Gentle ambient light",
+		name: "Landing",
+	},
+	{
+		description: "A nursery corner with soft curtains and calm airflow.",
+		lightProfile: "Diffused curtain light",
+		name: "Nursery",
+	},
+	{
+		description: "A studio space with broad windows and dry air.",
+		lightProfile: "Bright west light",
+		name: "Studio",
+	},
+	{
+		description: "A guest room with steady shade through the afternoon.",
+		lightProfile: "Steady shaded light",
+		name: "Guest Room",
+	},
+	{
+		description: "A breakfast area with quick morning brightness.",
+		lightProfile: "East-facing morning light",
+		name: "Breakfast Nook",
+	},
+	{
+		description: "A mudroom with cooler drafts near the back door.",
+		lightProfile: "Cool low light",
+		name: "Mudroom",
+	},
+	{
+		description: "A loft with high ceilings and changing daylight.",
+		lightProfile: "Variable overhead light",
+		name: "Loft",
+	},
+	{
+		description: "A porch room protected from harsh sun and wind.",
+		lightProfile: "Covered porch light",
+		name: "Porch",
 	},
 ] as const;
 
@@ -258,7 +340,7 @@ const parseSeedOptions = (
 };
 
 const getRoomTemplate = (index: number) => {
-	return roomTemplates[index] ?? roomTemplates.at(-1);
+	return roomTemplates[index % roomTemplates.length];
 };
 
 const getPlantTemplate = (index: number) => {
@@ -314,6 +396,7 @@ const buildGeneratedSeedRooms = ({
 		return {
 			description: template.description,
 			id: createSeedId(roomIndex + 1),
+			lightProfile: template.lightProfile,
 			name:
 				roomIndex < roomTemplates.length - 1
 					? template.name
@@ -375,6 +458,7 @@ try {
 				seedRooms.map((seedRoom) => ({
 					description: seedRoom.description,
 					id: seedRoom.id,
+					lightProfile: seedRoom.lightProfile,
 					name: seedRoom.name,
 				}))
 			);
