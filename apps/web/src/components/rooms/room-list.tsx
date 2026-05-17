@@ -195,6 +195,7 @@ export function RoomList({
 									isActive={room.id === selectedRoomId}
 									key={room.id}
 									room={room}
+									roomId={room.id}
 								/>
 							);
 						})}

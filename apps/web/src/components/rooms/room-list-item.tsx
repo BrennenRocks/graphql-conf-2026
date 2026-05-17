@@ -8,7 +8,7 @@ import {
 } from "@graphql-conf/ui/components/card";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
-import { Suspense, useState } from "react";
+import { memo, Suspense, useState } from "react";
 
 import { graphql } from "@/__gql__";
 import type { FragmentType } from "@/__gql__/fragment-masking";
@@ -32,9 +32,13 @@ export const RoomListItemFragment = graphql(/* GraphQL */ `
 interface RoomListItemProps {
 	isActive: boolean;
 	room: FragmentType<typeof RoomListItemFragment>;
+	roomId: string;
 }
 
-export function RoomListItem({ isActive, room }: RoomListItemProps) {
+export const RoomListItem = memo(function RoomListItem({
+	isActive,
+	room,
+}: RoomListItemProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const { data } = useSuspenseFragment({
 		fragment: RoomListItemFragment,
@@ -113,5 +117,15 @@ export function RoomListItem({ isActive, room }: RoomListItemProps) {
 				)}
 			</CardContent>
 		</Card>
+	);
+}, areRoomListItemPropsEqual);
+
+function areRoomListItemPropsEqual(
+	previousProps: RoomListItemProps,
+	nextProps: RoomListItemProps
+) {
+	return (
+		previousProps.isActive === nextProps.isActive &&
+		previousProps.roomId === nextProps.roomId
 	);
 }
