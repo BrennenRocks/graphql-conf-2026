@@ -11,7 +11,7 @@ export const Route = createRootRoute({
 	head: () => ({
 		meta: [
 			{
-				title: "graphql-conf",
+				title: "Plant Rooms",
 			},
 			{
 				name: "description",
