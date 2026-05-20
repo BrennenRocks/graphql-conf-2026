@@ -18,7 +18,8 @@ type Documents = {
     "\n\tfragment PlantListItem_plant on Plant {\n\t\tid\n\t\troomId\n\t\tname\n\t\tspecies\n\t}\n": typeof types.PlantListItem_PlantFragmentDoc,
     "\n\tfragment RoomPlantCount_room on Room {\n\t\tplantCount\n\t}\n": typeof types.RoomPlantCount_RoomFragmentDoc,
     "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n": typeof types.RoomCarePlanQueryDocument,
-    "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tlightProfile\n\t}\n": typeof types.RoomHeader_RoomFragmentDoc,
+    "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t}\n": typeof types.RoomHeader_RoomFragmentDoc,
+    "\n\tfragment RoomLightProfile_room on Room {\n\t\tlightProfile\n\t}\n": typeof types.RoomLightProfile_RoomFragmentDoc,
     "\n\tfragment RoomListItem_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t}\n": typeof types.RoomListItem_RoomFragmentDoc,
     "\n\tmutation CreateRoomMutation($input: CreateRoomInput!) {\n\t\tcreateRoom(input: $input) {\n\t\t\troom {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tdescription\n\t\t\t\tplantCount\n\t\t\t}\n\t\t\troomEdge {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t\tdescription\n\t\t\t\t\tplantCount\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": typeof types.CreateRoomMutationDocument,
     "\n\tmutation UpdateRoomMutation($input: UpdateRoomInput!) {\n\t\tupdateRoom(input: $input) {\n\t\t\troom {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tdescription\n\t\t\t\tplantCount\n\t\t\t}\n\t\t\troomEdge {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t\tdescription\n\t\t\t\t\tplantCount\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": typeof types.UpdateRoomMutationDocument,
@@ -33,14 +34,15 @@ type Documents = {
     "\n\tfragment PlantDeleteOptimisticResponse_plant on Plant {\n\t\tid\n\t\tname\n\t\troomId\n\t\tspecies\n\t}\n": typeof types.PlantDeleteOptimisticResponse_PlantFragmentDoc,
     "\n\tfragment PlantUpdateOptimisticResponse_plant on Plant {\n\t\tid\n\t\tname\n\t\troomId\n\t\tspecies\n\t}\n": typeof types.PlantUpdateOptimisticResponse_PlantFragmentDoc,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": typeof types.HomeRouteQueryDocument,
-    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n": typeof types.RoomDetailRouteQueryDocument,
+    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomLightProfile_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n": typeof types.RoomDetailRouteQueryDocument,
 };
 const documents: Documents = {
     "\n\tquery PlantCareNoteQuery($id: ID!) {\n\t\tplantCareNote(id: $id) {\n\t\t\tid\n\t\t\tname\n\t\t\tspecies\n\t\t\tnote\n\t\t}\n\t}\n": types.PlantCareNoteQueryDocument,
     "\n\tfragment PlantListItem_plant on Plant {\n\t\tid\n\t\troomId\n\t\tname\n\t\tspecies\n\t}\n": types.PlantListItem_PlantFragmentDoc,
     "\n\tfragment RoomPlantCount_room on Room {\n\t\tplantCount\n\t}\n": types.RoomPlantCount_RoomFragmentDoc,
     "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\troomCarePlan(id: $id) {\n\t\t\troomId\n\t\t\tsummary\n\t\t\ttips\n\t\t}\n\t}\n": types.RoomCarePlanQueryDocument,
-    "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tlightProfile\n\t}\n": types.RoomHeader_RoomFragmentDoc,
+    "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t}\n": types.RoomHeader_RoomFragmentDoc,
+    "\n\tfragment RoomLightProfile_room on Room {\n\t\tlightProfile\n\t}\n": types.RoomLightProfile_RoomFragmentDoc,
     "\n\tfragment RoomListItem_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t}\n": types.RoomListItem_RoomFragmentDoc,
     "\n\tmutation CreateRoomMutation($input: CreateRoomInput!) {\n\t\tcreateRoom(input: $input) {\n\t\t\troom {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tdescription\n\t\t\t\tplantCount\n\t\t\t}\n\t\t\troomEdge {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t\tdescription\n\t\t\t\t\tplantCount\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.CreateRoomMutationDocument,
     "\n\tmutation UpdateRoomMutation($input: UpdateRoomInput!) {\n\t\tupdateRoom(input: $input) {\n\t\t\troom {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tdescription\n\t\t\t\tplantCount\n\t\t\t}\n\t\t\troomEdge {\n\t\t\t\tcursor\n\t\t\t\tnode {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t\tdescription\n\t\t\t\t\tplantCount\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.UpdateRoomMutationDocument,
@@ -55,7 +57,7 @@ const documents: Documents = {
     "\n\tfragment PlantDeleteOptimisticResponse_plant on Plant {\n\t\tid\n\t\tname\n\t\troomId\n\t\tspecies\n\t}\n": types.PlantDeleteOptimisticResponse_PlantFragmentDoc,
     "\n\tfragment PlantUpdateOptimisticResponse_plant on Plant {\n\t\tid\n\t\tname\n\t\troomId\n\t\tspecies\n\t}\n": types.PlantUpdateOptimisticResponse_PlantFragmentDoc,
     "\n  query HomeRouteQuery {\n    healthCheck\n  }\n": types.HomeRouteQueryDocument,
-    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n": types.RoomDetailRouteQueryDocument,
+    "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomLightProfile_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n": types.RoomDetailRouteQueryDocument,
 };
 
 /**
@@ -91,7 +93,11 @@ export function graphql(source: "\n\tquery RoomCarePlanQuery($id: ID!) {\n\t\tro
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tlightProfile\n\t}\n"): (typeof documents)["\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t\tlightProfile\n\t}\n"];
+export function graphql(source: "\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t}\n"): (typeof documents)["\n\tfragment RoomHeader_room on Room {\n\t\tid\n\t\tname\n\t\tdescription\n\t}\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n\tfragment RoomLightProfile_room on Room {\n\t\tlightProfile\n\t}\n"): (typeof documents)["\n\tfragment RoomLightProfile_room on Room {\n\t\tlightProfile\n\t}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -151,7 +157,7 @@ export function graphql(source: "\n  query HomeRouteQuery {\n    healthCheck\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n"];
+export function graphql(source: "\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomLightProfile_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery RoomDetailRouteQuery($id: ID!) {\n\t\troom(id: $id) {\n\t\t\tid\n\t\t\t...RoomHeader_room @nonreactive\n\t\t\t...RoomLightProfile_room @nonreactive\n\t\t\t...RoomPlantCountBadge_room @nonreactive\n\t\t}\n\t}\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

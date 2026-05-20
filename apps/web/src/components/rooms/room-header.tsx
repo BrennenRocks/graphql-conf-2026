@@ -14,6 +14,7 @@ import type { FallbackProps } from "react-error-boundary";
 import { graphql } from "@/__gql__";
 import { ErrorState } from "@/components/shared/error-state";
 import { RoomForm } from "./room-form";
+import { RoomLightProfile } from "./room-light-profile";
 import {
 	RoomPlantCountBadge,
 	RoomPlantCountBadgeSkeleton,
@@ -26,7 +27,6 @@ export const RoomHeaderFragment = graphql(/* GraphQL */ `
 		id
 		name
 		description
-		lightProfile
 	}
 `);
 
@@ -128,9 +128,9 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<p className="text-[0.7rem] text-muted-foreground uppercase tracking-[0.2em]">
-					{data.lightProfile}
-				</p>
+				<Suspense fallback={<RoomLightProfile.Skeleton />}>
+					<RoomLightProfile roomId={data.id} />
+				</Suspense>
 			</CardContent>
 		</Card>
 	);
@@ -150,7 +150,7 @@ function RoomHeaderSkeleton() {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<Skeleton className="h-3 w-28" />
+				<RoomLightProfile.Skeleton />
 			</CardContent>
 		</Card>
 	);

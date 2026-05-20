@@ -352,7 +352,7 @@ function RoomPlantListSkeleton() {
 	return (
 		<Card className="border border-border/80 bg-card/80">
 			<CardHeader>
-				<Skeleton className="h-6 w-20" />
+				<CardTitle>Plants</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<RoomPlantListPlantsSkeleton />

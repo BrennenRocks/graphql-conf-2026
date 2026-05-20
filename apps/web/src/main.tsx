@@ -2,8 +2,6 @@ import { ApolloProvider } from "@apollo/client/react";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 import { scan } from "react-scan";
-
-import Loader from "./components/loader";
 import { apolloClient } from "./lib/apollo-client";
 import { routeTree } from "./routeTree.gen";
 
@@ -13,7 +11,6 @@ scan({
 
 const router = createRouter({
 	defaultPreload: "intent",
-	defaultPendingComponent: () => <Loader />,
 	routeTree,
 	Wrap({ children }: { children: React.ReactNode }) {
 		return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
