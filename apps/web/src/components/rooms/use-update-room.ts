@@ -1,7 +1,19 @@
 import { useApolloClient, useMutation } from "@apollo/client/react";
-
+import { graphql } from "@/__gql__";
 import { readRoomPlantCount } from "./room-cache";
-import { UpdateRoomMutation } from "./room-operations";
+
+const UpdateRoomMutation = graphql(/* GraphQL */ `
+	mutation UpdateRoomMutation($input: UpdateRoomInput!) {
+		updateRoom(input: $input) {
+			room {
+				id
+				name
+				description
+				plantCount
+			}
+		}
+	}
+`);
 
 export function useUpdateRoom() {
 	const apolloClient = useApolloClient();
@@ -21,17 +33,6 @@ export function useUpdateRoom() {
 						id,
 						name,
 						plantCount,
-					},
-					roomEdge: {
-						__typename: "RoomEdge",
-						cursor: `optimistic-room-${id}`,
-						node: {
-							__typename: "Room",
-							description,
-							id,
-							name,
-							plantCount,
-						},
 					},
 				},
 			} as const;

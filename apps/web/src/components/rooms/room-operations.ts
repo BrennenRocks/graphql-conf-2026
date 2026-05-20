@@ -1,27 +1,5 @@
 import { graphql } from "@/__gql__";
 
-export const UpdateRoomMutation = graphql(/* GraphQL */ `
-	mutation UpdateRoomMutation($input: UpdateRoomInput!) {
-		updateRoom(input: $input) {
-			room {
-				id
-				name
-				description
-				plantCount
-			}
-			roomEdge {
-				cursor
-				node {
-					id
-					name
-					description
-					plantCount
-				}
-			}
-		}
-	}
-`);
-
 export const DeleteRoomMutation = graphql(/* GraphQL */ `
 	mutation DeleteRoomMutation($input: DeleteRoomInput!) {
 		deleteRoom(input: $input) {
