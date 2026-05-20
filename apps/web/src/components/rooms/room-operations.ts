@@ -38,36 +38,6 @@ export const CreatePlantMutation = graphql(/* GraphQL */ `
 	}
 `);
 
-export const UpdatePlantMutation = graphql(/* GraphQL */ `
-	mutation UpdatePlantMutation($input: UpdatePlantInput!) {
-		updatePlant(input: $input) {
-			plant {
-				id
-				roomId
-				name
-				species
-			}
-			plantEdge {
-				cursor
-				node {
-					id
-					roomId
-					name
-					species
-				}
-			}
-			room {
-				id
-				plantCount
-			}
-			previousRoom {
-				id
-				plantCount
-			}
-		}
-	}
-`);
-
 export const DeletePlantMutation = graphql(/* GraphQL */ `
 	mutation DeletePlantMutation($input: DeletePlantInput!) {
 		deletePlant(input: $input) {

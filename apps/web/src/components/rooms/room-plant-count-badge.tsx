@@ -39,7 +39,7 @@ export function RoomPlantCountBadge({
 	);
 }
 
-export function RoomPlantCountBadgeSkeleton({
+function RoomPlantCountBadgeSkeleton({
 	size = "md",
 }: Pick<RoomPlantCountBadgeProps, "size">) {
 	return (
@@ -48,3 +48,5 @@ export function RoomPlantCountBadgeSkeleton({
 		/>
 	);
 }
+
+RoomPlantCountBadge.Skeleton = RoomPlantCountBadgeSkeleton;

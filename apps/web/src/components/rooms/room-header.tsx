@@ -15,10 +15,7 @@ import { graphql } from "@/__gql__";
 import { ErrorState } from "@/components/shared/error-state";
 import { RoomForm } from "./room-form";
 import { RoomLightProfile } from "./room-light-profile";
-import {
-	RoomPlantCountBadge,
-	RoomPlantCountBadgeSkeleton,
-} from "./room-plant-count-badge";
+import { RoomPlantCountBadge } from "./room-plant-count-badge";
 import { useDeleteRoom } from "./use-delete-room";
 import { useUpdateRoom } from "./use-update-room";
 
@@ -103,7 +100,7 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 						)}
 					</div>
 					<div className="flex items-center gap-2">
-						<Suspense fallback={<RoomPlantCountBadgeSkeleton />}>
+						<Suspense fallback={<RoomPlantCountBadge.Skeleton />}>
 							<RoomPlantCountBadge roomId={data.id} />
 						</Suspense>
 						<Button

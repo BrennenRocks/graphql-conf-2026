@@ -15,10 +15,7 @@ import type { FragmentType } from "@/__gql__/fragment-masking";
 import { cn } from "@/lib/utils";
 
 import { RoomForm } from "./room-form";
-import {
-	RoomPlantCountBadge,
-	RoomPlantCountBadgeSkeleton,
-} from "./room-plant-count-badge";
+import { RoomPlantCountBadge } from "./room-plant-count-badge";
 import { useUpdateRoom } from "./use-update-room";
 
 export const RoomListItemFragment = graphql(/* GraphQL */ `
@@ -80,7 +77,7 @@ export const RoomListItem = memo(function RoomListItem({
 						<CardTitle className="text-base">{data.name}</CardTitle>
 					</Link>
 					<div className="flex items-center gap-2">
-						<Suspense fallback={<RoomPlantCountBadgeSkeleton size="sm" />}>
+						<Suspense fallback={<RoomPlantCountBadge.Skeleton size="sm" />}>
 							<RoomPlantCountBadge roomId={data.id} size="sm" />
 						</Suspense>
 						<Button

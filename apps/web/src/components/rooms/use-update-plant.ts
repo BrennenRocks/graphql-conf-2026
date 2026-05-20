@@ -1,12 +1,41 @@
 import { gql } from "@apollo/client";
 import { useApolloClient, useMutation } from "@apollo/client/react";
-
+import { graphql } from "@/__gql__";
 import {
 	addOrReplacePlantEdgeInRoom,
 	readRoomPlantCount,
 	removePlantEdgeFromRoom,
 } from "./room-cache";
-import { UpdatePlantMutation } from "./room-operations";
+
+const UpdatePlantMutation = graphql(/* GraphQL */ `
+	mutation UpdatePlantMutation($input: UpdatePlantInput!) {
+		updatePlant(input: $input) {
+			plant {
+				id
+				roomId
+				name
+				species
+			}
+			plantEdge {
+				cursor
+				node {
+					id
+					roomId
+					name
+					species
+				}
+			}
+			room {
+				id
+				plantCount
+			}
+			previousRoom {
+				id
+				plantCount
+			}
+		}
+	}
+`);
 
 interface UpdatePlantOptimisticResponsePlant {
 	id: string;
