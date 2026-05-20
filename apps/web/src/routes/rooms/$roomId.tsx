@@ -17,7 +17,9 @@ const RoomDetailRouteQuery = graphql(/* GraphQL */ `
 	query RoomDetailRouteQuery($id: ID!) {
 		room(id: $id) {
 			id
-			...RoomHeader_room @nonreactive
+			...RoomTitle_room @nonreactive
+			...RoomDescription_room @nonreactive
+			...RoomForm_room @nonreactive
 			...RoomLightProfile_room @nonreactive
 			...RoomPlantCountBadge_room @nonreactive
 		}
@@ -42,7 +44,6 @@ export const Route = createFileRoute("/rooms/$roomId")({
 export function RoomDetail() {
 	const { carePlanQueryRef, roomDetailQueryRef } = Route.useLoaderData();
 	const { data } = useReadQuery(roomDetailQueryRef);
-	console.log({ data });
 	const roomId = data?.room?.id;
 
 	if (!roomId) {

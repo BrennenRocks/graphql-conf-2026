@@ -1,46 +1,32 @@
-import { useSuspenseFragment } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
-	CardTitle,
 } from "@graphql-conf/ui/components/card";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
-import { memo, Suspense, useState } from "react";
+import { memo, Suspense, useId, useState } from "react";
 
-import { graphql } from "@/__gql__";
-import type { FragmentType } from "@/__gql__/fragment-masking";
 import { cn } from "@/lib/utils";
-
+import { RoomDescription } from "./room-description";
 import { RoomForm } from "./room-form";
 import { RoomPlantCountBadge } from "./room-plant-count-badge";
+import { RoomTitle } from "./room-title";
 import { useUpdateRoom } from "./use-update-room";
-
-export const RoomListItemFragment = graphql(/* GraphQL */ `
-	fragment RoomListItem_room on Room {
-		id
-		name
-		description
-	}
-`);
 
 interface RoomListItemProps {
 	isActive: boolean;
-	room: FragmentType<typeof RoomListItemFragment>;
 	roomId: string;
 }
 
 export const RoomListItem = memo(function RoomListItem({
 	isActive,
-	room,
+	roomId,
 }: RoomListItemProps) {
+	const titleId = useId();
+	const editLabelId = useId();
 	const [isEditing, setIsEditing] = useState(false);
-	const { data } = useSuspenseFragment({
-		fragment: RoomListItemFragment,
-		from: room,
-	});
 	const [updateRoom, { loading: isUpdatingRoom }] = useUpdateRoom();
 
 	const handleUpdateRoom = async (values: {
@@ -51,7 +37,7 @@ export const RoomListItem = memo(function RoomListItem({
 			variables: {
 				input: {
 					description: values.description,
-					id: data.id,
+					id: roomId,
 					name: values.name,
 				},
 			},
@@ -69,23 +55,22 @@ export const RoomListItem = memo(function RoomListItem({
 		>
 			<CardHeader className="gap-2">
 				<div className="flex items-start justify-between gap-3">
-					<Link
-						params={{ roomId: data.id }}
-						preload="intent"
-						to="/rooms/$roomId"
-					>
-						<CardTitle className="text-base">{data.name}</CardTitle>
+					<Link params={{ roomId }} preload="intent" to="/rooms/$roomId">
+						<RoomTitle className="text-base" id={titleId} roomId={roomId} />
 					</Link>
 					<div className="flex items-center gap-2">
 						<Suspense fallback={<RoomPlantCountBadge.Skeleton size="sm" />}>
-							<RoomPlantCountBadge roomId={data.id} size="sm" />
+							<RoomPlantCountBadge roomId={roomId} size="sm" />
 						</Suspense>
 						<Button
-							aria-label={`Edit ${data.name}`}
+							aria-labelledby={`${editLabelId} ${titleId}`}
 							onClick={() => setIsEditing((isOpen) => !isOpen)}
 							size="icon-sm"
 							variant="ghost"
 						>
+							<span className="sr-only" id={editLabelId}>
+								Edit
+							</span>
 							<Pencil />
 						</Button>
 					</div>
@@ -94,22 +79,18 @@ export const RoomListItem = memo(function RoomListItem({
 			<CardContent>
 				{isEditing ? (
 					<RoomForm
-						defaultValues={{
-							description: data.description,
-							name: data.name,
-						}}
 						isSubmitting={isUpdatingRoom}
 						onCancel={() => setIsEditing(false)}
 						onSubmit={(values) => handleUpdateRoom(values)}
+						roomId={roomId}
 						submitLabel="Save room"
 					/>
 				) : (
-					<Link
-						params={{ roomId: data.id }}
-						preload="intent"
-						to="/rooms/$roomId"
-					>
-						<p className="text-muted-foreground text-sm">{data.description}</p>
+					<Link params={{ roomId }} preload="intent" to="/rooms/$roomId">
+						<RoomDescription
+							className="text-muted-foreground text-sm"
+							roomId={roomId}
+						/>
 					</Link>
 				)}
 			</CardContent>

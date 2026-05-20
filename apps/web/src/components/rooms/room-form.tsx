@@ -1,35 +1,83 @@
+import { useSuspenseFragment } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import { Input } from "@graphql-conf/ui/components/input";
 import { Label } from "@graphql-conf/ui/components/label";
 import { Loader2 } from "lucide-react";
 import { useEffect, useId } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
+import { graphql } from "@/__gql__";
 
 interface RoomFormValues {
 	description: string;
 	name: string;
 }
 
-interface RoomFormProps {
-	defaultValues?: RoomFormValues;
+export const RoomFormFragment = graphql(/* GraphQL */ `
+	fragment RoomForm_room on Room {
+		id
+		name
+		description
+	}
+`);
+
+interface BaseRoomFormProps {
 	isSubmitting: boolean;
 	onCancel?: () => void;
 	onSubmit: (values: RoomFormValues) => Promise<void> | void;
 	submitLabel: string;
 }
 
+type RoomFormProps =
+	| (BaseRoomFormProps & {
+			roomId: string;
+	  })
+	| (BaseRoomFormProps & {
+			roomId?: never;
+	  });
+
 const emptyRoomFormValues = {
 	description: "",
 	name: "",
 } satisfies RoomFormValues;
 
-export function RoomForm({
-	defaultValues = emptyRoomFormValues,
+export function RoomForm(props: RoomFormProps) {
+	if (props.roomId) {
+		return <RoomEditForm {...props} roomId={props.roomId} />;
+	}
+
+	return <RoomFormFields {...props} defaultValues={emptyRoomFormValues} />;
+}
+
+function RoomEditForm({
+	roomId,
+	...props
+}: BaseRoomFormProps & { roomId: string }) {
+	const { data } = useSuspenseFragment({
+		fragment: RoomFormFragment,
+		from: {
+			__typename: "Room",
+			id: roomId,
+		},
+	});
+
+	return (
+		<RoomFormFields
+			{...props}
+			defaultValues={{
+				description: data.description,
+				name: data.name,
+			}}
+		/>
+	);
+}
+
+function RoomFormFields({
+	defaultValues,
 	isSubmitting,
 	onCancel,
 	onSubmit,
 	submitLabel,
-}: RoomFormProps) {
+}: BaseRoomFormProps & { defaultValues: RoomFormValues }) {
 	const id = useId();
 	const { description: defaultDescription, name: defaultName } = defaultValues;
 	const {

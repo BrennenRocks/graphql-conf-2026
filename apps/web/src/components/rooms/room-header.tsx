@@ -1,45 +1,32 @@
-import { useSuspenseFragment } from "@apollo/client/react";
 import { Button } from "@graphql-conf/ui/components/button";
 import {
 	Card,
 	CardContent,
 	CardHeader,
-	CardTitle,
 } from "@graphql-conf/ui/components/card";
 import { Skeleton } from "@graphql-conf/ui/components/skeleton";
 import { Pencil, Trash2 } from "lucide-react";
-import { Suspense, useState } from "react";
+import { Suspense, useId, useState } from "react";
 import type { FallbackProps } from "react-error-boundary";
 
-import { graphql } from "@/__gql__";
 import { ErrorState } from "@/components/shared/error-state";
+import { RoomDescription } from "./room-description";
 import { RoomForm } from "./room-form";
 import { RoomLightProfile } from "./room-light-profile";
 import { RoomPlantCountBadge } from "./room-plant-count-badge";
+import { RoomTitle } from "./room-title";
 import { useDeleteRoom } from "./use-delete-room";
 import { useUpdateRoom } from "./use-update-room";
-
-export const RoomHeaderFragment = graphql(/* GraphQL */ `
-	fragment RoomHeader_room on Room {
-		id
-		name
-		description
-	}
-`);
 
 interface RoomHeaderProps {
 	roomId: string;
 }
 
 export function RoomHeader({ roomId }: RoomHeaderProps) {
+	const titleId = useId();
+	const editLabelId = useId();
+	const deleteLabelId = useId();
 	const [isEditing, setIsEditing] = useState(false);
-	const { data } = useSuspenseFragment({
-		fragment: RoomHeaderFragment,
-		from: {
-			__typename: "Room",
-			id: roomId,
-		},
-	});
 	const [updateRoom, { loading: isUpdatingRoom }] = useUpdateRoom();
 	const [deleteRoom, { loading: isDeletingRoom }] = useDeleteRoom();
 
@@ -51,7 +38,7 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 			variables: {
 				input: {
 					description: values.description,
-					id: data.id,
+					id: roomId,
 					name: values.name,
 				},
 			},
@@ -63,7 +50,7 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 		await deleteRoom({
 			variables: {
 				input: {
-					id: data.id,
+					id: roomId,
 				},
 			},
 		});
@@ -78,47 +65,54 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 							Plant Room
 						</p>
 						{isEditing ? (
-							<div className="w-full min-w-[min(20rem,100%)] max-w-xl rounded-md border border-border/80 bg-background/70 p-3">
-								<RoomForm
-									defaultValues={{
-										description: data.description,
-										name: data.name,
-									}}
-									isSubmitting={isUpdatingRoom}
-									onCancel={() => setIsEditing(false)}
-									onSubmit={(values) => handleUpdateRoom(values)}
-									submitLabel="Save room"
-								/>
-							</div>
+							<>
+								<RoomTitle className="sr-only" id={titleId} roomId={roomId} />
+								<div className="w-full min-w-[min(20rem,100%)] max-w-xl rounded-md border border-border/80 bg-background/70 p-3">
+									<RoomForm
+										isSubmitting={isUpdatingRoom}
+										onCancel={() => setIsEditing(false)}
+										onSubmit={(values) => handleUpdateRoom(values)}
+										roomId={roomId}
+										submitLabel="Save room"
+									/>
+								</div>
+							</>
 						) : (
 							<>
-								<CardTitle className="text-2xl">{data.name}</CardTitle>
-								<p className="max-w-2xl text-muted-foreground text-sm">
-									{data.description}
-								</p>
+								<RoomTitle className="text-2xl" id={titleId} roomId={roomId} />
+								<RoomDescription
+									className="max-w-2xl text-muted-foreground text-sm"
+									roomId={roomId}
+								/>
 							</>
 						)}
 					</div>
 					<div className="flex items-center gap-2">
 						<Suspense fallback={<RoomPlantCountBadge.Skeleton />}>
-							<RoomPlantCountBadge roomId={data.id} />
+							<RoomPlantCountBadge roomId={roomId} />
 						</Suspense>
 						<Button
-							aria-label={`Edit ${data.name}`}
+							aria-labelledby={`${editLabelId} ${titleId}`}
 							disabled={isDeletingRoom}
 							onClick={() => setIsEditing((isOpen) => !isOpen)}
 							size="icon"
 							variant="outline"
 						>
+							<span className="sr-only" id={editLabelId}>
+								Edit
+							</span>
 							<Pencil />
 						</Button>
 						<Button
-							aria-label={`Delete ${data.name}`}
+							aria-labelledby={`${deleteLabelId} ${titleId}`}
 							disabled={isDeletingRoom}
 							onClick={handleDeleteRoom}
 							size="icon"
 							variant="destructive"
 						>
+							<span className="sr-only" id={deleteLabelId}>
+								Delete
+							</span>
 							<Trash2 />
 						</Button>
 					</div>
@@ -126,7 +120,7 @@ export function RoomHeader({ roomId }: RoomHeaderProps) {
 			</CardHeader>
 			<CardContent>
 				<Suspense fallback={<RoomLightProfile.Skeleton />}>
-					<RoomLightProfile roomId={data.id} />
+					<RoomLightProfile roomId={roomId} />
 				</Suspense>
 			</CardContent>
 		</Card>

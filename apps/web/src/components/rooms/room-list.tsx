@@ -194,7 +194,6 @@ export function RoomList({
 								<RoomListItem
 									isActive={room.id === selectedRoomId}
 									key={room.id}
-									room={room}
 									roomId={room.id}
 								/>
 							);
